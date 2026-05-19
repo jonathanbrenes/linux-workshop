@@ -6,8 +6,8 @@
 |--------|------|
 | Duration | 30 minutes |
 | Students | 24–37 (ages 11–13) |
-| Laptops | 15 |
-| Groups | 2–3 students per laptop |
+| Laptops | 25 |
+| Groups | 1–2 students per laptop |
 | Setup | Windows + WSL Ubuntu |
 
 ---

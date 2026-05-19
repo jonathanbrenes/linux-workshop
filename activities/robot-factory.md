@@ -22,6 +22,8 @@ Look around:
 ls
 ```
 
+> **💡 Tip:** Names in **blue** are **folders** — names in **white** are **files**.
+
 You should see: `parts-bin/`, `assembly-line/`, `showroom/`, and some instruction files.
 
 Check what parts are available:

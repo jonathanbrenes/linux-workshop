@@ -297,7 +297,7 @@
 <table>
   <tr><th>Command</th><th>What It Does</th><th>Example</th></tr>
   <tr><td><code>pwd</code></td><td><strong>Where am I?</strong> Shows your current folder</td><td><code>pwd</code></td></tr>
-  <tr><td><code>ls</code></td><td><strong>What's here?</strong> Lists files and folders</td><td><code>ls</code></td></tr>
+  <tr><td><code>ls</code></td><td><strong>What's here?</strong> Lists files and folders (<span style="color:#4a90d9;font-weight:bold">blue</span> = folders, white = files)</td><td><code>ls</code></td></tr>
   <tr><td><code>ls -a</code></td><td><strong>Show EVERYTHING</strong> — even hidden files!</td><td><code>ls -a</code></td></tr>
   <tr><td><code>cd foldername</code></td><td><strong>Go into</strong> a folder</td><td><code>cd cave</code></td></tr>
   <tr><td><code>cd ..</code></td><td><strong>Go back</strong> one folder</td><td><code>cd ..</code></td></tr>
@@ -358,6 +358,10 @@
 <p>Now look around. What do you see?</p>
 <pre><code><span class="cmd-prompt">ls</span></code></pre>
 
+<div class="tip">
+  <strong>💡 Tip:</strong> Notice the colors! Names in <strong>blue</strong> are <strong>folders</strong> you can enter with <code>cd</code>. Names in white are <strong>files</strong> you can read with <code>cat</code>.
+</div>
+
 <p>Your adventure begins with <code>start-here.txt</code>. Read it:</p>
 <pre><code><span class="cmd-prompt">cat start-here.txt</span></code></pre>
 
@@ -407,6 +411,9 @@
 <p>Go to the Robot Factory:</p>
 <pre><code><span class="cmd-prompt">cd ~/linux-adventure/robot-factory</span></code></pre>
 <pre><code><span class="cmd-prompt">ls</span></code></pre>
+<div class="tip">
+  <strong>💡 Tip:</strong> <strong>Blue</strong> = folders — <strong>white</strong> = files.
+</div>
 <p>Check what parts are available:</p>
 <pre><code><span class="cmd-prompt">ls parts-bin/</span></code></pre>
 

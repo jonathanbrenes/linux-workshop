@@ -22,6 +22,8 @@ Now look around. What do you see?
 ls
 ```
 
+> **💡 Tip:** Notice the colors! Names in **blue** are **folders** you can enter with `cd`. Names in **white** are **files** you can read with `cat`.
+
 There are folders and files here. Your adventure begins with `start-here.txt`. Read it:
 
 ```bash

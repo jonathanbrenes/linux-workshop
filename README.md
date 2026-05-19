@@ -43,7 +43,7 @@ You're in! 🎉
 
 ### During the Workshop
 
-- Students work in groups of **2–3 per laptop**
+- Students work in groups of **1–2 per laptop**
 - One person types, others help — rotate every few minutes
 - Follow the timeline in [`instructor-guide.md`](instructor-guide.md)
 - Print or display the [`cheatsheet.md`](cheatsheet.md)

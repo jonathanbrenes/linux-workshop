@@ -9,7 +9,7 @@ Print this out or keep it open on the side!
 | Command | What It Does | Example |
 |---------|-------------|---------|
 | `pwd` | **Where am I?** Shows your current folder | `pwd` |
-| `ls` | **What's here?** Lists files and folders | `ls` |
+| `ls` | **What's here?** Lists files and folders (blue = folders, white = files) | `ls` |
 | `ls -a` | **Show EVERYTHING** — even hidden files! | `ls -a` |
 | `cd foldername` | **Go into** a folder | `cd cave` |
 | `cd ..` | **Go back** one folder | `cd ..` |
