@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linux Adventure Workshop — Student Guide</title>
+<style>
+  /* ===== RESET & BASE ===== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { font-size: 11pt; }
+
+  body {
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    color: #1a1a1a;
+    line-height: 1.5;
+    padding: 0;
+    margin: 0;
+    background: #fff;
+  }
+
+  /* ===== PRINT SETTINGS ===== */
+  @page {
+    size: letter;
+    margin: 1.5cm 1.8cm;
+  }
+
+  @media print {
+    body { font-size: 10pt; }
+    .page-break { page-break-before: always; }
+    .no-break { page-break-inside: avoid; }
+    .cover { height: 100vh; }
+    a { color: #1a1a1a !important; text-decoration: none !important; }
+  }
+
+  /* ===== SCREEN PADDING ===== */
+  @media screen {
+    body { max-width: 800px; margin: 0 auto; padding: 20px; }
+    .page-break { border-top: 3px dashed #ccc; margin: 40px 0; padding-top: 30px; }
+  }
+
+  /* ===== COVER PAGE ===== */
+  .cover {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 60px 20px;
+  }
+
+  .cover .penguin { font-size: 80pt; margin-bottom: 10px; }
+  .cover h1 { font-size: 28pt; color: #1a1a1a; margin-bottom: 8px; }
+  .cover .subtitle { font-size: 14pt; color: #555; margin-bottom: 30px; }
+
+  .cover .tagline {
+    font-size: 12pt;
+    color: #333;
+    border: 2px solid #333;
+    border-radius: 8px;
+    padding: 12px 24px;
+    display: inline-block;
+    margin-top: 15px;
+    font-weight: 600;
+  }
+
+  .cover .footer-info {
+    margin-top: 40px;
+    font-size: 10pt;
+    color: #777;
+    line-height: 1.8;
+  }
+
+  /* ===== HEADINGS ===== */
+  h1 {
+    font-size: 20pt;
+    border-bottom: 3px solid #333;
+    padding-bottom: 6px;
+    margin-bottom: 16px;
+    margin-top: 0;
+  }
+
+  h2 {
+    font-size: 14pt;
+    color: #222;
+    margin-top: 20px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 4px;
+  }
+
+  h3 {
+    font-size: 11pt;
+    color: #333;
+    margin-top: 14px;
+    margin-bottom: 6px;
+  }
+
+  /* ===== SECTION HEADERS (activity titles) ===== */
+  .activity-header {
+    background: #1a1a1a;
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 18pt;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .activity-header .icon { font-size: 22pt; }
+  .activity-header .time {
+    margin-left: auto;
+    font-size: 10pt;
+    background: rgba(255,255,255,0.2);
+    padding: 3px 10px;
+    border-radius: 12px;
+  }
+
+  /* ===== TABLES ===== */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0 16px;
+    font-size: 10pt;
+  }
+
+  th {
+    background: #f0f0f0;
+    text-align: left;
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    font-weight: 600;
+  }
+
+  td {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    vertical-align: top;
+  }
+
+  tr:nth-child(even) td { background: #fafafa; }
+
+  /* ===== CODE ===== */
+  code {
+    font-family: 'Cascadia Code', 'Consolas', 'Courier New', monospace;
+    background: #f4f4f4;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 9.5pt;
+    border: 1px solid #e0e0e0;
+  }
+
+  pre {
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 10px 14px;
+    border-radius: 6px;
+    margin: 8px 0 14px;
+    overflow-x: auto;
+    font-size: 9.5pt;
+    line-height: 1.5;
+  }
+
+  pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+
+  .cmd-prompt::before {
+    content: "$ ";
+    color: #6a9955;
+    font-weight: bold;
+  }
+
+  /* ===== TIPS / CALLOUTS ===== */
+  .tip {
+    background: #e8f5e9;
+    border-left: 4px solid #43a047;
+    padding: 8px 14px;
+    margin: 10px 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 10pt;
+  }
+
+  .warning {
+    background: #fff3e0;
+    border-left: 4px solid #ef6c00;
+    padding: 8px 14px;
+    margin: 10px 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 10pt;
+  }
+
+  .challenge-box {
+    border: 2px solid #1565c0;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 12px 0;
+    background: #e3f2fd;
+  }
+
+  .challenge-box h3 {
+    margin-top: 0;
+    color: #1565c0;
+  }
+
+  .bonus-box {
+    border: 2px dashed #7b1fa2;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 12px 0;
+    background: #f3e5f5;
+  }
+
+  .bonus-box h3 {
+    margin-top: 0;
+    color: #7b1fa2;
+  }
+
+  /* ===== LISTS ===== */
+  ul, ol { margin: 6px 0 12px 20px; }
+  li { margin-bottom: 4px; }
+
+  /* ===== MISC ===== */
+  p { margin-bottom: 8px; }
+  strong { color: #111; }
+  hr { border: none; border-top: 1px solid #ddd; margin: 16px 0; }
+
+  .group-label {
+    display: inline-block;
+    background: #e8eaf6;
+    border: 1px solid #9fa8da;
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 9pt;
+    color: #283593;
+    margin-bottom: 6px;
+  }
+
+  .key-message {
+    text-align: center;
+    font-size: 12pt;
+    font-weight: 600;
+    color: #333;
+    padding: 16px;
+    margin: 16px 0;
+    border: 2px solid #333;
+    border-radius: 8px;
+  }
+
+  .names-line {
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 8px 14px;
+    margin: 10px 0 16px;
+    background: #fafafa;
+    font-size: 10pt;
+  }
+
+  .names-line span { color: #999; }
+</style>
+</head>
+<body>
+
+<!-- ==================== COVER PAGE ==================== -->
+<div class="cover">
+  <div class="penguin">🐧</div>
+  <h1>Linux Adventure Workshop</h1>
+  <div class="subtitle">Student Guide</div>
+
+  <div class="tagline">You don't just use Linux — you BUILD with it.</div>
+
+  <div class="footer-info">
+    WSL Ubuntu &bull; Hands-On &bull; 30 Minutes<br>
+    <br>
+    <div class="names-line">
+      <strong>Group Members:</strong> <span>_______________________ &nbsp; _______________________ &nbsp; _______________________</span>
+    </div>
+    <div class="names-line">
+      <strong>Laptop #:</strong> <span>___________</span>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== CHEATSHEET ==================== -->
+<div class="page-break"></div>
+
+<h1>📋 Linux Command Cheatsheet</h1>
+<p>Keep this page open! These are all the commands you need today.</p>
+
+<h2>🧭 Moving Around</h2>
+<table>
+  <tr><th>Command</th><th>What It Does</th><th>Example</th></tr>
+  <tr><td><code>pwd</code></td><td><strong>Where am I?</strong> Shows your current folder</td><td><code>pwd</code></td></tr>
+  <tr><td><code>ls</code></td><td><strong>What's here?</strong> Lists files and folders</td><td><code>ls</code></td></tr>
+  <tr><td><code>ls -a</code></td><td><strong>Show EVERYTHING</strong> — even hidden files!</td><td><code>ls -a</code></td></tr>
+  <tr><td><code>cd foldername</code></td><td><strong>Go into</strong> a folder</td><td><code>cd cave</code></td></tr>
+  <tr><td><code>cd ..</code></td><td><strong>Go back</strong> one folder</td><td><code>cd ..</code></td></tr>
+  <tr><td><code>cd ~</code></td><td><strong>Go home</strong> — back to your home folder</td><td><code>cd ~</code></td></tr>
+</table>
+
+<h2>📄 Working With Files</h2>
+<table>
+  <tr><th>Command</th><th>What It Does</th><th>Example</th></tr>
+  <tr><td><code>cat filename</code></td><td><strong>Read</strong> a file</td><td><code>cat clue1.txt</code></td></tr>
+  <tr><td><code>touch filename</code></td><td><strong>Create</strong> a new empty file</td><td><code>touch arm.txt</code></td></tr>
+  <tr><td><code>mv old new</code></td><td><strong>Rename</strong> or <strong>move</strong> a file</td><td><code>mv arm.txt robot-arm.txt</code></td></tr>
+  <tr><td><code>cp file copy</code></td><td><strong>Copy</strong> a file</td><td><code>cp arm.txt backup.txt</code></td></tr>
+  <tr><td><code>rm filename</code></td><td><strong>Delete</strong> a file (careful!)</td><td><code>rm junk.txt</code></td></tr>
+</table>
+
+<h2>📁 Folders &amp; Finding Things</h2>
+<table>
+  <tr><th>Command</th><th>What It Does</th><th>Example</th></tr>
+  <tr><td><code>mkdir name</code></td><td><strong>Create</strong> a new folder</td><td><code>mkdir my-robots</code></td></tr>
+  <tr><td><code>grep "word" file</code></td><td><strong>Search</strong> for a word in a file</td><td><code>grep "cookie" witness.txt</code></td></tr>
+  <tr><td><code>wc -l filename</code></td><td><strong>Count</strong> lines in a file</td><td><code>wc -l parts.txt</code></td></tr>
+</table>
+
+<h2>📝 Scripts &amp; Other</h2>
+<table>
+  <tr><th>Command</th><th>What It Does</th><th>Example</th></tr>
+  <tr><td><code>nano filename</code></td><td><strong>Open</strong> a text editor</td><td><code>nano hello.sh</code></td></tr>
+  <tr><td><code>bash filename</code></td><td><strong>Run</strong> a script</td><td><code>bash hello.sh</code></td></tr>
+  <tr><td><code>echo "text"</code></td><td><strong>Print</strong> text to the screen</td><td><code>echo "Hello!"</code></td></tr>
+  <tr><td><code>clear</code></td><td><strong>Clean</strong> the screen</td><td><code>clear</code></td></tr>
+  <tr><td><code>history</code></td><td><strong>See</strong> all commands you typed</td><td><code>history</code></td></tr>
+</table>
+
+<div class="tip">
+  <strong>💡 Pro Tips:</strong>
+  Press <strong>Tab</strong> to auto-complete names.
+  Press <strong>↑ arrow</strong> to repeat your last command.
+  Type <code>cd ~</code> if you ever get lost.
+</div>
+
+<!-- ==================== ACTIVITY 1: TREASURE HUNT ==================== -->
+<div class="page-break"></div>
+
+<div class="activity-header">
+  <span class="icon">🗺️</span>
+  <span>Activity 1: Treasure Hunt</span>
+  <span class="time">⏱ 8 min</span>
+</div>
+
+<p>You are an explorer. You've arrived at a mysterious island. Somewhere here, a treasure is hidden. Your only tool? <strong>The terminal.</strong></p>
+<p>Nobody is going to tell you where the treasure is. You have to <strong>find it yourself.</strong></p>
+
+<h2>Getting Started</h2>
+<p>Open your terminal and go to the treasure hunt:</p>
+<pre><code><span class="cmd-prompt">cd ~/linux-adventure/treasure-hunt</span></code></pre>
+
+<p>Now look around. What do you see?</p>
+<pre><code><span class="cmd-prompt">ls</span></code></pre>
+
+<p>Your adventure begins with <code>start-here.txt</code>. Read it:</p>
+<pre><code><span class="cmd-prompt">cat start-here.txt</span></code></pre>
+
+<h2>Your Mission</h2>
+<ol>
+  <li>Read the first clue</li>
+  <li>Follow the clues from folder to folder</li>
+  <li>Find the <strong>treasure</strong></li>
+</ol>
+
+<h3>Rules</h3>
+<ul>
+  <li>Read every file you find — some are clues, some are traps!</li>
+  <li>If you get lost, type <code>pwd</code> to see where you are</li>
+  <li>To go back, type <code>cd ..</code></li>
+  <li>The treasure might be <strong>hidden</strong>... 👀</li>
+</ul>
+
+<h2>Commands You'll Need</h2>
+<table>
+  <tr><th>Command</th><th>What It Does</th></tr>
+  <tr><td><code>ls</code></td><td>See what's in the current folder</td></tr>
+  <tr><td><code>ls -a</code></td><td>See EVERYTHING — even hidden files!</td></tr>
+  <tr><td><code>cd foldername</code></td><td>Go into a folder</td></tr>
+  <tr><td><code>cd ..</code></td><td>Go back one folder</td></tr>
+  <tr><td><code>cat filename</code></td><td>Read a file</td></tr>
+  <tr><td><code>pwd</code></td><td>See where you are right now</td></tr>
+</table>
+
+<div class="key-message">
+  Start exploring. Read the clues. Follow the trail.<br>
+  Can you find the treasure? 🏆
+</div>
+
+<!-- ==================== ACTIVITY 2: ROBOT FACTORY ==================== -->
+<div class="page-break"></div>
+
+<div class="activity-header">
+  <span class="icon">🤖</span>
+  <span>Activity 2: Robot Factory</span>
+  <span class="time">⏱ 8 min</span>
+</div>
+
+<p>Welcome to the <strong>Robot Factory</strong>! Your job: build a robot from parts. You'll create robot parts as files, name them, and show your robot off in the showroom.</p>
+
+<h2>Getting Started</h2>
+<p>Go to the Robot Factory:</p>
+<pre><code><span class="cmd-prompt">cd ~/linux-adventure/robot-factory</span></code></pre>
+<pre><code><span class="cmd-prompt">ls</span></code></pre>
+<p>Check what parts are available:</p>
+<pre><code><span class="cmd-prompt">ls parts-bin/</span></code></pre>
+
+<div class="challenge-box no-break">
+  <h3>Challenge 1: Build Your Robot</h3>
+  <p>Go to the assembly line and create your robot's parts:</p>
+  <pre><code><span class="cmd-prompt">cd assembly-line</span>
+<span class="cmd-prompt">touch head.txt body.txt left-arm.txt right-arm.txt left-leg.txt right-leg.txt</span></code></pre>
+  <p>Check your work and count the parts:</p>
+  <pre><code><span class="cmd-prompt">ls</span>
+<span class="cmd-prompt">ls | wc -l</span></code></pre>
+</div>
+
+<div class="challenge-box no-break">
+  <h3>Challenge 2: Name Your Parts</h3>
+  <p>Rename your robot parts — get creative!</p>
+  <pre><code><span class="cmd-prompt">mv head.txt super-brain-3000.txt</span>
+<span class="cmd-prompt">mv body.txt titanium-chest.txt</span></code></pre>
+  <p>Rename the rest however you want! Then check with <code>ls</code>.</p>
+</div>
+
+<div class="challenge-box no-break">
+  <h3>Challenge 3: Move to the Showroom</h3>
+  <p>Your robot is ready! Move it to the showroom:</p>
+  <pre><code><span class="cmd-prompt">mv *.txt ../showroom/</span>
+<span class="cmd-prompt">cd ../showroom</span>
+<span class="cmd-prompt">ls</span></code></pre>
+  <p>Your robot is on display! 🤖🎉</p>
+</div>
+
+<div class="bonus-box no-break">
+  <h3>⭐ Bonus Challenges</h3>
+  <ul>
+    <li><strong>MEGA Robot:</strong> Build a robot with <strong>15 parts</strong>!</li>
+    <li><strong>Name it:</strong> <code>echo "THUNDERBOT-9000" > robot-name.txt</code></li>
+    <li><strong>Copy a part:</strong> <code>cp left-arm.txt spare-arm.txt</code></li>
+  </ul>
+</div>
+
+<!-- ==================== ACTIVITY 3: TERMINAL PLAYGROUND ==================== -->
+<div class="page-break"></div>
+
+<div class="activity-header">
+  <span class="icon">🎮</span>
+  <span>Activity 3: Terminal Playground</span>
+  <span class="time">⏱ 5 min</span>
+</div>
+
+<p>The terminal isn't just for work — it can be <strong>FUN!</strong></p>
+<pre><code><span class="cmd-prompt">cd ~/linux-adventure/playground</span></code></pre>
+
+<div class="no-break">
+<h2>🐄 Cowsay — Make a Cow Talk!</h2>
+<pre><code><span class="cmd-prompt">cowsay "I love Linux!"</span>
+<span class="cmd-prompt">cowsay "Hello World"</span></code></pre>
+<p>Want a different animal?</p>
+<pre><code><span class="cmd-prompt">cowsay -f dragon "I breathe fire"</span>
+<span class="cmd-prompt">cowsay -f tux "I am the Linux penguin"</span></code></pre>
+</div>
+
+<div class="no-break">
+<h2>🔮 Fortune — Random Quote</h2>
+<pre><code><span class="cmd-prompt">fortune</span></code></pre>
+<p>Combine it with cowsay:</p>
+<pre><code><span class="cmd-prompt">fortune | cowsay</span></code></pre>
+</div>
+
+<div class="no-break">
+<h2>🚂 SL — Oops!</h2>
+<p>Ever type <code>sl</code> instead of <code>ls</code> by accident?</p>
+<pre><code><span class="cmd-prompt">sl</span></code></pre>
+<p>Watch what happens! 🚂 (Press <code>Ctrl+C</code> to stop)</p>
+</div>
+
+<div class="no-break">
+<h2>💻 CMatrix — Become The Matrix</h2>
+<pre><code><span class="cmd-prompt">cmatrix</span></code></pre>
+<p>Green code rains down your screen. Press <code>q</code> to quit.</p>
+</div>
+
+<div class="no-break">
+<h2>🕐 Built-In Fun (Always Works!)</h2>
+<table>
+  <tr><th>Command</th><th>What It Does</th></tr>
+  <tr><td><code>date</code></td><td>Today's date and time</td></tr>
+  <tr><td><code>cal</code></td><td>Show a calendar</td></tr>
+  <tr><td><code>whoami</code></td><td>Who are you?</td></tr>
+  <tr><td><code>uptime</code></td><td>How long the computer has been on</td></tr>
+  <tr><td><code>echo "Hello!"</code></td><td>Make the terminal say something</td></tr>
+</table>
+</div>
+
+<div class="tip">
+  <strong>💡 Combine commands</strong> with the pipe <code>|</code> — it sends the output of one command into the next!<br>
+  <code>fortune | cowsay</code> &nbsp;&nbsp;or&nbsp;&nbsp; <code>echo "I am awesome" | cowsay -f tux</code>
+</div>
+
+<!-- ==================== ACTIVITY 4: FIRST SCRIPT ==================== -->
+<div class="page-break"></div>
+
+<div class="activity-header">
+  <span class="icon">📝</span>
+  <span>Activity 4: First Script</span>
+  <span class="time">⏱ 7 min</span>
+</div>
+
+<p>A script is a file that tells the computer what to do, step by step. When you write a script, <strong>you are programming.</strong></p>
+
+<h2>Step 1: Go to the Script Lab</h2>
+<pre><code><span class="cmd-prompt">cd ~/linux-adventure/my-scripts</span></code></pre>
+
+<h2>Step 2: Create Your Script</h2>
+<pre><code><span class="cmd-prompt">nano hello.sh</span></code></pre>
+<p>A text editor opens in your terminal!</p>
+
+<h2>Step 3: Type This Code</h2>
+<pre><code>#!/bin/bash
+echo "=============================="
+echo "  Hello! I am a Linux script!"
+echo "  Made by: [YOUR NAME]"
+echo "=============================="
+echo ""
+echo "Today is:"
+date
+echo ""
+echo "You are logged in as:"
+whoami
+echo ""
+echo "🐧 Script complete!"</code></pre>
+<p>Replace <code>[YOUR NAME]</code> with your real name!</p>
+
+<h2>Step 4: Save and Exit nano</h2>
+<table>
+  <tr><th>Action</th><th>Keys</th></tr>
+  <tr><td>Save the file</td><td><strong>Ctrl + O</strong>, then press <strong>Enter</strong></td></tr>
+  <tr><td>Exit nano</td><td><strong>Ctrl + X</strong></td></tr>
+</table>
+
+<h2>Step 5: Run Your Script!</h2>
+<pre><code><span class="cmd-prompt">bash hello.sh</span></code></pre>
+
+<div class="key-message">
+  🎉 YOUR SCRIPT JUST RAN!<br>
+  You are officially a programmer!
+</div>
+
+<div class="bonus-box no-break">
+  <h3>⭐ Bonus: Make It Interactive</h3>
+  <p>Open your script again (<code>nano hello.sh</code>) and add:</p>
+  <pre><code>echo "What is your name?"
+read name
+echo "Hello, $name! Welcome to Linux!"</code></pre>
+  <p>Save, exit, and run with <code>bash hello.sh</code>.</p>
+  <p>The <code>read</code> command waits for you to type something!</p>
+</div>
+
+<!-- ==================== ACTIVITY 5 (BONUS): COMMAND DETECTIVE ==================== -->
+<div class="page-break"></div>
+
+<div class="activity-header">
+  <span class="icon">🔍</span>
+  <span>Bonus: Command Detective</span>
+  <span class="time">⏱ Extra</span>
+</div>
+
+<p>Someone stole the last cookie from the jar. There are witnesses and suspects. Your job: search through the evidence and figure out <strong>who did it.</strong></p>
+
+<h2>Getting Started</h2>
+<pre><code><span class="cmd-prompt">cd ~/linux-adventure/detective</span>
+<span class="cmd-prompt">cat case-file.txt</span></code></pre>
+
+<h2>Investigate</h2>
+<p>Read witness statements and suspect files:</p>
+<pre><code><span class="cmd-prompt">cat evidence/witness1.txt</span>
+<span class="cmd-prompt">cat evidence/witness2.txt</span>
+<span class="cmd-prompt">cat suspects/alex.txt</span>
+<span class="cmd-prompt">cat suspects/sam.txt</span></code></pre>
+
+<h2>Use <code>grep</code> — Your Secret Weapon</h2>
+<p>Instead of reading every file, <strong>search</strong> for clues!</p>
+
+<pre><code><span class="cmd-prompt">grep "cookies" suspects/*</span>
+<span class="cmd-prompt">grep "kitchen" suspects/*</span>
+<span class="cmd-prompt">grep "chocolate" evidence/*</span>
+<span class="cmd-prompt">grep -r "cookie" ~/linux-adventure/detective/</span></code></pre>
+
+<h2>Solve the Case!</h2>
+<ol>
+  <li>Who was in the kitchen?</li>
+  <li>Who likes cookies?</li>
+  <li>Who had chocolate on their shirt?</li>
+  <li><strong>Who stole the cookie?</strong></li>
+</ol>
+
+<div class="tip">
+  <strong>💡 <code>grep</code></strong> is one of the most powerful commands in Linux. Real engineers and security analysts use it every day!
+</div>
+
+<!-- ==================== BACK COVER ==================== -->
+<div class="page-break"></div>
+
+<div class="cover" style="justify-content: center;">
+  <div class="penguin" style="font-size: 50pt;">🐧</div>
+
+  <div class="key-message" style="margin: 20px 0; font-size: 14pt; border-width: 3px;">
+    Linux is not just used.<br>
+    Linux is controlled.<br>
+    Linux is built with.
+  </div>
+
+  <div style="margin-top: 30px; text-align: center; font-size: 10pt; color: #888; line-height: 2;">
+    <p><strong>Commands you learned today:</strong></p>
+    <p>
+      <code>pwd</code> &nbsp;
+      <code>ls</code> &nbsp;
+      <code>cd</code> &nbsp;
+      <code>cat</code> &nbsp;
+      <code>touch</code> &nbsp;
+      <code>mv</code> &nbsp;
+      <code>cp</code> &nbsp;
+      <code>mkdir</code> &nbsp;
+      <code>grep</code> &nbsp;
+      <code>nano</code> &nbsp;
+      <code>bash</code> &nbsp;
+      <code>echo</code> &nbsp;
+      <code>clear</code>
+    </p>
+  </div>
+
+  <div style="margin-top: 40px; font-size: 10pt; color: #999;">
+    <p>The terminal is not scary. It's your superpower. 💪</p>
+    <p style="margin-top: 20px;">Every expert was once a beginner. Keep building.</p>
+  </div>
+
+  <div style="margin-top: 50px; font-size: 9pt; color: #bbb;">
+    Linux Adventure Workshop &bull; WSL Ubuntu
+  </div>
+</div>
+
+</body>
+</html>
