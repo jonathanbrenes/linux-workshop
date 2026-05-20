@@ -1,5 +1,5 @@
 # ============================================
-# 🐧 Linux Adventure Workshop — All-in-One Installer
+# Linux Adventure Workshop - All-in-One Installer
 # ============================================
 # Run this ONCE per laptop in PowerShell (as Admin recommended).
 # It does everything: installs WSL+Ubuntu, downloads workshop
@@ -18,7 +18,7 @@ $lnkFile = Join-Path ([Environment]::GetFolderPath("Desktop")) "Linux Adventure 
 
 Write-Host ""
 Write-Host "  =========================================" -ForegroundColor Cyan
-Write-Host "  🐧 Linux Adventure Workshop — Installer" -ForegroundColor Cyan
+Write-Host "  Linux Adventure Workshop - Installer" -ForegroundColor Cyan
 Write-Host "  =========================================" -ForegroundColor Cyan
 Write-Host ""
 
@@ -43,7 +43,7 @@ if ($wslReady) {
     if ($LASTEXITCODE -eq 0) {
         Write-Host "    -> WSL + Ubuntu installed." -ForegroundColor Green
         Write-Host ""
-        Write-Host "  ⚠️  REBOOT REQUIRED" -ForegroundColor Red
+        Write-Host "  REBOOT REQUIRED" -ForegroundColor Red
         Write-Host "  Please reboot this laptop, then:" -ForegroundColor Red
         Write-Host "    1. Open Ubuntu from the Start menu to finish first-time setup" -ForegroundColor Red
         Write-Host "    2. Run this installer again to complete the remaining steps" -ForegroundColor Red
@@ -76,7 +76,7 @@ Write-Host "    -> Activity folders created in ~/linux-adventure/" -ForegroundCo
 # =============================================
 # STEP 3: Install fun tools (cowsay, sl, etc.)
 # =============================================
-Write-Host "  [3/5] Installing fun tools (cowsay, sl, cmatrix, figlet)..." -ForegroundColor Yellow
+Write-Host '  [3/5] Installing fun tools (cowsay, sl, cmatrix, figlet)...' -ForegroundColor Yellow
 wsl -d Ubuntu -- bash -c "curl -sL $repo/bonus/setup-fun.sh | sudo bash"
 Write-Host "    -> Fun tools installed." -ForegroundColor DarkGray
 
@@ -141,52 +141,53 @@ Write-Host "    -> $icoFile" -ForegroundColor DarkGray
 # =============================================
 Write-Host "  [5/5] Creating desktop shortcut..." -ForegroundColor Yellow
 
-$launchScript = @'
-# Linux Adventure Workshop — Split-Screen Launcher
-Add-Type -AssemblyName System.Windows.Forms
-Add-Type @"
-using System;
-using System.Runtime.InteropServices;
-public class WinAPI {
-    [DllImport("user32.dll")]
-    public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
-    [DllImport("user32.dll")]
-    public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-}
-"@
-
-$screen = [System.Windows.Forms.Screen]::PrimaryScreen.WorkingArea
-$halfW  = [int]($screen.Width / 2)
-$h      = $screen.Height
-$left   = $screen.X
-$top    = $screen.Y
-
-Start-Process "msedge.exe" "--new-window https://linux.brenes.info"
-Start-Sleep -Seconds 3
-
-$edge = Get-Process -Name msedge -ErrorAction SilentlyContinue |
-        Where-Object { $_.MainWindowHandle -ne 0 } |
-        Select-Object -First 1
-
-if ($edge) {
-    [WinAPI]::ShowWindow($edge.MainWindowHandle, 9) | Out-Null
-    [WinAPI]::SetWindowPos($edge.MainWindowHandle, [IntPtr]::Zero,
-        $left, $top, $halfW, $h, 0x0040) | Out-Null
-}
-
-Start-Process "wt.exe" "-p Ubuntu"
-Start-Sleep -Seconds 2
-
-$wt = Get-Process -Name WindowsTerminal -ErrorAction SilentlyContinue |
-      Where-Object { $_.MainWindowHandle -ne 0 } |
-      Select-Object -First 1
-
-if ($wt) {
-    [WinAPI]::ShowWindow($wt.MainWindowHandle, 9) | Out-Null
-    [WinAPI]::SetWindowPos($wt.MainWindowHandle, [IntPtr]::Zero,
-        ($left + $halfW), $top, $halfW, $h, 0x0040) | Out-Null
-}
-'@
+$nl = [Environment]::NewLine
+$hereOpen = [char]64 + [char]34
+$hereClose = [char]34 + [char]64
+$launchScript = '# Linux Adventure Workshop - Split-Screen Launcher' + $nl
+$launchScript += 'Add-Type -AssemblyName System.Windows.Forms' + $nl
+$launchScript += "Add-Type $hereOpen" + $nl
+$launchScript += 'using System;' + $nl
+$launchScript += 'using System.Runtime.InteropServices;' + $nl
+$launchScript += 'public class WinAPI {' + $nl
+$launchScript += '    [DllImport("user32.dll")]' + $nl
+$launchScript += '    public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);' + $nl
+$launchScript += '    [DllImport("user32.dll")]' + $nl
+$launchScript += '    public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);' + $nl
+$launchScript += '}' + $nl
+$launchScript += $hereClose + $nl
+$launchScript += '' + $nl
+$launchScript += '$screen = [System.Windows.Forms.Screen]::PrimaryScreen.WorkingArea' + $nl
+$launchScript += '$halfW  = [int]($screen.Width / 2)' + $nl
+$launchScript += '$h      = $screen.Height' + $nl
+$launchScript += '$left   = $screen.X' + $nl
+$launchScript += '$top    = $screen.Y' + $nl
+$launchScript += '' + $nl
+$launchScript += 'Start-Process "msedge.exe" "--new-window https://linux.brenes.info"' + $nl
+$launchScript += 'Start-Sleep -Seconds 3' + $nl
+$launchScript += '' + $nl
+$launchScript += '$edge = Get-Process -Name msedge -ErrorAction SilentlyContinue |' + $nl
+$launchScript += '        Where-Object { $_.MainWindowHandle -ne 0 } |' + $nl
+$launchScript += '        Select-Object -First 1' + $nl
+$launchScript += '' + $nl
+$launchScript += 'if ($edge) {' + $nl
+$launchScript += '    [WinAPI]::ShowWindow($edge.MainWindowHandle, 9) | Out-Null' + $nl
+$launchScript += '    [WinAPI]::SetWindowPos($edge.MainWindowHandle, [IntPtr]::Zero,' + $nl
+$launchScript += '        $left, $top, $halfW, $h, 0x0040) | Out-Null' + $nl
+$launchScript += '}' + $nl
+$launchScript += '' + $nl
+$launchScript += 'Start-Process "wt.exe" "-p Ubuntu"' + $nl
+$launchScript += 'Start-Sleep -Seconds 2' + $nl
+$launchScript += '' + $nl
+$launchScript += '$wt = Get-Process -Name WindowsTerminal -ErrorAction SilentlyContinue |' + $nl
+$launchScript += '      Where-Object { $_.MainWindowHandle -ne 0 } |' + $nl
+$launchScript += '      Select-Object -First 1' + $nl
+$launchScript += '' + $nl
+$launchScript += 'if ($wt) {' + $nl
+$launchScript += '    [WinAPI]::ShowWindow($wt.MainWindowHandle, 9) | Out-Null' + $nl
+$launchScript += '    [WinAPI]::SetWindowPos($wt.MainWindowHandle, [IntPtr]::Zero,' + $nl
+$launchScript += '        ($left + $halfW), $top, $halfW, $h, 0x0040) | Out-Null' + $nl
+$launchScript += '}'
 
 Set-Content -Path $ps1File -Value $launchScript -Encoding UTF8
 
@@ -201,6 +202,6 @@ $shortcut.Save()
 
 Write-Host "    -> $lnkFile" -ForegroundColor DarkGray
 Write-Host ""
-Write-Host "  ✅ All done! Laptop is ready for the workshop." -ForegroundColor Green
-Write-Host "  Double-click the 🐧 Tux penguin on the Desktop to launch." -ForegroundColor Green
+Write-Host "  All done! Laptop is ready for the workshop." -ForegroundColor Green
+Write-Host "  Double-click the Tux penguin on the Desktop to launch." -ForegroundColor Green
 Write-Host ""
