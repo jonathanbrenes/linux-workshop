@@ -35,7 +35,7 @@ foreach ($sz in $sizes) {
     $g = [System.Drawing.Graphics]::FromImage($bmp)
     $g.SmoothingMode = "AntiAlias"
     $g.TextRenderingHint = "AntiAliasGridFit"
-    $g.Clear([System.Drawing.Color]::Transparent)
+    $g.Clear([System.Drawing.Color]::White)
     $fontSize = [math]::Floor($sz * 0.75)
     $font = New-Object System.Drawing.Font("Segoe UI Emoji", $fontSize, [System.Drawing.FontStyle]::Regular)
     $sf = New-Object System.Drawing.StringFormat
