@@ -434,12 +434,37 @@
   <pre><code><span class="cmd-prompt">cowsay "Ready to go!"</span></code></pre>
 </div>
 
-<div class="warning">
-  <strong>⚠️ No internet at the school?</strong> Run Step 2 (fun tools) at home/office on each laptop beforehand. Step 1 (setup.sh) doesn't need internet, but you'll need the file on a USB drive.
+<div class="script-card no-break">
+  <h3>🖥️ Step 3: Workshop Launcher — Desktop Shortcut</h3>
+  <p>Creates a desktop shortcut that opens <strong>Edge</strong> (left half, with the workshop site) and <strong>Windows Terminal with Ubuntu</strong> (right half) side by side. Perfect for each student laptop.</p>
+  <div class="script-url"><a href="https://raw.githubusercontent.com/jonathanbrenes/linux-workshop/main/launch-workshop.ps1" target="_blank">https://raw.githubusercontent.com/jonathanbrenes/linux-workshop/main/launch-workshop.ps1</a></div>
+  <p><strong>One-liner — download both files to the Desktop &amp; create the shortcut:</strong></p>
+  <p>Open <strong>PowerShell</strong> (not Ubuntu) and run:</p>
+  <pre><code>cd $env:USERPROFILE\Desktop
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/jonathanbrenes/linux-workshop/main/launch-workshop.ps1" -OutFile "launch-workshop.ps1"
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/jonathanbrenes/linux-workshop/main/Launch Workshop.bat" -OutFile "Launch Workshop.bat"</code></pre>
+  <p><strong>Verify:</strong> Double-click <strong>"Launch Workshop.bat"</strong> on the Desktop. Edge should open on the left with the workshop guide, and Ubuntu terminal on the right.</p>
+</div>
+
+<div class="tip">
+  <strong>💡 All 3 steps in one go!</strong> Open <strong>Ubuntu</strong> and run Steps 1 &amp; 2, then open <strong>PowerShell</strong> and run Step 3. Here's the combined quick-deploy:
   <br><br>
-  <strong>USB alternative:</strong> Copy both scripts to a USB drive, then from Ubuntu:
-  <pre style="margin:6px 0 0;"><code><span class="cmd-prompt">bash /mnt/c/Users/USERNAME/Desktop/setup.sh</span>
+  <strong>In Ubuntu (WSL):</strong>
+  <pre style="margin:6px 0 4px;"><code><span class="cmd-prompt">curl -sL https://raw.githubusercontent.com/jonathanbrenes/linux-workshop/main/setup.sh | bash</span>
+<span class="cmd-prompt">curl -sL https://raw.githubusercontent.com/jonathanbrenes/linux-workshop/main/bonus/setup-fun.sh | sudo bash</span></code></pre>
+  <strong>In PowerShell:</strong>
+  <pre style="margin:6px 0 0;"><code>cd $env:USERPROFILE\Desktop; @("launch-workshop.ps1","Launch Workshop.bat") | % { Invoke-WebRequest "https://raw.githubusercontent.com/jonathanbrenes/linux-workshop/main/$_" -OutFile $_ }</code></pre>
+</div>
+
+<div class="warning">
+  <strong>⚠️ No internet at the school?</strong> Run Steps 2 &amp; 3 at home/office on each laptop beforehand. Step 1 (setup.sh) doesn't need internet, but you'll need the file on a USB drive.
+  <br><br>
+  <strong>USB alternative:</strong> Copy all files to a USB drive, then:
+  <br>From <strong>Ubuntu:</strong>
+  <pre style="margin:6px 0 4px;"><code><span class="cmd-prompt">bash /mnt/c/Users/USERNAME/Desktop/setup.sh</span>
 <span class="cmd-prompt">sudo bash /mnt/c/Users/USERNAME/Desktop/setup-fun.sh</span></code></pre>
+  From <strong>PowerShell:</strong>
+  <pre style="margin:6px 0 0;"><code>Copy-Item "D:\launch-workshop.ps1","D:\Launch Workshop.bat" -Destination "$env:USERPROFILE\Desktop"</code></pre>
 </div>
 
 <h2>✅ Pre-Flight Checklist</h2>
@@ -448,8 +473,9 @@
   <tr><td>1</td><td>Ubuntu (WSL) opens from the Start menu on every laptop</td><td>☐</td></tr>
   <tr><td>2</td><td><code>setup.sh</code> ran successfully — <code>ls ~/linux-adventure/</code> shows 5 folders</td><td>☐</td></tr>
   <tr><td>3</td><td><code>setup-fun.sh</code> ran — <code>cowsay "test"</code> works</td><td>☐</td></tr>
-  <tr><td>4</td><td>Student guides printed (1 per group) or displayed on projector</td><td>☐</td></tr>
-  <tr><td>5</td><td>This instructor guide is open on your device</td><td>☐</td></tr>
+  <tr><td>4</td><td><strong>"Launch Workshop.bat"</strong> is on the Desktop and works (Edge left + Ubuntu right)</td><td>☐</td></tr>
+  <tr><td>5</td><td>Student guides printed (1 per group) or displayed on projector</td><td>☐</td></tr>
+  <tr><td>6</td><td>This instructor guide is open on your device</td><td>☐</td></tr>
 </table>
 
 <!-- ==================== WELCOME SCRIPT ==================== -->
