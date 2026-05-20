@@ -384,7 +384,7 @@
 <h2>⏱️ Timeline</h2>
 <table>
   <tr><th>Time</th><th>Duration</th><th>Activity</th><th>Key Commands</th></tr>
-  <tr class="timeline-row"><td>0:00</td><td>2 min</td><td><strong>Welcome &amp; Intro</strong></td><td>Open terminals, pep talk</td></tr>
+  <tr class="timeline-row"><td>0:00</td><td>2 min</td><td><strong>Welcome &amp; Intro</strong></td><td>Welcome slides (8 slides)</td></tr>
   <tr class="timeline-row"><td>0:02</td><td>8 min</td><td><strong>🗺️ Treasure Hunt</strong></td><td><code>ls</code>, <code>cd</code>, <code>cat</code>, <code>ls -a</code></td></tr>
   <tr class="timeline-row"><td>0:10</td><td>8 min</td><td><strong>🤖 Robot Factory</strong></td><td><code>touch</code>, <code>mv</code>, <code>wc -l</code></td></tr>
   <tr class="timeline-row"><td>0:18</td><td>5 min</td><td><strong>🎮 Terminal Playground</strong></td><td><code>cowsay</code>, <code>sl</code>, <code>cmatrix</code></td></tr>
@@ -472,7 +472,8 @@
   <tr><td>3</td><td><code>setup-fun.sh</code> ran — <code>cowsay "test"</code> works</td><td>☐</td></tr>
   <tr><td>4</td><td>🐧 <strong>"Linux Adventure Workshop"</strong> shortcut is on the Desktop and works</td><td>☐</td></tr>
   <tr><td>5</td><td>Student guides printed (1 per group) or displayed on projector</td><td>☐</td></tr>
-  <tr><td>6</td><td>This instructor guide is open on your device</td><td>☐</td></tr>
+  <tr><td>6</td><td>Welcome slides loaded on projector — <a href="https://linux.brenes.info/welcome.html">linux.brenes.info/welcome.html</a></td><td>☐</td></tr>
+  <tr><td>7</td><td>This instructor guide is open on your device</td><td>☐</td></tr>
 </table>
 
 <!-- ==================== WELCOME SCRIPT ==================== -->
@@ -484,13 +485,33 @@
   <span class="badge">2 minutes</span>
 </div>
 
-<p>Keep it <strong>SHORT</strong> and energetic:</p>
+<p>Open the <strong>Welcome Slides</strong> full-screen on the projector before students arrive:</p>
 
-<div class="script-speech">
-  "Today, you're not just using a computer. You're going to <strong>control</strong> it. No mouse. No menus. Just you, the terminal, and your brain. Linux runs servers, phones, robots, even spaceships. And today — it runs YOUR adventure. Let's go!"
+<div class="script-card no-break">
+  <h3>🖥️ Welcome Slides</h3>
+  <p>8 slides, ~2 minutes. Use arrow keys or spacebar to advance.</p>
+  <div class="script-url">
+    <a href="https://linux.brenes.info/welcome.html" target="_blank">linux.brenes.info/welcome.html</a>
+  </div>
 </div>
 
-<p>Then immediately:</p>
+<p><strong>Slide order:</strong></p>
+<ol>
+  <li><strong>Title</strong> — "Linux Adventure Workshop" with penguin</li>
+  <li><strong>What is Open Source</strong> — Closed vs Open comparison</li>
+  <li><strong>Linux runs almost everything</strong> — 10-card grid (phones, cars, space, Azure…)</li>
+  <li><strong>Linux by the numbers</strong> — stat bars (supercomputers 100%, cloud 90%+, etc.)</li>
+  <li><strong>Even Microsoft uses Linux</strong> — Azure Linux, WSL, GitHub, AI infrastructure</li>
+  <li><strong>Look around this room</strong> — phone, router, laptop, websites</li>
+  <li><strong>Why should you care</strong> — game devs, AI, security, NASA</li>
+  <li><strong>Ready?</strong> — terminal prompt with blinking cursor</li>
+</ol>
+
+<div class="tip">
+  <strong>💡 Delivery tip:</strong> Don't read the slides. Let the visuals speak. Add energy with your voice: <em>"Raise your hand if you have an Android phone — guess what, you're already running Linux!"</em>
+</div>
+
+<p>After slide 8, immediately:</p>
 <ol>
   <li>Make sure every group has Ubuntu open</li>
   <li>Have them type <code>cd ~/linux-adventure</code> and press Enter</li>
