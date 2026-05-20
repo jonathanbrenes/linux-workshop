@@ -155,20 +155,21 @@ $launchScript += "Add-Type $hereOpen" + $nl
 $launchScript += 'using System;' + $nl
 $launchScript += 'using System.Runtime.InteropServices;' + $nl
 $launchScript += 'public class WinAPI {' + $nl
-$launchScript += '    [DllImport("user32.dll")]' + $nl
-$launchScript += '    public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);' + $nl
-$launchScript += '    [DllImport("user32.dll")]' + $nl
-$launchScript += '    public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);' + $nl
+$launchScript += '    [DllImport("user32.dll")] public static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);' + $nl
+$launchScript += '    [DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);' + $nl
+$launchScript += '    [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd);' + $nl
 $launchScript += '}' + $nl
 $launchScript += $hereClose + $nl
 $launchScript += '' + $nl
-$launchScript += '$screen = [System.Windows.Forms.Screen]::PrimaryScreen.WorkingArea' + $nl
-$launchScript += '$halfW  = [int]($screen.Width / 2)' + $nl
-$launchScript += '$h      = $screen.Height' + $nl
-$launchScript += '$left   = $screen.X' + $nl
-$launchScript += '$top    = $screen.Y' + $nl
+$launchScript += '# Always use the primary monitor' + $nl
+$launchScript += '$primary = [System.Windows.Forms.Screen]::PrimaryScreen.WorkingArea' + $nl
+$launchScript += '$halfW   = [int]($primary.Width / 2)' + $nl
+$launchScript += '$fullH   = $primary.Height' + $nl
+$launchScript += '$originX = $primary.X' + $nl
+$launchScript += '$originY = $primary.Y' + $nl
 $launchScript += '' + $nl
-$launchScript += 'Start-Process "msedge.exe" "--new-window https://linux.brenes.info"' + $nl
+$launchScript += '# Launch Edge on the LEFT half of the primary monitor' + $nl
+$launchScript += 'Start-Process "msedge.exe" "--new-window --window-position=$originX,$originY --window-size=$halfW,$fullH https://linux.brenes.info"' + $nl
 $launchScript += 'Start-Sleep -Seconds 3' + $nl
 $launchScript += '' + $nl
 $launchScript += '$edge = Get-Process -Name msedge -ErrorAction SilentlyContinue |' + $nl
@@ -177,10 +178,11 @@ $launchScript += '        Select-Object -First 1' + $nl
 $launchScript += '' + $nl
 $launchScript += 'if ($edge) {' + $nl
 $launchScript += '    [WinAPI]::ShowWindow($edge.MainWindowHandle, 9) | Out-Null' + $nl
-$launchScript += '    [WinAPI]::SetWindowPos($edge.MainWindowHandle, [IntPtr]::Zero,' + $nl
-$launchScript += '        $left, $top, $halfW, $h, 0x0040) | Out-Null' + $nl
+$launchScript += '    [WinAPI]::MoveWindow($edge.MainWindowHandle, $originX, $originY, $halfW, $fullH, $true) | Out-Null' + $nl
+$launchScript += '    [WinAPI]::SetForegroundWindow($edge.MainWindowHandle) | Out-Null' + $nl
 $launchScript += '}' + $nl
 $launchScript += '' + $nl
+$launchScript += '# Launch Windows Terminal on the RIGHT half of the primary monitor' + $nl
 $launchScript += 'Start-Process "wt.exe" "-p Ubuntu"' + $nl
 $launchScript += 'Start-Sleep -Seconds 2' + $nl
 $launchScript += '' + $nl
@@ -190,8 +192,8 @@ $launchScript += '      Select-Object -First 1' + $nl
 $launchScript += '' + $nl
 $launchScript += 'if ($wt) {' + $nl
 $launchScript += '    [WinAPI]::ShowWindow($wt.MainWindowHandle, 9) | Out-Null' + $nl
-$launchScript += '    [WinAPI]::SetWindowPos($wt.MainWindowHandle, [IntPtr]::Zero,' + $nl
-$launchScript += '        ($left + $halfW), $top, $halfW, $h, 0x0040) | Out-Null' + $nl
+$launchScript += '    [WinAPI]::MoveWindow($wt.MainWindowHandle, ($originX + $halfW), $originY, $halfW, $fullH, $true) | Out-Null' + $nl
+$launchScript += '    [WinAPI]::SetForegroundWindow($wt.MainWindowHandle) | Out-Null' + $nl
 $launchScript += '}'
 
 Set-Content -Path $ps1File -Value $launchScript -Encoding UTF8
