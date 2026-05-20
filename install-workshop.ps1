@@ -56,10 +56,15 @@ if ($wslReady) {
 }
 
 # Check that Ubuntu distro is available
-$distros = wsl -l -q 2>&1
-if ($distros -notmatch "Ubuntu") {
+$distroList = (wsl -l -q 2>&1) -replace "`0","" -join " "
+$hasUbuntu = $distroList -match "Ubuntu"
+if (-not $hasUbuntu) {
     Write-Host "    -> Ubuntu distro not found. Installing..." -ForegroundColor Yellow
     wsl --install -d Ubuntu --no-launch
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "    -> Install failed. You may need to run as Administrator." -ForegroundColor Red
+        return
+    }
     Write-Host "    -> Open Ubuntu from the Start menu to finish first-time setup, then re-run this installer." -ForegroundColor Cyan
     return
 }
