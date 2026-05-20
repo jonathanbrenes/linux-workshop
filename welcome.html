@@ -87,10 +87,10 @@
   /* ===== GRID LAYOUTS ===== */
   .device-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
     margin-top: 30px;
-    max-width: 900px;
+    max-width: 1000px;
     width: 100%;
   }
 
@@ -350,7 +350,12 @@
     <div class="device-card">
       <span class="icon">🎮</span>
       <div class="label">Gaming</div>
-      <div class="detail">Steam Deck, Chromebooks</div>
+      <div class="detail">Steam Deck runs SteamOS</div>
+    </div>
+    <div class="device-card">
+      <span class="icon">💻</span>
+      <div class="label">Chromebooks</div>
+      <div class="detail">ChromeOS = Linux</div>
     </div>
     <div class="device-card">
       <span class="icon">📺</span>
@@ -378,9 +383,9 @@
       <div class="detail">Medical equipment & records</div>
     </div>
     <div class="device-card">
-      <span class="icon">✈️</span>
-      <div class="label">Airplanes</div>
-      <div class="detail">In-flight systems</div>
+      <span class="icon">☁️</span>
+      <div class="label">Microsoft Azure</div>
+      <div class="detail">Azure Linux powers the cloud</div>
     </div>
     <div class="device-card">
       <span class="icon">🖥️</span>
@@ -418,8 +423,33 @@
   <p class="fade-in-up" style="margin-top:24px; font-size: clamp(12pt, 1.8vw, 22pt);">The world doesn't run on Windows. <span class="highlight">It runs on Linux.</span></p>
 </div>
 
-<!-- ===== SLIDE 5: LOOK AROUND ===== -->
+<!-- ===== SLIDE 5: EVEN MICROSOFT USES LINUX ===== -->
 <div class="slide" id="s5">
+  <h2 class="fade-in-up">Even <span class="highlight">Microsoft</span> uses Linux</h2>
+  <p class="fade-in-up" style="font-size: clamp(12pt, 1.8vw, 22pt); margin-bottom: 20px;">Yes — the company that makes Windows.</p>
+  <div class="look-grid fade-in-up" style="max-width: 800px;">
+    <div class="look-item">
+      <span class="icon">☁️</span>
+      <div class="text"><strong>Azure Linux 4.0</strong> — Microsoft just launched their own Linux distro to power Azure, the world's second-largest cloud.</div>
+    </div>
+    <div class="look-item">
+      <span class="icon">🪟</span>
+      <div class="text"><strong>WSL</strong> — Windows Subsystem for Linux lets you run Linux inside Windows. That's what we're using today!</div>
+    </div>
+    <div class="look-item">
+      <span class="icon">🐙</span>
+      <div class="text"><strong>GitHub</strong> — the world's largest code platform (owned by Microsoft) runs on Linux servers.</div>
+    </div>
+    <div class="look-item">
+      <span class="icon">💚</span>
+      <div class="text"><strong>Xbox Cloud Gaming</strong> — game streaming servers run Linux. Microsoft is one of the top open-source contributors in the world.</div>
+    </div>
+  </div>
+  <p class="fade-in-up" style="margin-top:24px; font-size: clamp(12pt, 1.6vw, 20pt); color: #999;">Linux is so powerful that even its biggest competitor builds with it.</p>
+</div>
+
+<!-- ===== SLIDE 6: LOOK AROUND ===== -->
+<div class="slide" id="s6">
   <h2 class="fade-in-up">Now <span class="highlight-orange">look around</span> this room</h2>
   <div class="look-grid fade-in-up">
     <div class="look-item">
@@ -443,7 +473,7 @@
 </div>
 
 <!-- ===== SLIDE 6: WHY SHOULD YOU CARE ===== -->
-<div class="slide" id="s6">
+<div class="slide" id="s7">
   <h2 class="fade-in-up">Why should <span class="highlight-pink">you</span> care?</h2>
   <p class="fade-in-up" style="font-size: clamp(14pt, 2vw, 24pt); margin-bottom: 20px;">Because the people who <em>build</em> the future use the terminal.</p>
   <div class="look-grid fade-in-up" style="max-width: 700px;">
@@ -470,7 +500,7 @@
 </div>
 
 <!-- ===== SLIDE 7: LET'S GO ===== -->
-<div class="slide" id="s7">
+<div class="slide" id="s8">
   <div class="big-emoji fade-in-up">🐧</div>
   <h1 class="fade-in-up" style="margin-bottom: 10px;">Ready?</h1>
   <p class="fade-in-up" style="font-size: clamp(14pt, 2vw, 26pt); margin-bottom: 24px;">
@@ -485,7 +515,7 @@
 </div>
 
 <!-- ===== NAVIGATION ===== -->
-<div class="slide-counter"><span id="current">1</span> / <span id="total">7</span></div>
+<div class="slide-counter"><span id="current">1</span> / <span id="total">8</span></div>
 <div class="nav">
   <button id="prev" onclick="go(-1)" disabled>‹</button>
   <button id="next" onclick="go(1)">›</button>
