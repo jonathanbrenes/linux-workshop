@@ -6,11 +6,11 @@
 # files, installs fun tools, and creates a desktop shortcut.
 #
 # Usage (PowerShell):
-#   irm https://raw.githubusercontent.com/jonathanbrenes/linux-workshop/main/install-workshop.ps1 | iex
+#   irm https://linux.brenes.info/install-workshop.ps1 | iex
 # ============================================
 
 $ErrorActionPreference = "Stop"
-$repo    = "https://raw.githubusercontent.com/jonathanbrenes/linux-workshop/main"
+$site    = "https://linux.brenes.info"
 $appDir  = Join-Path $env:USERPROFILE ".linux-workshop"
 $ps1File = Join-Path $appDir "launch-workshop.ps1"
 $icoFile = Join-Path $appDir "tux.ico"
@@ -75,14 +75,14 @@ Write-Host "    -> Ubuntu is ready." -ForegroundColor DarkGray
 # STEP 2: Download & run workshop setup scripts
 # =============================================
 Write-Host "  [2/5] Setting up workshop files in Ubuntu..." -ForegroundColor Yellow
-wsl -d Ubuntu -- bash -c "curl -sL $repo/setup.sh | bash"
+wsl -d Ubuntu -- bash -c "curl -sL $site/setup.sh | bash"
 Write-Host "    -> Activity folders created in ~/linux-adventure/" -ForegroundColor DarkGray
 
 # =============================================
 # STEP 3: Install fun tools (cowsay, sl, etc.)
 # =============================================
 Write-Host '  [3/5] Installing fun tools (cowsay, sl, cmatrix, figlet)...' -ForegroundColor Yellow
-wsl -d Ubuntu -- bash -c "curl -sL $repo/bonus/setup-fun.sh | sudo bash"
+wsl -d Ubuntu -- bash -c "curl -sL $site/bonus/setup-fun.sh | sudo bash"
 Write-Host "    -> Fun tools installed." -ForegroundColor DarkGray
 
 # =============================================
