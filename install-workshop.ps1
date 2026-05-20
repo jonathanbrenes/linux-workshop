@@ -1,29 +1,89 @@
 # ============================================
-# 🐧 Linux Adventure Workshop — Installer
+# 🐧 Linux Adventure Workshop — All-in-One Installer
 # ============================================
-# Run this ONCE per laptop in PowerShell.
-# It creates a desktop shortcut with a Tux icon
-# that launches Edge + Ubuntu side by side.
+# Run this ONCE per laptop in PowerShell (as Admin recommended).
+# It does everything: installs WSL+Ubuntu, downloads workshop
+# files, installs fun tools, and creates a desktop shortcut.
 #
 # Usage (PowerShell):
 #   irm https://raw.githubusercontent.com/jonathanbrenes/linux-workshop/main/install-workshop.ps1 | iex
 # ============================================
 
 $ErrorActionPreference = "Stop"
+$repo    = "https://raw.githubusercontent.com/jonathanbrenes/linux-workshop/main"
 $appDir  = Join-Path $env:USERPROFILE ".linux-workshop"
 $ps1File = Join-Path $appDir "launch-workshop.ps1"
 $icoFile = Join-Path $appDir "tux.ico"
 $lnkFile = Join-Path ([Environment]::GetFolderPath("Desktop")) "Linux Adventure Workshop.lnk"
 
 Write-Host ""
-Write-Host "  === Linux Adventure Workshop Installer ===" -ForegroundColor Cyan
+Write-Host "  =========================================" -ForegroundColor Cyan
+Write-Host "  🐧 Linux Adventure Workshop — Installer" -ForegroundColor Cyan
+Write-Host "  =========================================" -ForegroundColor Cyan
 Write-Host ""
 
-# --- Create app folder ---
 if (-not (Test-Path $appDir)) { New-Item -ItemType Directory -Path $appDir -Force | Out-Null }
 
-# --- Generate Tux icon from emoji ---
-Write-Host "  [1/4] Creating Tux penguin icon..." -ForegroundColor Yellow
+# =============================================
+# STEP 1: Install WSL + Ubuntu
+# =============================================
+Write-Host "  [1/5] Checking WSL + Ubuntu..." -ForegroundColor Yellow
+
+$wslReady = $false
+try {
+    $wslOutput = wsl --status 2>&1
+    if ($LASTEXITCODE -eq 0) { $wslReady = $true }
+} catch {}
+
+if ($wslReady) {
+    Write-Host "    -> WSL is already installed." -ForegroundColor DarkGray
+} else {
+    Write-Host "    -> Installing WSL with Ubuntu (this may take a few minutes)..." -ForegroundColor Yellow
+    wsl --install -d Ubuntu --no-launch
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "    -> WSL + Ubuntu installed." -ForegroundColor Green
+        Write-Host ""
+        Write-Host "  ⚠️  REBOOT REQUIRED" -ForegroundColor Red
+        Write-Host "  Please reboot this laptop, then:" -ForegroundColor Red
+        Write-Host "    1. Open Ubuntu from the Start menu to finish first-time setup" -ForegroundColor Red
+        Write-Host "    2. Run this installer again to complete the remaining steps" -ForegroundColor Red
+        Write-Host ""
+        return
+    } else {
+        Write-Host "    -> WSL install failed (exit code $LASTEXITCODE). Try running as Administrator." -ForegroundColor Red
+        return
+    }
+}
+
+# Check that Ubuntu distro is available
+$distros = wsl -l -q 2>&1
+if ($distros -notmatch "Ubuntu") {
+    Write-Host "    -> Ubuntu distro not found. Installing..." -ForegroundColor Yellow
+    wsl --install -d Ubuntu --no-launch
+    Write-Host "    -> Open Ubuntu from the Start menu to finish first-time setup, then re-run this installer." -ForegroundColor Cyan
+    return
+}
+
+Write-Host "    -> Ubuntu is ready." -ForegroundColor DarkGray
+
+# =============================================
+# STEP 2: Download & run workshop setup scripts
+# =============================================
+Write-Host "  [2/5] Setting up workshop files in Ubuntu..." -ForegroundColor Yellow
+wsl -d Ubuntu -- bash -c "curl -sL $repo/setup.sh | bash"
+Write-Host "    -> Activity folders created in ~/linux-adventure/" -ForegroundColor DarkGray
+
+# =============================================
+# STEP 3: Install fun tools (cowsay, sl, etc.)
+# =============================================
+Write-Host "  [3/5] Installing fun tools (cowsay, sl, cmatrix, figlet)..." -ForegroundColor Yellow
+wsl -d Ubuntu -- bash -c "curl -sL $repo/bonus/setup-fun.sh | sudo bash"
+Write-Host "    -> Fun tools installed." -ForegroundColor DarkGray
+
+# =============================================
+# STEP 4: Create Tux icon + launcher + shortcut
+# =============================================
+Write-Host "  [4/5] Creating Tux penguin icon..." -ForegroundColor Yellow
 Add-Type -AssemblyName System.Drawing
 Add-Type -AssemblyName System.Windows.Forms
 
@@ -48,14 +108,9 @@ foreach ($sz in $sizes) {
     $images += $bmp
 }
 
-# Write multi-size ICO file
 $ms = New-Object System.IO.MemoryStream
 $bw = New-Object System.IO.BinaryWriter($ms)
-
-# ICO header
-$bw.Write([UInt16]0)       # reserved
-$bw.Write([UInt16]1)       # type: icon
-$bw.Write([UInt16]$sizes.Count)
+$bw.Write([UInt16]0); $bw.Write([UInt16]1); $bw.Write([UInt16]$sizes.Count)
 
 $headerSize = 6 + ($sizes.Count * 16)
 $dataOffset = $headerSize
@@ -67,34 +122,24 @@ foreach ($bmp in $images) {
     $pngBytes = $pngStream.ToArray()
     $pngStream.Dispose()
     $pngDataList += ,($pngBytes)
-
     $w = if ($bmp.Width -ge 256) { 0 } else { $bmp.Width }
     $h = if ($bmp.Height -ge 256) { 0 } else { $bmp.Height }
-
-    $bw.Write([byte]$w)           # width
-    $bw.Write([byte]$h)           # height
-    $bw.Write([byte]0)            # color palette
-    $bw.Write([byte]0)            # reserved
-    $bw.Write([UInt16]1)          # color planes
-    $bw.Write([UInt16]32)         # bits per pixel
-    $bw.Write([UInt32]$pngBytes.Length)  # data size
-    $bw.Write([UInt32]$dataOffset)      # data offset
+    $bw.Write([byte]$w); $bw.Write([byte]$h); $bw.Write([byte]0); $bw.Write([byte]0)
+    $bw.Write([UInt16]1); $bw.Write([UInt16]32)
+    $bw.Write([UInt32]$pngBytes.Length); $bw.Write([UInt32]$dataOffset)
     $dataOffset += $pngBytes.Length
 }
-
-foreach ($pngBytes in $pngDataList) {
-    $bw.Write($pngBytes)
-}
+foreach ($pngBytes in $pngDataList) { $bw.Write($pngBytes) }
 
 [System.IO.File]::WriteAllBytes($icoFile, $ms.ToArray())
-$bw.Dispose()
-$ms.Dispose()
+$bw.Dispose(); $ms.Dispose()
 foreach ($bmp in $images) { $bmp.Dispose() }
-
 Write-Host "    -> $icoFile" -ForegroundColor DarkGray
 
-# --- Download launch script ---
-Write-Host "  [2/4] Downloading launcher script..." -ForegroundColor Yellow
+# =============================================
+# STEP 5: Create launcher script + desktop shortcut
+# =============================================
+Write-Host "  [5/5] Creating desktop shortcut..." -ForegroundColor Yellow
 
 $launchScript = @'
 # Linux Adventure Workshop — Split-Screen Launcher
@@ -144,10 +189,6 @@ if ($wt) {
 '@
 
 Set-Content -Path $ps1File -Value $launchScript -Encoding UTF8
-Write-Host "    -> $ps1File" -ForegroundColor DarkGray
-
-# --- Create desktop shortcut ---
-Write-Host "  [3/4] Creating desktop shortcut..." -ForegroundColor Yellow
 
 $ws = New-Object -ComObject WScript.Shell
 $shortcut = $ws.CreateShortcut($lnkFile)
@@ -159,32 +200,7 @@ $shortcut.WorkingDirectory = $env:USERPROFILE
 $shortcut.Save()
 
 Write-Host "    -> $lnkFile" -ForegroundColor DarkGray
-
-# --- Install WSL + Ubuntu ---
-Write-Host "  [4/4] Checking WSL installation..." -ForegroundColor Yellow
-
-$wslInstalled = $false
-try {
-    $wslOutput = wsl --status 2>&1
-    if ($LASTEXITCODE -eq 0) { $wslInstalled = $true }
-} catch {}
-
-if ($wslInstalled) {
-    Write-Host "    -> WSL is already installed. Skipping." -ForegroundColor DarkGray
-} else {
-    Write-Host "    -> Installing WSL with Ubuntu (this may take a few minutes)..." -ForegroundColor Yellow
-    Write-Host "    -> A reboot may be required after installation." -ForegroundColor Yellow
-    wsl --install -d Ubuntu --no-launch
-    if ($LASTEXITCODE -eq 0) {
-        Write-Host "    -> WSL + Ubuntu installed successfully." -ForegroundColor Green
-        Write-Host "    -> Please REBOOT this laptop, then open Ubuntu from the Start menu to finish setup." -ForegroundColor Cyan
-    } else {
-        Write-Host "    -> WSL installation returned exit code $LASTEXITCODE." -ForegroundColor Red
-        Write-Host "    -> You may need to reboot and run 'wsl --install -d Ubuntu' again." -ForegroundColor Red
-    }
-}
-
 Write-Host ""
-Write-Host "  Done! Look for 'Linux Adventure Workshop' on your Desktop." -ForegroundColor Green
-Write-Host "  Double-click the Tux penguin to launch the workshop." -ForegroundColor Green
+Write-Host "  ✅ All done! Laptop is ready for the workshop." -ForegroundColor Green
+Write-Host "  Double-click the 🐧 Tux penguin on the Desktop to launch." -ForegroundColor Green
 Write-Host ""

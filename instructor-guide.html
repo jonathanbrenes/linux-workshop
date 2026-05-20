@@ -405,71 +405,39 @@
   <span class="badge">Do this first!</span>
 </div>
 
-<p>Run these scripts on <strong>every laptop</strong> before students arrive. Each script can be downloaded directly from GitHub and run in one command.</p>
+<p>Run <strong>one command</strong> in PowerShell on each laptop. It does everything automatically:</p>
 
 <div class="script-card no-break">
-  <h3>📦 Step 1: Main Setup Script — <code>setup.sh</code></h3>
-  <p>Creates all activity folders and challenge files in <code>~/linux-adventure/</code>. Safe to run multiple times — it resets everything fresh.</p>
-  <div class="script-url"><a href="https://raw.githubusercontent.com/jonathanbrenes/linux-workshop/main/setup.sh" target="_blank">https://raw.githubusercontent.com/jonathanbrenes/linux-workshop/main/setup.sh</a></div>
-  <p><strong>One-liner to download &amp; run:</strong></p>
-  <pre><code><span class="cmd-prompt">curl -sL https://raw.githubusercontent.com/jonathanbrenes/linux-workshop/main/setup.sh | bash</span></code></pre>
-  <p><strong>Or download first, then run:</strong></p>
-  <pre><code><span class="cmd-prompt">curl -sLO https://raw.githubusercontent.com/jonathanbrenes/linux-workshop/main/setup.sh</span>
-<span class="cmd-prompt">bash setup.sh</span></code></pre>
-  <p><strong>Verify it worked:</strong></p>
-  <pre><code><span class="cmd-prompt">ls ~/linux-adventure/</span></code></pre>
-  <p>You should see: <code>treasure-hunt/</code> <code>robot-factory/</code> <code>detective/</code> <code>playground/</code> <code>my-scripts/</code></p>
-</div>
-
-<div class="script-card no-break">
-  <h3>🎮 Step 2: Fun Tools Installer — <code>setup-fun.sh</code></h3>
-  <p>Installs <code>cowsay</code>, <code>fortune</code>, <code>sl</code>, <code>cmatrix</code>, and <code>figlet</code> for the Terminal Playground activity. Requires internet and sudo.</p>
-  <div class="script-url"><a href="https://raw.githubusercontent.com/jonathanbrenes/linux-workshop/main/bonus/setup-fun.sh" target="_blank">https://raw.githubusercontent.com/jonathanbrenes/linux-workshop/main/bonus/setup-fun.sh</a></div>
-  <p><strong>One-liner to download &amp; run:</strong></p>
-  <pre><code><span class="cmd-prompt">curl -sL https://raw.githubusercontent.com/jonathanbrenes/linux-workshop/main/bonus/setup-fun.sh | sudo bash</span></code></pre>
-  <p><strong>Or download first, then run:</strong></p>
-  <pre><code><span class="cmd-prompt">curl -sLO https://raw.githubusercontent.com/jonathanbrenes/linux-workshop/main/bonus/setup-fun.sh</span>
-<span class="cmd-prompt">sudo bash setup-fun.sh</span></code></pre>
-  <p><strong>Verify it worked:</strong></p>
-  <pre><code><span class="cmd-prompt">cowsay "Ready to go!"</span></code></pre>
-</div>
-
-<div class="script-card no-break">
-  <h3>🖥️ Step 3: Workshop Launcher — Desktop Shortcut</h3>
-  <p>Creates a <strong>"Linux Adventure Workshop"</strong> shortcut on the Desktop with a 🐧 Tux penguin icon. Double-clicking it opens Edge (left half, workshop site) and Ubuntu terminal (right half) side by side.</p>
-  <div class="script-url"><a href="https://raw.githubusercontent.com/jonathanbrenes/linux-workshop/main/install-workshop.ps1" target="_blank">https://raw.githubusercontent.com/jonathanbrenes/linux-workshop/main/install-workshop.ps1</a></div>
-  <p><strong>One-liner — open PowerShell and run:</strong></p>
+  <h3>🐧 All-in-One Installer — <code>install-workshop.ps1</code></h3>
+  <p>This single script handles the entire setup:</p>
+  <ol>
+    <li><strong>Installs WSL + Ubuntu</strong> (skips if already installed; reboots if needed)</li>
+    <li><strong>Creates activity folders</strong> in <code>~/linux-adventure/</code> (setup.sh)</li>
+    <li><strong>Installs fun tools</strong> — cowsay, sl, cmatrix, figlet (setup-fun.sh)</li>
+    <li><strong>Creates a 🐧 Tux desktop shortcut</strong> that opens Edge + Ubuntu side by side</li>
+  </ol>
+  <p><strong>Open PowerShell (as Admin) and run:</strong></p>
   <pre><code>irm https://raw.githubusercontent.com/jonathanbrenes/linux-workshop/main/install-workshop.ps1 | iex</code></pre>
-  <p><strong>Verify:</strong> A penguin icon named <strong>"Linux Adventure Workshop"</strong> appears on the Desktop. Double-click it — Edge opens left, Ubuntu terminal opens right.</p>
+  <p><strong>If WSL wasn't installed:</strong> The script will install it, ask you to reboot, and then you run the same command again to finish.</p>
 </div>
 
 <div class="tip">
-  <strong>💡 All 3 steps in one go!</strong> Open <strong>Ubuntu</strong> for Steps 1 &amp; 2, then <strong>PowerShell</strong> for Step 3:
-  <br><br>
-  <strong>In Ubuntu (WSL):</strong>
-  <pre style="margin:6px 0 4px;"><code><span class="cmd-prompt">curl -sL https://raw.githubusercontent.com/jonathanbrenes/linux-workshop/main/setup.sh | bash</span>
-<span class="cmd-prompt">curl -sL https://raw.githubusercontent.com/jonathanbrenes/linux-workshop/main/bonus/setup-fun.sh | sudo bash</span></code></pre>
-  <strong>In PowerShell:</strong>
-  <pre style="margin:6px 0 0;"><code>irm https://raw.githubusercontent.com/jonathanbrenes/linux-workshop/main/install-workshop.ps1 | iex</code></pre>
+  <strong>💡 Safe to re-run.</strong> The installer skips steps that are already done. If a laptop needs a reset, just run it again.
 </div>
 
 <div class="warning">
-  <strong>⚠️ No internet at the school?</strong> Run Steps 2 &amp; 3 at home/office on each laptop beforehand. Step 1 (setup.sh) doesn't need internet, but you'll need the file on a USB drive.
+  <strong>⚠️ No internet at the school?</strong> Run the installer at home/office on each laptop beforehand. The script downloads everything it needs from GitHub.
   <br><br>
-  <strong>USB alternative:</strong> Copy all files to a USB drive, then:
-  <br>From <strong>Ubuntu:</strong>
-  <pre style="margin:6px 0 4px;"><code><span class="cmd-prompt">bash /mnt/c/Users/USERNAME/Desktop/setup.sh</span>
-<span class="cmd-prompt">sudo bash /mnt/c/Users/USERNAME/Desktop/setup-fun.sh</span></code></pre>
-  From <strong>PowerShell:</strong>
+  <strong>USB alternative:</strong> Download the repo files to a USB drive, then run from PowerShell:
   <pre style="margin:6px 0 0;"><code>powershell -ExecutionPolicy Bypass -File "D:\install-workshop.ps1"</code></pre>
 </div>
 
 <h2>✅ Pre-Flight Checklist</h2>
 <table>
   <tr><th>#</th><th>Task</th><th>Check</th></tr>
-  <tr><td>1</td><td>Ubuntu (WSL) opens from the Start menu on every laptop</td><td>☐</td></tr>
-  <tr><td>2</td><td><code>setup.sh</code> ran successfully — <code>ls ~/linux-adventure/</code> shows 5 folders</td><td>☐</td></tr>
-  <tr><td>3</td><td><code>setup-fun.sh</code> ran — <code>cowsay "test"</code> works</td><td>☐</td></tr>
+  <tr><td>1</td><td>Installer ran successfully on every laptop — <code>irm ... | iex</code></td><td>☐</td></tr>
+  <tr><td>2</td><td>Ubuntu (WSL) opens from the Start menu on every laptop</td><td>☐</td></tr>
+  <tr><td>3</td><td><code>ls ~/linux-adventure/</code> shows 5 folders and <code>cowsay "test"</code> works</td><td>☐</td></tr>
   <tr><td>4</td><td>🐧 <strong>"Linux Adventure Workshop"</strong> shortcut is on the Desktop — click it to open Edge (workshop site) + Windows Terminal (Ubuntu) side by side</td><td>☐</td></tr>
   <tr><td>5</td><td>Student guides printed (1 per group) or displayed on projector</td><td>☐</td></tr>
   <tr><td>6</td><td>Welcome slides loaded on projector — <a href="https://linux.brenes.info/welcome.html">linux.brenes.info/welcome.html</a></td><td>☐</td></tr>
