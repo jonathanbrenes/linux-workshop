@@ -23,7 +23,7 @@ Write-Host ""
 if (-not (Test-Path $appDir)) { New-Item -ItemType Directory -Path $appDir -Force | Out-Null }
 
 # --- Generate Tux icon from emoji ---
-Write-Host "  [1/3] Creating Tux penguin icon..." -ForegroundColor Yellow
+Write-Host "  [1/4] Creating Tux penguin icon..." -ForegroundColor Yellow
 Add-Type -AssemblyName System.Drawing
 Add-Type -AssemblyName System.Windows.Forms
 
@@ -94,7 +94,7 @@ foreach ($bmp in $images) { $bmp.Dispose() }
 Write-Host "    -> $icoFile" -ForegroundColor DarkGray
 
 # --- Download launch script ---
-Write-Host "  [2/3] Downloading launcher script..." -ForegroundColor Yellow
+Write-Host "  [2/4] Downloading launcher script..." -ForegroundColor Yellow
 
 $launchScript = @'
 # Linux Adventure Workshop — Split-Screen Launcher
@@ -147,7 +147,7 @@ Set-Content -Path $ps1File -Value $launchScript -Encoding UTF8
 Write-Host "    -> $ps1File" -ForegroundColor DarkGray
 
 # --- Create desktop shortcut ---
-Write-Host "  [3/3] Creating desktop shortcut..." -ForegroundColor Yellow
+Write-Host "  [3/4] Creating desktop shortcut..." -ForegroundColor Yellow
 
 $ws = New-Object -ComObject WScript.Shell
 $shortcut = $ws.CreateShortcut($lnkFile)
@@ -159,6 +159,31 @@ $shortcut.WorkingDirectory = $env:USERPROFILE
 $shortcut.Save()
 
 Write-Host "    -> $lnkFile" -ForegroundColor DarkGray
+
+# --- Install WSL + Ubuntu ---
+Write-Host "  [4/4] Checking WSL installation..." -ForegroundColor Yellow
+
+$wslInstalled = $false
+try {
+    $wslOutput = wsl --status 2>&1
+    if ($LASTEXITCODE -eq 0) { $wslInstalled = $true }
+} catch {}
+
+if ($wslInstalled) {
+    Write-Host "    -> WSL is already installed. Skipping." -ForegroundColor DarkGray
+} else {
+    Write-Host "    -> Installing WSL with Ubuntu (this may take a few minutes)..." -ForegroundColor Yellow
+    Write-Host "    -> A reboot may be required after installation." -ForegroundColor Yellow
+    wsl --install -d Ubuntu --no-launch
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "    -> WSL + Ubuntu installed successfully." -ForegroundColor Green
+        Write-Host "    -> Please REBOOT this laptop, then open Ubuntu from the Start menu to finish setup." -ForegroundColor Cyan
+    } else {
+        Write-Host "    -> WSL installation returned exit code $LASTEXITCODE." -ForegroundColor Red
+        Write-Host "    -> You may need to reboot and run 'wsl --install -d Ubuntu' again." -ForegroundColor Red
+    }
+}
+
 Write-Host ""
 Write-Host "  Done! Look for 'Linux Adventure Workshop' on your Desktop." -ForegroundColor Green
 Write-Host "  Double-click the Tux penguin to launch the workshop." -ForegroundColor Green
