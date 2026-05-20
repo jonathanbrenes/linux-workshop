@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linux Adventure Workshop — Instructor Guide</title>
+<style>
+  /* ===== RESET & BASE ===== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { font-size: 11pt; }
+
+  body {
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    color: #1a1a1a;
+    line-height: 1.55;
+    padding: 0;
+    margin: 0;
+    background: #fff;
+  }
+
+  /* ===== PRINT SETTINGS ===== */
+  @page {
+    size: letter;
+    margin: 1.5cm 1.8cm;
+  }
+
+  @media print {
+    body { font-size: 10pt; }
+    .page-break { page-break-before: always; }
+    .no-break { page-break-inside: avoid; }
+    .cover { height: 100vh; }
+    a { color: #1a1a1a !important; text-decoration: underline !important; }
+    .script-card { break-inside: avoid; }
+  }
+
+  /* ===== SCREEN PADDING ===== */
+  @media screen {
+    body { max-width: 800px; margin: 0 auto; padding: 20px; }
+    .page-break { border-top: 3px dashed #ccc; margin: 40px 0; padding-top: 30px; }
+  }
+
+  /* ===== COVER PAGE ===== */
+  .cover {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 60px 20px;
+  }
+
+  .cover .penguin { font-size: 80pt; margin-bottom: 10px; }
+  .cover h1 { font-size: 28pt; color: #1a1a1a; margin-bottom: 8px; }
+  .cover .subtitle { font-size: 14pt; color: #555; margin-bottom: 30px; }
+
+  .cover .tagline {
+    font-size: 12pt;
+    color: #333;
+    border: 2px solid #333;
+    border-radius: 8px;
+    padding: 12px 24px;
+    display: inline-block;
+    margin-top: 15px;
+    font-weight: 600;
+  }
+
+  .cover .footer-info {
+    margin-top: 40px;
+    font-size: 10pt;
+    color: #777;
+    line-height: 1.8;
+  }
+
+  /* ===== HEADINGS ===== */
+  h1 {
+    font-size: 20pt;
+    border-bottom: 3px solid #333;
+    padding-bottom: 6px;
+    margin-bottom: 16px;
+    margin-top: 0;
+  }
+
+  h2 {
+    font-size: 14pt;
+    color: #222;
+    margin-top: 20px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 4px;
+  }
+
+  h3 {
+    font-size: 11pt;
+    color: #333;
+    margin-top: 14px;
+    margin-bottom: 6px;
+  }
+
+  /* ===== SECTION HEADERS ===== */
+  .section-header {
+    background: #1a1a1a;
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 18pt;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-header .icon { font-size: 22pt; }
+  .section-header .badge {
+    margin-left: auto;
+    font-size: 10pt;
+    background: rgba(255,255,255,0.2);
+    padding: 3px 10px;
+    border-radius: 12px;
+  }
+
+  /* ===== TABLES ===== */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0 16px;
+    font-size: 10pt;
+  }
+
+  th {
+    background: #f0f0f0;
+    text-align: left;
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    font-weight: 600;
+  }
+
+  td {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    vertical-align: top;
+  }
+
+  tr:nth-child(even) td { background: #fafafa; }
+
+  /* ===== CODE ===== */
+  code {
+    font-family: 'Cascadia Code', 'Consolas', 'Courier New', monospace;
+    background: #f4f4f4;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 9.5pt;
+    border: 1px solid #e0e0e0;
+  }
+
+  pre {
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 10px 14px;
+    border-radius: 6px;
+    margin: 8px 0 14px;
+    overflow-x: auto;
+    font-size: 9.5pt;
+    line-height: 1.5;
+  }
+
+  pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+
+  .cmd-prompt::before {
+    content: "$ ";
+    color: #6a9955;
+    font-weight: bold;
+  }
+
+  /* ===== TIPS / CALLOUTS ===== */
+  .tip {
+    background: #e8f5e9;
+    border-left: 4px solid #43a047;
+    padding: 8px 14px;
+    margin: 10px 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 10pt;
+  }
+
+  .warning {
+    background: #fff3e0;
+    border-left: 4px solid #ef6c00;
+    padding: 8px 14px;
+    margin: 10px 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 10pt;
+  }
+
+  .info-box {
+    background: #e3f2fd;
+    border-left: 4px solid #1565c0;
+    padding: 8px 14px;
+    margin: 10px 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 10pt;
+  }
+
+  .script-speech {
+    background: #f3e5f5;
+    border-left: 4px solid #7b1fa2;
+    padding: 10px 16px;
+    margin: 10px 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 10pt;
+    font-style: italic;
+    line-height: 1.7;
+  }
+
+  .script-speech::before {
+    content: "🎤 ";
+    font-style: normal;
+  }
+
+  /* ===== SCRIPT DOWNLOAD CARDS ===== */
+  .script-card {
+    border: 2px solid #1565c0;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 14px 0;
+    background: #f8fbff;
+  }
+
+  .script-card h3 {
+    margin-top: 0;
+    color: #1565c0;
+    font-size: 12pt;
+  }
+
+  .script-card .script-url {
+    display: block;
+    background: #1e1e1e;
+    color: #9cdcfe;
+    padding: 8px 12px;
+    border-radius: 5px;
+    margin: 8px 0;
+    font-family: 'Cascadia Code', 'Consolas', monospace;
+    font-size: 8.5pt;
+    word-break: break-all;
+  }
+
+  .script-card .script-url a {
+    color: #9cdcfe;
+    text-decoration: none;
+  }
+
+  .script-card .script-url a:hover {
+    text-decoration: underline;
+  }
+
+  /* ===== TIMELINE ===== */
+  .timeline-row td:first-child {
+    font-weight: 700;
+    white-space: nowrap;
+    width: 50px;
+    color: #1565c0;
+  }
+  .timeline-row td:nth-child(2) {
+    white-space: nowrap;
+    width: 55px;
+    text-align: center;
+  }
+
+  /* ===== HELP TABLE ===== */
+  .help-table td:first-child {
+    font-weight: 600;
+    width: 45%;
+  }
+
+  /* ===== LISTS ===== */
+  ul, ol { margin: 6px 0 12px 20px; }
+  li { margin-bottom: 4px; }
+
+  /* ===== MISC ===== */
+  p { margin-bottom: 8px; }
+  strong { color: #111; }
+  hr { border: none; border-top: 1px solid #ddd; margin: 16px 0; }
+
+  .key-message {
+    text-align: center;
+    font-size: 12pt;
+    font-weight: 600;
+    color: #333;
+    padding: 16px;
+    margin: 16px 0;
+    border: 2px solid #333;
+    border-radius: 8px;
+  }
+
+  .at-a-glance {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 12px 0;
+  }
+
+  .glance-item {
+    background: #f5f5f5;
+    border-radius: 6px;
+    padding: 10px 14px;
+    text-align: center;
+  }
+
+  .glance-item .value {
+    font-size: 18pt;
+    font-weight: 700;
+    color: #1565c0;
+    display: block;
+  }
+
+  .glance-item .label {
+    font-size: 9pt;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .activity-tip {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 12px 0;
+    background: #fafafa;
+  }
+
+  .activity-tip h3 {
+    margin-top: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .activity-tip .duration {
+    font-size: 9pt;
+    background: #e0e0e0;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: normal;
+    color: #555;
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== COVER PAGE ==================== -->
+<div class="cover">
+  <div class="penguin">👩‍🏫</div>
+  <h1>Linux Adventure Workshop</h1>
+  <div class="subtitle">Instructor Guide</div>
+
+  <div class="tagline">Everything you need to run a great workshop.</div>
+
+  <div class="footer-info">
+    WSL Ubuntu &bull; 30 Minutes &bull; Ages 11–13<br>
+    25 Laptops &bull; 1–2 Students per Laptop
+  </div>
+</div>
+
+<!-- ==================== AT A GLANCE ==================== -->
+<div class="page-break"></div>
+
+<div class="section-header">
+  <span class="icon">📊</span>
+  <span>Workshop at a Glance</span>
+</div>
+
+<div class="at-a-glance">
+  <div class="glance-item"><span class="value">30 min</span><span class="label">Duration</span></div>
+  <div class="glance-item"><span class="value">24–37</span><span class="label">Students (ages 11–13)</span></div>
+  <div class="glance-item"><span class="value">25</span><span class="label">Laptops</span></div>
+  <div class="glance-item"><span class="value">1–2</span><span class="label">Per Laptop</span></div>
+</div>
+
+<h2>⏱️ Timeline</h2>
+<table>
+  <tr><th>Time</th><th>Duration</th><th>Activity</th><th>Key Commands</th></tr>
+  <tr class="timeline-row"><td>0:00</td><td>2 min</td><td><strong>Welcome &amp; Intro</strong></td><td>Open terminals, pep talk</td></tr>
+  <tr class="timeline-row"><td>0:02</td><td>8 min</td><td><strong>🗺️ Treasure Hunt</strong></td><td><code>ls</code>, <code>cd</code>, <code>cat</code>, <code>ls -a</code></td></tr>
+  <tr class="timeline-row"><td>0:10</td><td>8 min</td><td><strong>🤖 Robot Factory</strong></td><td><code>touch</code>, <code>mv</code>, <code>wc -l</code></td></tr>
+  <tr class="timeline-row"><td>0:18</td><td>5 min</td><td><strong>🎮 Terminal Playground</strong></td><td><code>cowsay</code>, <code>sl</code>, <code>cmatrix</code></td></tr>
+  <tr class="timeline-row"><td>0:23</td><td>7 min</td><td><strong>📝 First Script</strong></td><td><code>nano</code>, <code>bash</code></td></tr>
+  <tr class="timeline-row"><td>0:30</td><td>—</td><td><strong>🏁 Wrap-up</strong></td><td>Celebration &amp; key message</td></tr>
+</table>
+
+<div class="info-box">
+  <strong>🔍 Command Detective</strong> is a bonus activity for groups that finish early. It uses <code>grep</code> to search through evidence files — great for curious/advanced students.
+</div>
+
+<!-- ==================== DEPLOYMENT SCRIPTS ==================== -->
+<div class="page-break"></div>
+
+<div class="section-header">
+  <span class="icon">🚀</span>
+  <span>Before the Workshop — Deploy Scripts</span>
+  <span class="badge">Do this first!</span>
+</div>
+
+<p>Run these scripts on <strong>every laptop</strong> before students arrive. Each script can be downloaded directly from GitHub and run in one command.</p>
+
+<div class="script-card no-break">
+  <h3>📦 Step 1: Main Setup Script — <code>setup.sh</code></h3>
+  <p>Creates all activity folders and challenge files in <code>~/linux-adventure/</code>. Safe to run multiple times — it resets everything fresh.</p>
+  <div class="script-url"><a href="https://raw.githubusercontent.com/jonathanbrenes/linux-workshop/main/setup.sh" target="_blank">https://raw.githubusercontent.com/jonathanbrenes/linux-workshop/main/setup.sh</a></div>
+  <p><strong>One-liner to download &amp; run:</strong></p>
+  <pre><code><span class="cmd-prompt">curl -sL https://raw.githubusercontent.com/jonathanbrenes/linux-workshop/main/setup.sh | bash</span></code></pre>
+  <p><strong>Or download first, then run:</strong></p>
+  <pre><code><span class="cmd-prompt">curl -sLO https://raw.githubusercontent.com/jonathanbrenes/linux-workshop/main/setup.sh</span>
+<span class="cmd-prompt">bash setup.sh</span></code></pre>
+  <p><strong>Verify it worked:</strong></p>
+  <pre><code><span class="cmd-prompt">ls ~/linux-adventure/</span></code></pre>
+  <p>You should see: <code>treasure-hunt/</code> <code>robot-factory/</code> <code>detective/</code> <code>playground/</code> <code>my-scripts/</code></p>
+</div>
+
+<div class="script-card no-break">
+  <h3>🎮 Step 2: Fun Tools Installer — <code>setup-fun.sh</code></h3>
+  <p>Installs <code>cowsay</code>, <code>fortune</code>, <code>sl</code>, <code>cmatrix</code>, and <code>figlet</code> for the Terminal Playground activity. Requires internet and sudo.</p>
+  <div class="script-url"><a href="https://raw.githubusercontent.com/jonathanbrenes/linux-workshop/main/bonus/setup-fun.sh" target="_blank">https://raw.githubusercontent.com/jonathanbrenes/linux-workshop/main/bonus/setup-fun.sh</a></div>
+  <p><strong>One-liner to download &amp; run:</strong></p>
+  <pre><code><span class="cmd-prompt">curl -sL https://raw.githubusercontent.com/jonathanbrenes/linux-workshop/main/bonus/setup-fun.sh | sudo bash</span></code></pre>
+  <p><strong>Or download first, then run:</strong></p>
+  <pre><code><span class="cmd-prompt">curl -sLO https://raw.githubusercontent.com/jonathanbrenes/linux-workshop/main/bonus/setup-fun.sh</span>
+<span class="cmd-prompt">sudo bash setup-fun.sh</span></code></pre>
+  <p><strong>Verify it worked:</strong></p>
+  <pre><code><span class="cmd-prompt">cowsay "Ready to go!"</span></code></pre>
+</div>
+
+<div class="warning">
+  <strong>⚠️ No internet at the school?</strong> Run Step 2 (fun tools) at home/office on each laptop beforehand. Step 1 (setup.sh) doesn't need internet, but you'll need the file on a USB drive.
+  <br><br>
+  <strong>USB alternative:</strong> Copy both scripts to a USB drive, then from Ubuntu:
+  <pre style="margin:6px 0 0;"><code><span class="cmd-prompt">bash /mnt/c/Users/USERNAME/Desktop/setup.sh</span>
+<span class="cmd-prompt">sudo bash /mnt/c/Users/USERNAME/Desktop/setup-fun.sh</span></code></pre>
+</div>
+
+<h2>✅ Pre-Flight Checklist</h2>
+<table>
+  <tr><th>#</th><th>Task</th><th>Check</th></tr>
+  <tr><td>1</td><td>Ubuntu (WSL) opens from the Start menu on every laptop</td><td>☐</td></tr>
+  <tr><td>2</td><td><code>setup.sh</code> ran successfully — <code>ls ~/linux-adventure/</code> shows 5 folders</td><td>☐</td></tr>
+  <tr><td>3</td><td><code>setup-fun.sh</code> ran — <code>cowsay "test"</code> works</td><td>☐</td></tr>
+  <tr><td>4</td><td>Student guides printed (1 per group) or displayed on projector</td><td>☐</td></tr>
+  <tr><td>5</td><td>This instructor guide is open on your device</td><td>☐</td></tr>
+</table>
+
+<!-- ==================== WELCOME SCRIPT ==================== -->
+<div class="page-break"></div>
+
+<div class="section-header">
+  <span class="icon">🎤</span>
+  <span>Welcome Script</span>
+  <span class="badge">2 minutes</span>
+</div>
+
+<p>Keep it <strong>SHORT</strong> and energetic:</p>
+
+<div class="script-speech">
+  "Today, you're not just using a computer. You're going to <strong>control</strong> it. No mouse. No menus. Just you, the terminal, and your brain. Linux runs servers, phones, robots, even spaceships. And today — it runs YOUR adventure. Let's go!"
+</div>
+
+<p>Then immediately:</p>
+<ol>
+  <li>Make sure every group has Ubuntu open</li>
+  <li>Have them type <code>cd ~/linux-adventure</code> and press Enter</li>
+  <li>Start Activity 1!</li>
+</ol>
+
+<div class="tip">
+  <strong>💡 Energy tip:</strong> Don't over-explain. Kids learn by doing. Get them into Activity 1 as fast as possible.
+</div>
+
+<!-- ==================== ACTIVITY TIPS ==================== -->
+<div class="page-break"></div>
+
+<div class="section-header">
+  <span class="icon">📋</span>
+  <span>Activity-by-Activity Tips</span>
+</div>
+
+<div class="activity-tip no-break">
+  <h3>🗺️ Treasure Hunt <span class="duration">8 min</span></h3>
+  <p><strong>Goal:</strong> Navigate folders and find hidden clues</p>
+  <p><strong>Key commands:</strong> <code>ls</code>, <code>ls -a</code>, <code>cd</code>, <code>cat</code></p>
+  <ul>
+    <li><strong>Big reveal:</strong> The treasure is a hidden file (<code>.treasure</code>) — they need <code>ls -a</code> to see it!</li>
+    <li><strong>Don't</strong> give away the hidden file trick right away — let them struggle for 1–2 minutes</li>
+    <li>If a group is stuck after 2 minutes, hint: <em>"Have you tried seeing ALL the files?"</em></li>
+    <li>There's also a hidden bonus: <code>.secret-star</code> in the forest</li>
+  </ul>
+</div>
+
+<div class="activity-tip no-break">
+  <h3>🤖 Robot Factory <span class="duration">8 min</span></h3>
+  <p><strong>Goal:</strong> Create files, rename them, count them</p>
+  <p><strong>Key commands:</strong> <code>touch</code>, <code>ls</code>, <code>mv</code>, <code>wc -l</code></p>
+  <ul>
+    <li>Students get creative with robot part names — <strong>encourage it!</strong></li>
+    <li>Challenge fast groups: <em>"Can you build a robot with 15 parts?"</em></li>
+    <li>Remind them: <span style="color:#4a90d9;font-weight:bold">blue</span> = folders, white = files</li>
+  </ul>
+</div>
+
+<div class="activity-tip no-break">
+  <h3>🎮 Terminal Playground <span class="duration">5 min</span></h3>
+  <p><strong>Goal:</strong> Have FUN — see the terminal can be playful</p>
+  <p><strong>Requires:</strong> <code>cowsay</code>, <code>sl</code>, <code>fortune</code>, <code>cmatrix</code> (from <code>setup-fun.sh</code>)</p>
+  <ul>
+    <li>If tools aren't installed, students can still try <code>echo</code>, <code>cal</code>, <code>date</code>, <code>whoami</code></li>
+    <li><code>cmatrix</code> is a crowd favorite — let them enjoy it! Press <code>q</code> to quit</li>
+    <li><code>fortune | cowsay</code> always gets laughs</li>
+  </ul>
+</div>
+
+<div class="activity-tip no-break">
+  <h3>📝 First Script <span class="duration">7 min</span></h3>
+  <p><strong>Goal:</strong> Write and run a bash script in nano</p>
+  <ul>
+    <li><strong>Key moment:</strong> When they run their script and it WORKS — <strong>celebrate it!</strong></li>
+    <li>Walk them through nano: type → <code>Ctrl+O</code> to save → <code>Enter</code> → <code>Ctrl+X</code> to exit</li>
+    <li>Emphasize: <em>"You just wrote a PROGRAM. You are now a programmer."</em></li>
+    <li>This is the most common place students need help — circulate actively</li>
+  </ul>
+</div>
+
+<div class="activity-tip no-break">
+  <h3>🔍 Command Detective <span class="duration">Bonus</span></h3>
+  <p><strong>Goal:</strong> Use <code>grep</code> to solve a mystery</p>
+  <ul>
+    <li>Only for groups that finish everything early</li>
+    <li>Answer: <strong>Alex</strong> stole the cookie (was in kitchen, likes cookies, had chocolate on shirt)</li>
+    <li>Great for curious/advanced students who want a real challenge</li>
+  </ul>
+</div>
+
+<!-- ==================== GROUP MANAGEMENT ==================== -->
+<div class="page-break"></div>
+
+<div class="section-header">
+  <span class="icon">👥</span>
+  <span>Group &amp; Energy Management</span>
+</div>
+
+<h2>🔄 Rotation Rule</h2>
+<ul>
+  <li>Every activity, a <strong>different person</strong> types</li>
+  <li>Other group members help by reading instructions and suggesting commands</li>
+  <li>No one should type for more than one activity in a row</li>
+</ul>
+
+<h2>⚡ Energy Management</h2>
+<table>
+  <tr><th>Situation</th><th>What to Do</th></tr>
+  <tr><td>Energy drops</td><td>Switch to <strong>Terminal Playground</strong> — fun commands wake everyone up</td></tr>
+  <tr><td>Groups racing ahead</td><td>Give them the <strong>Command Detective</strong> bonus</td></tr>
+  <tr><td>Groups falling behind</td><td>Skip Terminal Playground → go straight to <strong>First Script</strong></td></tr>
+  <tr><td>Noise getting loud</td><td>Terminal excitement is GOOD! Only redirect if groups distract each other. Say: <em>"Indoor hacker voices"</em></td></tr>
+</table>
+
+<h2>🎯 When to Help vs. When to Observe</h2>
+<table class="help-table">
+  <tr><th>Situation</th><th>Action</th></tr>
+  <tr><td>Student is thinking and trying commands</td><td><strong>👀 Observe</strong> — let them figure it out</td></tr>
+  <tr><td>Stuck for 2+ minutes</td><td><strong>💬 Hint</strong> — don't give the answer, give a direction</td></tr>
+  <tr><td>Typed something wrong, got an error</td><td><strong>👍 Encourage</strong> — <em>"Errors are normal! Read the message."</em></td></tr>
+  <tr><td>Accidentally broke something</td><td><strong>🔧 Help</strong> — re-run <code>setup.sh</code></td></tr>
+  <tr><td>Excited and wants to explore</td><td><strong>🚀 Encourage</strong> — <em>"Try it! See what happens!"</em></td></tr>
+  <tr><td>Afraid to type</td><td><strong>💪 Reassure</strong> — <em>"You can't break anything. Try it!"</em></td></tr>
+</table>
+
+<!-- ==================== TROUBLESHOOTING ==================== -->
+<div class="page-break"></div>
+
+<div class="section-header">
+  <span class="icon">🛠️</span>
+  <span>Troubleshooting</span>
+</div>
+
+<table>
+  <tr><th>Problem</th><th>Solution</th></tr>
+  <tr><td>Ubuntu won't open</td><td>Start menu → search <strong>"Ubuntu"</strong></td></tr>
+  <tr><td><code>"Permission denied"</code></td><td>Try adding <code>bash</code> before the script name</td></tr>
+  <tr><td><code>"command not found"</code> for fun tools</td><td>Run <code>sudo bash setup-fun.sh</code> first</td></tr>
+  <tr><td>Student deleted files by accident</td><td>Re-run <code>bash setup.sh</code> — it resets everything</td></tr>
+  <tr><td>nano is confusing</td><td>Walk them through: type → <code>Ctrl+O</code> → Enter → <code>Ctrl+X</code></td></tr>
+  <tr><td>Terminal looks frozen</td><td>They might be in a program — try <code>Ctrl+C</code> or <code>q</code></td></tr>
+  <tr><td><code>"No such file or directory"</code></td><td>Check spelling, use <code>ls</code> to see what's available</td></tr>
+  <tr><td>WSL not installed on a laptop</td><td>Open PowerShell as Admin: <code>wsl --install -d Ubuntu</code></td></tr>
+</table>
+
+<div class="warning">
+  <strong>⚠️ Quick Reset:</strong> If anything goes wrong on a student's laptop, one command fixes it:
+  <pre style="margin:6px 0 0;"><code><span class="cmd-prompt">curl -sL https://raw.githubusercontent.com/jonathanbrenes/linux-workshop/main/setup.sh | bash</span></code></pre>
+  This re-creates all folders and files from scratch. Students can continue where they left off.
+</div>
+
+<!-- ==================== WRAP-UP ==================== -->
+<div class="page-break"></div>
+
+<div class="section-header">
+  <span class="icon">🏁</span>
+  <span>Wrap-Up Script</span>
+  <span class="badge">1 minute</span>
+</div>
+
+<div class="script-speech">
+  "You just navigated a Linux terminal, created files, searched through evidence, and WROTE YOUR OWN PROGRAM. That's what builders do. Linux runs the world — and now you know how to use it. Keep exploring. Keep building. 🐧"
+</div>
+
+<div class="key-message" style="margin-top: 30px; font-size: 14pt; border-width: 3px;">
+  Linux is not just used.<br>
+  Linux is controlled.<br>
+  Linux is built with.
+</div>
+
+<div style="margin-top: 40px; text-align: center; font-size: 10pt; color: #888;">
+  <p><strong>Quick-reference links:</strong></p>
+  <p>
+    <a href="https://jonathanbrenes.github.io/linux-workshop/" target="_blank">Workshop Website</a> &nbsp;|&nbsp;
+    <a href="https://github.com/jonathanbrenes/linux-workshop" target="_blank">GitHub Repository</a> &nbsp;|&nbsp;
+    <a href="https://linux.brenes.info" target="_blank">linux.brenes.info</a>
+  </p>
+</div>
+
+<div style="margin-top: 30px; text-align: center; font-size: 9pt; color: #bbb;">
+  Linux Adventure Workshop &bull; Instructor Guide &bull; WSL Ubuntu
+</div>
+
+</body>
+</html>
