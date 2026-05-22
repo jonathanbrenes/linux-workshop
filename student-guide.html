@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" href="images/webicon.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linux Adventure Workshop — Student Guide</title>
+<script src="i18n.js"></script>
+<style>
+  /* ===== RESET & BASE ===== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 11pt; }
+  body {
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    color: #1a1a1a; line-height: 1.5; padding: 0; margin: 0; background: #fff;
+  }
+
+  /* ===== PRINT SETTINGS ===== */
+  @page { size: letter; margin: 1.5cm 1.8cm; }
+  @media print {
+    body { font-size: 10pt; }
+    .page-break { page-break-before: always; }
+    .no-break { page-break-inside: avoid; }
+    .cover { height: 100vh; }
+    a { color: #1a1a1a !important; text-decoration: none !important; }
+  }
+
+  /* ===== SCREEN PADDING ===== */
+  @media screen {
+    body { max-width: 800px; margin: 0 auto; padding: 20px; padding-top: 50px; }
+    .page-break { border-top: 3px dashed #ccc; margin: 40px 0; padding-top: 30px; }
+  }
+
+  /* ===== COVER PAGE ===== */
+  .cover { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 60px 20px; }
+  .cover .penguin { font-size: 80pt; margin-bottom: 10px; }
+  .cover h1 { font-size: 28pt; color: #1a1a1a; margin-bottom: 8px; }
+  .cover .subtitle { font-size: 14pt; color: #555; margin-bottom: 30px; }
+  .cover .tagline { font-size: 12pt; color: #333; border: 2px solid #333; border-radius: 8px; padding: 12px 24px; display: inline-block; margin-top: 15px; font-weight: 600; }
+  .cover .footer-info { margin-top: 40px; font-size: 10pt; color: #777; line-height: 1.8; }
+
+  /* ===== HEADINGS ===== */
+  h1 { font-size: 20pt; border-bottom: 3px solid #333; padding-bottom: 6px; margin-bottom: 16px; margin-top: 0; }
+  h2 { font-size: 14pt; color: #222; margin-top: 20px; margin-bottom: 8px; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
+  h3 { font-size: 11pt; color: #333; margin-top: 14px; margin-bottom: 6px; }
+
+  /* ===== SECTION HEADERS (activity titles) ===== */
+  .activity-header { background: #1a1a1a; color: #fff; padding: 10px 16px; border-radius: 6px; font-size: 18pt; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+  .activity-header .icon { font-size: 22pt; }
+  .activity-header .time { margin-left: auto; font-size: 10pt; background: rgba(255,255,255,0.2); padding: 3px 10px; border-radius: 12px; }
+
+  /* ===== TABLES ===== */
+  table { width: 100%; border-collapse: collapse; margin: 10px 0 16px; font-size: 10pt; }
+  th { background: #f0f0f0; text-align: left; padding: 6px 10px; border: 1px solid #ccc; font-weight: 600; }
+  td { padding: 5px 10px; border: 1px solid #ccc; vertical-align: top; }
+  tr:nth-child(even) td { background: #fafafa; }
+
+  /* ===== CODE ===== */
+  code { font-family: 'Cascadia Code', 'Consolas', 'Courier New', monospace; background: #f4f4f4; padding: 1px 5px; border-radius: 3px; font-size: 9.5pt; border: 1px solid #e0e0e0; }
+  pre { background: #1e1e1e; color: #d4d4d4; padding: 10px 14px; border-radius: 6px; margin: 8px 0 14px; overflow-x: auto; font-size: 9.5pt; line-height: 1.5; }
+  pre code { background: none; border: none; padding: 0; color: inherit; font-size: inherit; }
+  .cmd-prompt::before { content: "$ "; color: #6a9955; font-weight: bold; }
+
+  /* ===== TIPS / CALLOUTS ===== */
+  .tip { background: #e8f5e9; border-left: 4px solid #43a047; padding: 8px 14px; margin: 10px 0; border-radius: 0 6px 6px 0; font-size: 10pt; }
+  .warning { background: #fff3e0; border-left: 4px solid #ef6c00; padding: 8px 14px; margin: 10px 0; border-radius: 0 6px 6px 0; font-size: 10pt; }
+  .challenge-box { border: 2px solid #1565c0; border-radius: 8px; padding: 12px 16px; margin: 12px 0; background: #e3f2fd; }
+  .challenge-box h3 { margin-top: 0; color: #1565c0; }
+  .bonus-box { border: 2px dashed #7b1fa2; border-radius: 8px; padding: 12px 16px; margin: 12px 0; background: #f3e5f5; }
+  .bonus-box h3 { margin-top: 0; color: #7b1fa2; }
+
+  /* ===== LISTS ===== */
+  ul, ol { margin: 6px 0 12px 20px; }
+  li { margin-bottom: 4px; }
+
+  /* ===== MISC ===== */
+  p { margin-bottom: 8px; }
+  strong { color: #111; }
+  hr { border: none; border-top: 1px solid #ddd; margin: 16px 0; }
+  .group-label { display: inline-block; background: #e8eaf6; border: 1px solid #9fa8da; border-radius: 4px; padding: 2px 8px; font-size: 9pt; color: #283593; margin-bottom: 6px; }
+  .key-message { text-align: center; font-size: 12pt; font-weight: 600; color: #333; padding: 16px; margin: 16px 0; border: 2px solid #333; border-radius: 8px; }
+  .names-line { border: 1px solid #ccc; border-radius: 6px; padding: 8px 14px; margin: 10px 0 16px; background: #fafafa; font-size: 10pt; }
+  .names-line span { color: #999; }
+</style>
+</head>
+<body>
+
+<!-- ==================== COVER PAGE ==================== -->
+<div class="cover">
+  <div class="penguin">🐧</div>
+  <h1><span lang="en">Linux Adventure Workshop</span><span lang="es">Taller de Aventura Linux</span></h1>
+  <div class="subtitle"><span lang="en">Student Guide</span><span lang="es">Guía del Estudiante</span></div>
+
+  <div class="tagline"><span lang="en">You don't just use Linux — you BUILD with it.</span><span lang="es">No solo usás Linux — CONSTRUÍS con él.</span></div>
+
+  <div class="footer-info">
+    WSL Ubuntu &bull; Hands-On &bull; 30 <span lang="en">Minutes</span><span lang="es">Minutos</span><br>
+    <br>
+    <div class="names-line">
+      <strong><span lang="en">Group Members:</span><span lang="es">Miembros del Grupo:</span></strong> <span>_______________________ &nbsp; _______________________ &nbsp; _______________________</span>
+    </div>
+    <div class="names-line">
+      <strong>Laptop #:</strong> <span>___________</span>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== CHEATSHEET ==================== -->
+<div class="page-break"></div>
+
+<h1><span lang="en">📋 Linux Command Cheatsheet</span><span lang="es">📋 Guía Rápida de Comandos Linux</span></h1>
+<p><span lang="en">Keep this page open! These are all the commands you need today.</span><span lang="es">¡Mantené esta página abierta! Estos son todos los comandos que necesitás hoy.</span></p>
+
+<h2><span lang="en">🧭 Moving Around</span><span lang="es">🧭 Moverse por el Sistema</span></h2>
+<table>
+  <tr><th><span lang="en">Command</span><span lang="es">Comando</span></th><th><span lang="en">What It Does</span><span lang="es">Qué Hace</span></th><th><span lang="en">Example</span><span lang="es">Ejemplo</span></th></tr>
+  <tr><td><code>pwd</code></td><td><span lang="en"><strong>Where am I?</strong> Shows your current folder</span><span lang="es"><strong>¿Dónde estoy?</strong> Muestra tu carpeta actual</span></td><td><code>pwd</code></td></tr>
+  <tr><td><code>ls</code></td><td><span lang="en"><strong>What's here?</strong> Lists files and folders (<span style="color:#4a90d9;font-weight:bold">blue</span> = folders, white = files)</span><span lang="es"><strong>¿Qué hay aquí?</strong> Lista archivos y carpetas (<span style="color:#4a90d9;font-weight:bold">azul</span> = carpetas, blanco = archivos)</span></td><td><code>ls</code></td></tr>
+  <tr><td><code>ls -a</code></td><td><span lang="en"><strong>Show EVERYTHING</strong> — even hidden files!</span><span lang="es"><strong>Mostrar TODO</strong> — ¡incluso archivos ocultos!</span></td><td><code>ls -a</code></td></tr>
+  <tr><td><code><span lang="en">cd foldername</span><span lang="es">cd carpeta</span></code></td><td><span lang="en"><strong>Go into</strong> a folder</span><span lang="es"><strong>Entrar</strong> a una carpeta</span></td><td><code><span lang="en">cd cave</span><span lang="es">cd cueva</span></code></td></tr>
+  <tr><td><code>cd ..</code></td><td><span lang="en"><strong>Go back</strong> one folder</span><span lang="es"><strong>Regresar</strong> una carpeta</span></td><td><code>cd ..</code></td></tr>
+  <tr><td><code>cd ~</code></td><td><span lang="en"><strong>Go home</strong> — back to your home folder</span><span lang="es"><strong>Ir a inicio</strong> — de vuelta a tu carpeta principal</span></td><td><code>cd ~</code></td></tr>
+</table>
+
+<h2><span lang="en">📄 Working With Files</span><span lang="es">📄 Trabajar con Archivos</span></h2>
+<table>
+  <tr><th><span lang="en">Command</span><span lang="es">Comando</span></th><th><span lang="en">What It Does</span><span lang="es">Qué Hace</span></th><th><span lang="en">Example</span><span lang="es">Ejemplo</span></th></tr>
+  <tr><td><code><span lang="en">cat filename</span><span lang="es">cat archivo</span></code></td><td><span lang="en"><strong>Read</strong> a file</span><span lang="es"><strong>Leer</strong> un archivo</span></td><td><code><span lang="en">cat clue1.txt</span><span lang="es">cat pista1.txt</span></code></td></tr>
+  <tr><td><code><span lang="en">touch filename</span><span lang="es">touch archivo</span></code></td><td><span lang="en"><strong>Create</strong> a new empty file</span><span lang="es"><strong>Crear</strong> un archivo vacío nuevo</span></td><td><code><span lang="en">touch arm.txt</span><span lang="es">touch brazo.txt</span></code></td></tr>
+  <tr><td><code><span lang="en">mv old new</span><span lang="es">mv viejo nuevo</span></code></td><td><span lang="en"><strong>Rename</strong> or <strong>move</strong> a file</span><span lang="es"><strong>Renombrar</strong> o <strong>mover</strong> un archivo</span></td><td><code><span lang="en">mv arm.txt robot-arm.txt</span><span lang="es">mv brazo.txt brazo-robot.txt</span></code></td></tr>
+  <tr><td><code><span lang="en">cp file copy</span><span lang="es">cp archivo copia</span></code></td><td><span lang="en"><strong>Copy</strong> a file</span><span lang="es"><strong>Copiar</strong> un archivo</span></td><td><code><span lang="en">cp arm.txt backup.txt</span><span lang="es">cp brazo.txt respaldo.txt</span></code></td></tr>
+  <tr><td><code><span lang="en">rm filename</span><span lang="es">rm archivo</span></code></td><td><span lang="en"><strong>Delete</strong> a file (careful!)</span><span lang="es"><strong>Eliminar</strong> un archivo (¡cuidado!)</span></td><td><code>rm junk.txt</code></td></tr>
+</table>
+
+<h2><span lang="en">📁 Folders &amp; Finding Things</span><span lang="es">📁 Carpetas y Buscar Cosas</span></h2>
+<table>
+  <tr><th><span lang="en">Command</span><span lang="es">Comando</span></th><th><span lang="en">What It Does</span><span lang="es">Qué Hace</span></th><th><span lang="en">Example</span><span lang="es">Ejemplo</span></th></tr>
+  <tr><td><code><span lang="en">mkdir name</span><span lang="es">mkdir nombre</span></code></td><td><span lang="en"><strong>Create</strong> a new folder</span><span lang="es"><strong>Crear</strong> una carpeta nueva</span></td><td><code>mkdir my-robots</code></td></tr>
+  <tr><td><code><span lang="en">grep "word" file</span><span lang="es">grep "palabra" archivo</span></code></td><td><span lang="en"><strong>Search</strong> for a word in a file</span><span lang="es"><strong>Buscar</strong> una palabra en un archivo</span></td><td><code><span lang="en">grep "cookie" witness.txt</span><span lang="es">grep "galleta" testigo.txt</span></code></td></tr>
+  <tr><td><code><span lang="en">wc -l filename</span><span lang="es">wc -l archivo</span></code></td><td><span lang="en"><strong>Count</strong> lines in a file</span><span lang="es"><strong>Contar</strong> líneas en un archivo</span></td><td><code>wc -l parts.txt</code></td></tr>
+</table>
+
+<h2><span lang="en">📝 Scripts &amp; Other</span><span lang="es">📝 Scripts y Otros</span></h2>
+<table>
+  <tr><th><span lang="en">Command</span><span lang="es">Comando</span></th><th><span lang="en">What It Does</span><span lang="es">Qué Hace</span></th><th><span lang="en">Example</span><span lang="es">Ejemplo</span></th></tr>
+  <tr><td><code><span lang="en">nano filename</span><span lang="es">nano archivo</span></code></td><td><span lang="en"><strong>Open</strong> a text editor</span><span lang="es"><strong>Abrir</strong> un editor de texto</span></td><td><code>nano hello.sh</code></td></tr>
+  <tr><td><code><span lang="en">bash filename</span><span lang="es">bash archivo</span></code></td><td><span lang="en"><strong>Run</strong> a script</span><span lang="es"><strong>Ejecutar</strong> un script</span></td><td><code>bash hello.sh</code></td></tr>
+  <tr><td><code><span lang="en">echo "text"</span><span lang="es">echo "texto"</span></code></td><td><span lang="en"><strong>Print</strong> text to the screen</span><span lang="es"><strong>Imprimir</strong> texto en la pantalla</span></td><td><code>echo "Hello!"</code></td></tr>
+  <tr><td><code>clear</code></td><td><span lang="en"><strong>Clean</strong> the screen</span><span lang="es"><strong>Limpiar</strong> la pantalla</span></td><td><code>clear</code></td></tr>
+  <tr><td><code>history</code></td><td><span lang="en"><strong>See</strong> all commands you typed</span><span lang="es"><strong>Ver</strong> todos los comandos que escribiste</span></td><td><code>history</code></td></tr>
+</table>
+
+<div class="tip">
+  <span lang="en"><strong>💡 Pro Tips:</strong> Press <strong>Tab</strong> to auto-complete names. Press <strong>↑ arrow</strong> to repeat your last command. Type <code>cd ~</code> if you ever get lost.</span>
+  <span lang="es"><strong>💡 Tips Pro:</strong> Presioná <strong>Tab</strong> para autocompletar nombres. Presioná <strong>↑ flecha arriba</strong> para repetir tu último comando. Escribí <code>cd ~</code> si te perdés.</span>
+</div>
+
+<!-- ==================== ACTIVITY 1: TREASURE HUNT ==================== -->
+<div class="page-break"></div>
+
+<div class="activity-header">
+  <span class="icon">🗺️</span>
+  <span><span lang="en">Activity 1: Treasure Hunt</span><span lang="es">Actividad 1: Búsqueda del Tesoro</span></span>
+  <span class="time">⏱ 8 min</span>
+</div>
+
+<p><span lang="en">You are an explorer. You've arrived at a mysterious island. Somewhere here, a treasure is hidden. Your only tool? <strong>The terminal.</strong></span><span lang="es">Sos un explorador. Llegaste a una isla misteriosa. En algún lugar hay un tesoro escondido. ¿Tu única herramienta? <strong>La terminal.</strong></span></p>
+<p><span lang="en">Nobody is going to tell you where the treasure is. You have to <strong>find it yourself.</strong></span><span lang="es">Nadie te va a decir dónde está el tesoro. Tenés que <strong>encontrarlo vos mismo.</strong></span></p>
+
+<h2><span lang="en">Getting Started</span><span lang="es">Para Empezar</span></h2>
+<p><span lang="en">Open your terminal and go to the treasure hunt:</span><span lang="es">Abrí tu terminal y andá a la búsqueda del tesoro:</span></p>
+<pre><code><span class="cmd-prompt">cd ~</span>
+<span class="cmd-prompt"><span lang="en">cd linux-adventure/treasure-hunt</span><span lang="es">cd aventura-linux/busqueda-del-tesoro</span></span></code></pre>
+
+<p><span lang="en">Now look around. What do you see?</span><span lang="es">Ahora mirá alrededor. ¿Qué ves?</span></p>
+<pre><code><span class="cmd-prompt">ls</span></code></pre>
+
+<div class="tip">
+  <span lang="en"><strong>💡 Tip:</strong> Notice the colors! Names in <strong>blue</strong> are <strong>folders</strong> you can enter with <code>cd</code>. Names in white are <strong>files</strong> you can read with <code>cat</code>.</span>
+  <span lang="es"><strong>💡 Tip:</strong> ¡Fijate en los colores! Los nombres en <strong>azul</strong> son <strong>carpetas</strong> donde podés entrar con <code>cd</code>. Los nombres en blanco son <strong>archivos</strong> que podés leer con <code>cat</code>.</span>
+</div>
+
+<p><span lang="en">Your adventure begins with <code>start-here.txt</code>. Read it:</span><span lang="es">Tu aventura empieza con <code>empieza-aqui.txt</code>. Leelo:</span></p>
+<pre><code><span class="cmd-prompt"><span lang="en">cat start-here.txt</span><span lang="es">cat empieza-aqui.txt</span></span></code></pre>
+
+<p><span lang="en">Hmm, a welcome message! But where should you go first? Look around with <code>ls</code> — do you see a mysterious <strong>cave</strong>? 🕳️ Let's explore it!</span><span lang="es">Hmm, ¡un mensaje de bienvenida! ¿Pero a dónde ir primero? Mirá alrededor con <code>ls</code> — ¿ves una misteriosa <strong>cueva</strong>? 🕳️ ¡Vamos a explorarla!</span></p>
+<pre><code><span class="cmd-prompt"><span lang="en">cd cave</span><span lang="es">cd cueva</span></span>
+<span class="cmd-prompt">ls</span>
+<span class="cmd-prompt"><span lang="en">cat clue1.txt</span><span lang="es">cat pista1.txt</span></span></code></pre>
+
+<div class="tip">
+  <span lang="en"><strong>🗺️ Tip:</strong> The clue tells you where to go next! Read it carefully and follow the trail.</span>
+  <span lang="es"><strong>🗺️ Tip:</strong> ¡La pista te dice a dónde ir después! Leela con cuidado y seguí el camino.</span>
+</div>
+
+<h2><span lang="en">Your Mission</span><span lang="es">Tu Misión</span></h2>
+<ol>
+  <li><span lang="en">Read the first clue</span><span lang="es">Leé la primera pista</span></li>
+  <li><span lang="en">Follow the clues from folder to folder</span><span lang="es">Seguí las pistas de carpeta en carpeta</span></li>
+  <li><span lang="en">Find the <strong>treasure</strong></span><span lang="es">Encontrá el <strong>tesoro</strong></span></li>
+</ol>
+
+<h3><span lang="en">Rules</span><span lang="es">Reglas</span></h3>
+<ul>
+  <li><span lang="en">Read every file you find — some are clues, some are traps!</span><span lang="es">Leé cada archivo que encontrés — ¡algunos son pistas, otros son trampas!</span></li>
+  <li><span lang="en">If you get lost, type <code>pwd</code> to see where you are</span><span lang="es">Si te perdés, escribí <code>pwd</code> para ver dónde estás</span></li>
+  <li><span lang="en">To go back, type <code>cd ..</code></span><span lang="es">Para regresar, escribí <code>cd ..</code></span></li>
+  <li><span lang="en">The treasure might be <strong>hidden</strong>... 👀</span><span lang="es">El tesoro podría estar <strong>oculto</strong>... 👀</span></li>
+</ul>
+
+<h2><span lang="en">Commands You'll Need</span><span lang="es">Comandos que Vas a Necesitar</span></h2>
+<table>
+  <tr><th><span lang="en">Command</span><span lang="es">Comando</span></th><th><span lang="en">What It Does</span><span lang="es">Qué Hace</span></th></tr>
+  <tr><td><code>ls</code></td><td><span lang="en">See what's in the current folder</span><span lang="es">Ver qué hay en la carpeta actual</span></td></tr>
+  <tr><td><code>ls -a</code></td><td><span lang="en">See EVERYTHING — even hidden files!</span><span lang="es">Ver TODO — ¡incluso archivos ocultos!</span></td></tr>
+  <tr><td><code><span lang="en">cd foldername</span><span lang="es">cd carpeta</span></code></td><td><span lang="en">Go into a folder</span><span lang="es">Entrar a una carpeta</span></td></tr>
+  <tr><td><code>cd ..</code></td><td><span lang="en">Go back one folder</span><span lang="es">Regresar una carpeta</span></td></tr>
+  <tr><td><code><span lang="en">cat filename</span><span lang="es">cat archivo</span></code></td><td><span lang="en">Read a file</span><span lang="es">Leer un archivo</span></td></tr>
+  <tr><td><code>pwd</code></td><td><span lang="en">See where you are right now</span><span lang="es">Ver dónde estás ahora mismo</span></td></tr>
+</table>
+
+<div class="key-message">
+  <span lang="en">Start exploring. Read the clues. Follow the trail.<br>Can you find the treasure? 🏆</span>
+  <span lang="es">Empezá a explorar. Leé las pistas. Seguí el camino.<br>¿Podés encontrar el tesoro? 🏆</span>
+</div>
+
+<!-- ==================== ACTIVITY 2: ROBOT FACTORY ==================== -->
+<div class="page-break"></div>
+
+<div class="activity-header">
+  <span class="icon">🤖</span>
+  <span><span lang="en">Activity 2: Robot Factory</span><span lang="es">Actividad 2: Fábrica de Robots</span></span>
+  <span class="time">⏱ 8 min</span>
+</div>
+
+<p><span lang="en">Welcome to the <strong>Robot Factory</strong>! Your job: build a robot from parts. You'll grab parts from the parts bin, copy them to the assembly line, join them into one robot file, and show it off in the showroom.</span><span lang="es">¡Bienvenido a la <strong>Fábrica de Robots</strong>! Tu trabajo: construir un robot con piezas. Vas a agarrar piezas del depósito, copiarlas a la línea de ensamblaje, unirlas en un solo archivo robot y exhibirlo en la sala de exhibición.</span></p>
+
+<h2><span lang="en">Getting Started</span><span lang="es">Para Empezar</span></h2>
+<p><span lang="en">Go to the Robot Factory:</span><span lang="es">Andá a la Fábrica de Robots:</span></p>
+<pre><code><span class="cmd-prompt">cd ~</span>
+<span class="cmd-prompt"><span lang="en">cd linux-adventure/robot-factory</span><span lang="es">cd aventura-linux/fabrica-de-robots</span></span></code></pre>
+<pre><code><span class="cmd-prompt">ls</span></code></pre>
+<div class="tip">
+  <span lang="en"><strong>💡 Tip:</strong> <strong>Blue</strong> = folders — <strong>white</strong> = files.</span>
+  <span lang="es"><strong>💡 Tip:</strong> <strong>Azul</strong> = carpetas — <strong>blanco</strong> = archivos.</span>
+</div>
+<p><span lang="en">Check what parts are available:</span><span lang="es">Revisá qué piezas hay disponibles:</span></p>
+<pre><code><span class="cmd-prompt"><span lang="en">ls parts-bin/</span><span lang="es">ls piezas/</span></span></code></pre>
+
+<div class="challenge-box no-break">
+  <h3><span lang="en">Challenge 1: Grab Your Parts</span><span lang="es">Desafío 1: Agarrá tus Piezas</span></h3>
+  <p><span lang="en">Copy parts from the parts bin to the assembly line:</span><span lang="es">Copiá piezas del depósito a la línea de ensamblaje:</span></p>
+  <pre><code><span class="cmd-prompt"><span lang="en">cp parts-bin/brain.txt assembly-line/brain.txt</span><span lang="es">cp piezas/cerebro.txt linea-de-ensamblaje/cerebro.txt</span></span>
+<span class="cmd-prompt"><span lang="en">cp parts-bin/battery.txt assembly-line/body.txt</span><span lang="es">cp piezas/bateria.txt linea-de-ensamblaje/cuerpo.txt</span></span>
+<span class="cmd-prompt"><span lang="en">cp parts-bin/arm.txt assembly-line/left-arm.txt</span><span lang="es">cp piezas/brazo.txt linea-de-ensamblaje/brazo-izq.txt</span></span>
+<span class="cmd-prompt"><span lang="en">cp parts-bin/arm.txt assembly-line/right-arm.txt</span><span lang="es">cp piezas/brazo.txt linea-de-ensamblaje/brazo-der.txt</span></span>
+<span class="cmd-prompt"><span lang="en">cp parts-bin/leg.txt assembly-line/left-leg.txt</span><span lang="es">cp piezas/pierna.txt linea-de-ensamblaje/pierna-izq.txt</span></span>
+<span class="cmd-prompt"><span lang="en">cp parts-bin/leg.txt assembly-line/right-leg.txt</span><span lang="es">cp piezas/pierna.txt linea-de-ensamblaje/pierna-der.txt</span></span></code></pre>
+  <p><span lang="en">Wait — we have a brain but no head to put it in! Let's create one:</span><span lang="es">¡Esperá — tenemos un cerebro pero no hay cabeza donde ponerlo! Creemos una:</span></p>
+  <pre><code><span class="cmd-prompt"><span lang="en">echo "🤖 A shiny robot head" > assembly-line/head.txt</span><span lang="es">echo "🤖 Una cabeza de robot brillante" > linea-de-ensamblaje/cabeza.txt</span></span></code></pre>
+  <p><span lang="en">Check your work and count the parts:</span><span lang="es">Revisá tu trabajo y contá las piezas:</span></p>
+  <pre><code><span class="cmd-prompt"><span lang="en">ls assembly-line/</span><span lang="es">ls linea-de-ensamblaje/</span></span>
+<span class="cmd-prompt"><span lang="en">ls assembly-line/ | wc -l</span><span lang="es">ls linea-de-ensamblaje/ | wc -l</span></span></code></pre>
+</div>
+
+<div class="challenge-box no-break">
+  <h3><span lang="en">Challenge 2: Assemble Your Robot</span><span lang="es">Desafío 2: Ensamblá tu Robot</span></h3>
+  <p><span lang="en">Go into the assembly line and join all the parts into one robot file:</span><span lang="es">Entrá a la línea de ensamblaje y uní todas las piezas en un solo archivo robot:</span></p>
+  <pre><code><span class="cmd-prompt"><span lang="en">cd assembly-line</span><span lang="es">cd linea-de-ensamblaje</span></span>
+<span class="cmd-prompt"><span lang="en">cat head.txt brain.txt body.txt left-arm.txt right-arm.txt left-leg.txt right-leg.txt > my-robot.txt</span><span lang="es">cat cabeza.txt cerebro.txt cuerpo.txt brazo-izq.txt brazo-der.txt pierna-izq.txt pierna-der.txt > mi-robot.txt</span></span></code></pre>
+  <p><span lang="en">See your assembled robot:</span><span lang="es">Mirá tu robot ensamblado:</span></p>
+  <pre><code><span class="cmd-prompt"><span lang="en">cat my-robot.txt</span><span lang="es">cat mi-robot.txt</span></span></code></pre>
+</div>
+
+<div class="challenge-box no-break">
+  <h3><span lang="en">Challenge 3: Name &amp; Move to the Showroom</span><span lang="es">Desafío 3: Nombrá y Mové a la Sala de Exhibición</span></h3>
+  <p><span lang="en">Give your robot a cool name and move it to the showroom:</span><span lang="es">Dale a tu robot un nombre genial y movelo a la sala de exhibición:</span></p>
+  <pre><code><span class="cmd-prompt"><span lang="en">mv my-robot.txt super-bot-3000.txt</span><span lang="es">mv mi-robot.txt super-bot-3000.txt</span></span>
+<span class="cmd-prompt"><span lang="en">mv super-bot-3000.txt ../showroom/</span><span lang="es">mv super-bot-3000.txt ../sala-de-exhibicion/</span></span>
+<span class="cmd-prompt"><span lang="en">cd ../showroom</span><span lang="es">cd ../sala-de-exhibicion</span></span>
+<span class="cmd-prompt"><span lang="en">cat super-bot-3000.txt</span><span lang="es">cat super-bot-3000.txt</span></span></code></pre>
+  <p><span lang="en">Your robot is on display! 🤖🎉</span><span lang="es">¡Tu robot está en exhibición! 🤖🎉</span></p>
+</div>
+
+<div class="bonus-box no-break">
+  <h3><span lang="en">⭐ Bonus: Build a Super Robot</span><span lang="es">⭐ Bonus: Construí un Super Robot</span></h3>
+  <p><span lang="en">Add eyes and build a new, even more powerful robot!</span><span lang="es">¡Agregá ojos y construí un robot nuevo y más poderoso!</span></p>
+  <pre><code><span class="cmd-prompt"><span lang="en">cp parts-bin/eye.txt assembly-line/left-eye.txt</span><span lang="es">cp piezas/ojo.txt linea-de-ensamblaje/ojo-izq.txt</span></span>
+<span class="cmd-prompt"><span lang="en">cp parts-bin/eye.txt assembly-line/right-eye.txt</span><span lang="es">cp piezas/ojo.txt linea-de-ensamblaje/ojo-der.txt</span></span>
+<span class="cmd-prompt"><span lang="en">cd assembly-line</span><span lang="es">cd linea-de-ensamblaje</span></span>
+<span class="cmd-prompt"><span lang="en">cat head.txt brain.txt body.txt left-arm.txt right-arm.txt left-leg.txt right-leg.txt left-eye.txt right-eye.txt > thunderbot-9000.txt</span><span lang="es">cat cabeza.txt cerebro.txt cuerpo.txt brazo-izq.txt brazo-der.txt pierna-izq.txt pierna-der.txt ojo-izq.txt ojo-der.txt > thunderbot-9000.txt</span></span>
+<span class="cmd-prompt"><span lang="en">cat thunderbot-9000.txt</span><span lang="es">cat thunderbot-9000.txt</span></span></code></pre>
+</div>
+
+<!-- ==================== ACTIVITY 3: TERMINAL PLAYGROUND ==================== -->
+<div class="page-break"></div>
+
+<div class="activity-header">
+  <span class="icon">🎮</span>
+  <span><span lang="en">Activity 3: Terminal Playground</span><span lang="es">Actividad 3: Zona de Juegos de la Terminal</span></span>
+  <span class="time">⏱ 5 min</span>
+</div>
+
+<p><span lang="en">The terminal isn't just for work — it can be <strong>FUN!</strong></span><span lang="es">La terminal no es solo para trabajar — ¡puede ser <strong>DIVERTIDA!</strong></span></p>
+<pre><code><span class="cmd-prompt">cd ~</span>
+<span class="cmd-prompt"><span lang="en">cd linux-adventure/playground</span><span lang="es">cd aventura-linux/area-de-juego</span></span></code></pre>
+
+<div class="no-break">
+<h2><span lang="en">🐄 Cowsay — Make a Cow Talk!</span><span lang="es">🐄 Cowsay — ¡Hacé que una Vaca Hable!</span></h2>
+<pre><code><span class="cmd-prompt">cowsay "I love Linux!"</span>
+<span class="cmd-prompt">cowsay "Hello World"</span></code></pre>
+<p><span lang="en">Want a different animal?</span><span lang="es">¿Querés un animal diferente?</span></p>
+<pre><code><span class="cmd-prompt">cowsay -f dragon "I breathe fire"</span>
+<span class="cmd-prompt">cowsay -f tux "I am the Linux penguin"</span></code></pre>
+</div>
+
+<div class="no-break">
+<h2><span lang="en">�️ Make the Cow Say Anything!</span><span lang="es">🗣️ ¡Hacé que la Vaca Diga lo que Quieras!</span></h2>
+<p><span lang="en">Use the pipe <code>|</code> to send your words to the cow:</span><span lang="es">Usá el pipe <code>|</code> para mandarle tus palabras a la vaca:</span></p>
+<pre><code><span class="cmd-prompt">echo "I love Linux" | cowsay</span>
+<span class="cmd-prompt">echo "Penguins rule the world" | cowsay -f tux</span></code></pre>
+</div>
+
+<div class="no-break">
+<h2><span lang="en">�️ Figlet — GIANT Text!</span><span lang="es">🖨️ Figlet — ¡Texto GIGANTE!</span></h2>
+<p><span lang="en">Make your name appear in huge letters:</span><span lang="es">Hacé que tu nombre aparezca en letras enormes:</span></p>
+<pre><code><span class="cmd-prompt">figlet HELLO</span>
+<span class="cmd-prompt">figlet Linux Rules</span></code></pre>
+<p><span lang="en">Try it with your name! <code>figlet [YOUR NAME]</code></span><span lang="es">¡Probalo con tu nombre! <code>figlet [TU NOMBRE]</code></span></p>
+</div>
+
+<div class="no-break">
+<h2><span lang="en">�🚂 SL — Oops!</span><span lang="es">🚂 SL — ¡Ups!</span></h2>
+<p><span lang="en">Ever type <code>sl</code> instead of <code>ls</code> by accident?</span><span lang="es">¿Alguna vez escribiste <code>sl</code> en vez de <code>ls</code> por accidente?</span></p>
+<pre><code><span class="cmd-prompt">sl</span></code></pre>
+<p><span lang="en">Watch what happens! 🚂 (Just wait — it goes away on its own.)</span><span lang="es">¡Mirá lo que pasa! 🚂 (Solo esperá — se va solito.)</span></p>
+</div>
+
+<div class="no-break">
+<h2><span lang="en">💻 CMatrix — Feel Like a Movie Hacker</span><span lang="es">💻 CMatrix — Sentite Como un Hacker de Película</span></h2>
+<p><span lang="en">In movies, when someone is "hacking a computer," green code rains down the screen. This is that! 😎 (It's just for fun — it doesn't actually do anything.)</span><span lang="es">En las películas, cuando alguien está "hackeando una computadora," código verde llueve por la pantalla. ¡Esto es eso! 😎 (Es solo por diversión — en realidad no hace nada.)</span></p>
+<pre><code><span class="cmd-prompt">cmatrix</span></code></pre>
+<p><span lang="en">Press <code>q</code> to quit. Show your friends and look like a genius. 🧠</span><span lang="es">Presioná <code>q</code> para salir. Mostráselo a tus amigos y parecé un genio. 🧠</span></p>
+</div>
+
+<div class="no-break">
+<h2><span lang="en">🕐 Built-In Fun (Always Works!)</span><span lang="es">🕐 Diversión Incluida (¡Siempre Funciona!)</span></h2>
+<table>
+  <tr><th><span lang="en">Command</span><span lang="es">Comando</span></th><th><span lang="en">What It Does</span><span lang="es">Qué Hace</span></th></tr>
+  <tr><td><code>date</code></td><td><span lang="en">Today's date and time</span><span lang="es">Fecha y hora actual</span></td></tr>
+  <tr><td><code>cal</code></td><td><span lang="en">Show a calendar</span><span lang="es">Mostrar un calendario</span></td></tr>
+  <tr><td><code>whoami</code></td><td><span lang="en">Who are you?</span><span lang="es">¿Quién sos?</span></td></tr>
+  <tr><td><code>uptime</code></td><td><span lang="en">How long the computer has been on</span><span lang="es">Cuánto tiempo lleva encendida la compu</span></td></tr>
+  <tr><td><code>echo "Hello!"</code></td><td><span lang="en">Make the terminal say something</span><span lang="es">Hacer que la terminal diga algo</span></td></tr>
+</table>
+</div>
+
+<div class="tip">
+  <span lang="en"><strong>💡 Combine commands</strong> with the pipe <code>|</code> — it sends the output of one command into the next!<br><code>echo "I am awesome" | cowsay</code> &nbsp;&nbsp;or&nbsp;&nbsp; <code>echo "Penguins rule" | cowsay -f tux</code></span>
+  <span lang="es"><strong>💡 Combiná comandos</strong> con el pipe <code>|</code> — ¡envía la salida de un comando al siguiente!<br><code>echo "I am awesome" | cowsay</code> &nbsp;&nbsp;o&nbsp;&nbsp; <code>echo "Penguins rule" | cowsay -f tux</code></span>
+</div>
+
+<!-- ==================== ACTIVITY 4: FIRST SCRIPT ==================== -->
+<div class="page-break"></div>
+
+<div class="activity-header">
+  <span class="icon">📝</span>
+  <span><span lang="en">Activity 4: First Script</span><span lang="es">Actividad 4: Tu Primer Script</span></span>
+  <span class="time">⏱ 7 min</span>
+</div>
+
+<p><span lang="en">A script is a file that tells the computer what to do, step by step. When you write a script, <strong>you are programming.</strong></span><span lang="es">Un script es un archivo que le dice a la computadora qué hacer, paso a paso. Cuando escribís un script, <strong>estás programando.</strong></span></p>
+
+<h2><span lang="en">Step 1: Go to the Script Lab</span><span lang="es">Paso 1: Andá al Laboratorio de Scripts</span></h2>
+<pre><code><span class="cmd-prompt">cd ~</span>
+<span class="cmd-prompt"><span lang="en">cd linux-adventure/my-scripts</span><span lang="es">cd aventura-linux/mis-scripts</span></span></code></pre>
+
+<h2><span lang="en">Step 2: Create Your Script</span><span lang="es">Paso 2: Creá tu Script</span></h2>
+<pre><code><span class="cmd-prompt">nano hello.sh</span></code></pre>
+<p><span lang="en">A text editor opens in your terminal!</span><span lang="es">¡Se abre un editor de texto en tu terminal!</span></p>
+
+<h2><span lang="en">Step 3: Type This Code</span><span lang="es">Paso 3: Escribí Este Código</span></h2>
+<div class="tip">
+  <span lang="en"><strong>📋 Copy & Paste tip:</strong> Select the code below, press <strong>Ctrl+C</strong> to copy. Then click on your terminal and press <strong>Ctrl+Shift+V</strong> to paste. (In the terminal, paste needs the extra <strong>Shift</strong>!)</span>
+  <span lang="es"><strong>📋 Tip para Copiar y Pegar:</strong> Seleccioná el código de abajo, presioná <strong>Ctrl+C</strong> para copiar. Después hacé clic en tu terminal y presioná <strong>Ctrl+Shift+V</strong> para pegar. (¡En la terminal, pegar necesita el <strong>Shift</strong> extra!)</span>
+</div>
+<span lang="en"><pre><code>#!/bin/bash
+echo "Hello! I am a Linux script!"
+echo "Made by: [YOUR NAME]"
+echo ""
+echo "Today is:"
+date
+echo ""
+echo "You are logged in as:"
+whoami
+echo ""
+echo "🐧 Script complete!"</code></pre></span>
+<span lang="es"><pre><code>#!/bin/bash
+echo "¡Hola! ¡Soy un script de Linux!"
+echo "Hecho por: [TU NOMBRE]"
+echo ""
+echo "Hoy es:"
+date
+echo ""
+echo "Estás conectado como:"
+whoami
+echo ""
+echo "🐧 ¡Script completo!"</code></pre></span>
+<p><span lang="en">Replace <code>[YOUR NAME]</code> with your real name!</span><span lang="es">¡Reemplazá <code>[TU NOMBRE]</code> con tu nombre real!</span></p>
+
+<h2><span lang="en">Step 4: Save and Exit nano</span><span lang="es">Paso 4: Guardar y Salir de nano</span></h2>
+<table>
+  <tr><th><span lang="en">Action</span><span lang="es">Acción</span></th><th><span lang="en">Keys</span><span lang="es">Teclas</span></th></tr>
+  <tr><td><span lang="en">Save the file</span><span lang="es">Guardar el archivo</span></td><td><strong>Ctrl + O</strong>, <span lang="en">then press</span><span lang="es">luego presioná</span> <strong>Enter</strong></td></tr>
+  <tr><td><span lang="en">Exit nano</span><span lang="es">Salir de nano</span></td><td><strong>Ctrl + X</strong></td></tr>
+</table>
+
+<h2><span lang="en">Step 5: Run Your Script!</span><span lang="es">Paso 5: ¡Ejecutá tu Script!</span></h2>
+<pre><code><span class="cmd-prompt">bash hello.sh</span></code></pre>
+
+<div class="key-message">
+  <span lang="en">🎉 YOUR SCRIPT JUST RAN!<br>You are officially a programmer!</span>
+  <span lang="es">🎉 ¡TU SCRIPT ACABA DE EJECUTARSE!<br>¡Oficialmente sos programador!</span>
+</div>
+
+<div class="bonus-box no-break">
+  <h3><span lang="en">⭐ Bonus: Make It Interactive</span><span lang="es">⭐ Extra: Hacelo Interactivo</span></h3>
+  <p><span lang="en">Open your script again (<code>nano hello.sh</code>) and add these lines at the end:</span><span lang="es">Abrí tu script de nuevo (<code>nano hello.sh</code>) y agregá estas líneas al final:</span></p>
+  <span lang="en"><pre><code>echo "What is your name?"
+read name
+echo "Hello, $name! Welcome to Linux!"</code></pre></span>
+  <span lang="es"><pre><code>echo "¿Cómo te llamás?"
+read name
+echo "¡Hola, $name! ¡Bienvenido a Linux!"</code></pre></span>
+  <p><span lang="en">Save, exit, and run with <code>bash hello.sh</code>.</span><span lang="es">Guardá, salí y ejecutá con <code>bash hello.sh</code>.</span></p>
+  <p><span lang="en">The <code>read</code> command waits for you to type something!</span><span lang="es">¡El comando <code>read</code> espera a que escribás algo!</span></p>
+</div>
+
+<!-- ==================== ACTIVITY 5 (BONUS): COMMAND DETECTIVE ==================== -->
+<div class="page-break"></div>
+
+<div class="activity-header">
+  <span class="icon">🔍</span>
+  <span><span lang="en">Bonus: Command Detective</span><span lang="es">Extra: Detective de Comandos</span></span>
+  <span class="time">⏱ Extra</span>
+</div>
+
+<p><span lang="en">Someone stole the last cookie from the jar. There are witnesses and suspects. Your job: search through the evidence and figure out <strong>who did it.</strong></span><span lang="es">Alguien robó la última galleta del frasco. Hay testigos y sospechosos. Tu trabajo: buscar entre la evidencia y descubrir <strong>quién fue.</strong></span></p>
+
+<h2><span lang="en">Getting Started</span><span lang="es">Para Empezar</span></h2>
+<pre><code><span class="cmd-prompt">cd ~</span>
+<span class="cmd-prompt"><span lang="en">cd linux-adventure/detective</span><span lang="es">cd aventura-linux/detective</span></span>
+<span class="cmd-prompt"><span lang="en">cat case-file.txt</span><span lang="es">cat caso.txt</span></span></code></pre>
+
+<h2><span lang="en">Investigate</span><span lang="es">Investigar</span></h2>
+<p><span lang="en">Read witness statements and suspect files:</span><span lang="es">Leé las declaraciones de los testigos y los archivos de sospechosos:</span></p>
+<pre><code><span class="cmd-prompt"><span lang="en">cat evidence/witness1.txt</span><span lang="es">cat evidencia/testigo1.txt</span></span>
+<span class="cmd-prompt"><span lang="en">cat evidence/witness2.txt</span><span lang="es">cat evidencia/testigo2.txt</span></span>
+<span class="cmd-prompt"><span lang="en">cat suspects/alex.txt</span><span lang="es">cat sospechosos/alex.txt</span></span>
+<span class="cmd-prompt"><span lang="en">cat suspects/sam.txt</span><span lang="es">cat sospechosos/sam.txt</span></span></code></pre>
+
+<h2><span lang="en">Use <code>grep</code> — Your Secret Weapon</span><span lang="es">Usá <code>grep</code> — Tu Arma Secreta</span></h2>
+<p><span lang="en">Instead of reading every file, <strong>search</strong> for clues!</span><span lang="es">En vez de leer cada archivo, ¡<strong>buscá</strong> pistas!</span></p>
+<pre><code><span class="cmd-prompt"><span lang="en">grep "cookies" suspects/*</span><span lang="es">grep "galletas" sospechosos/*</span></span>
+<span class="cmd-prompt"><span lang="en">grep "kitchen" suspects/*</span><span lang="es">grep "cocina" sospechosos/*</span></span>
+<span class="cmd-prompt"><span lang="en">grep "chocolate" evidence/*</span><span lang="es">grep "chocolate" evidencia/*</span></span>
+<span class="cmd-prompt"><span lang="en">grep -r "cookie" .</span><span lang="es">grep -r "galleta" .</span></span></code></pre>
+
+<h2><span lang="en">Solve the Case!</span><span lang="es">¡Resolvé el Caso!</span></h2>
+<ol>
+  <li><span lang="en">Who was in the kitchen?</span><span lang="es">¿Quién estaba en la cocina?</span></li>
+  <li><span lang="en">Who likes cookies?</span><span lang="es">¿A quién le gustan las galletas?</span></li>
+  <li><span lang="en">Who had chocolate on their shirt?</span><span lang="es">¿Quién tenía chocolate en su camisa?</span></li>
+  <li><span lang="en"><strong>Who stole the cookie?</strong></span><span lang="es"><strong>¿Quién robó la galleta?</strong></span></li>
+</ol>
+
+<div class="tip">
+  <span lang="en"><strong>💡 <code>grep</code></strong> is one of the most powerful commands in Linux. Real engineers and security analysts use it every day!</span>
+  <span lang="es"><strong>💡 <code>grep</code></strong> es uno de los comandos más poderosos de Linux. ¡Ingenieros y analistas de seguridad reales lo usan todos los días!</span>
+</div>
+
+<!-- ==================== BACK COVER ==================== -->
+<div class="page-break"></div>
+
+<div class="cover" style="justify-content: center;">
+  <div class="penguin" style="font-size: 50pt;">🐧</div>
+
+  <div class="key-message" style="margin: 20px 0; font-size: 14pt; border-width: 3px;">
+    <span lang="en">Linux is not just used.<br>Linux is controlled.<br>Linux is built with.</span>
+    <span lang="es">Linux no solo se usa.<br>Linux se controla.<br>Con Linux se construye.</span>
+  </div>
+
+  <div style="margin-top: 30px; text-align: center; font-size: 10pt; color: #888; line-height: 2;">
+    <p><strong><span lang="en">Commands you learned today:</span><span lang="es">Comandos que aprendiste hoy:</span></strong></p>
+    <p>
+      <code>pwd</code> &nbsp; <code>ls</code> &nbsp; <code>cd</code> &nbsp; <code>cat</code> &nbsp; <code>touch</code> &nbsp;
+      <code>mv</code> &nbsp; <code>cp</code> &nbsp; <code>mkdir</code> &nbsp; <code>grep</code> &nbsp; <code>nano</code> &nbsp;
+      <code>bash</code> &nbsp; <code>echo</code> &nbsp; <code>clear</code>
+    </p>
+  </div>
+
+  <div style="margin-top: 40px; font-size: 10pt; color: #999;">
+    <p><span lang="en">The terminal is not scary. It's your superpower. 💪</span><span lang="es">La terminal no da miedo. Es tu superpoder. 💪</span></p>
+    <p style="margin-top: 20px;"><span lang="en">Every expert was once a beginner. Keep building.</span><span lang="es">Todo experto fue alguna vez principiante. Seguí construyendo.</span></p>
+  </div>
+
+  <div style="margin-top: 50px; font-size: 9pt; color: #bbb;">
+    Linux Adventure Workshop &bull; WSL Ubuntu
+  </div>
+</div>
+
+</body>
+</html>

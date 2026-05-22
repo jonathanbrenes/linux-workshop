@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" href="images/webicon.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linux Adventure Workshop — Welcome</title>
+<script src="i18n.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    background: #0a0a0a;
+    color: #fff;
+    overflow: hidden;
+  }
+
+  /* ===== SLIDE SYSTEM ===== */
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 40px 60px;
+    opacity: 0;
+    transform: translateX(60px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    pointer-events: none;
+  }
+
+  .slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+
+  .slide.exit {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+
+  /* ===== TYPOGRAPHY ===== */
+  .slide h1 {
+    font-size: clamp(36pt, 6vw, 72pt);
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 20px;
+  }
+
+  .slide h2 {
+    font-size: clamp(22pt, 3.5vw, 44pt);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+
+  .slide p {
+    font-size: clamp(14pt, 2.2vw, 28pt);
+    line-height: 1.5;
+    color: #ccc;
+    max-width: 900px;
+  }
+
+  .slide .big-emoji {
+    font-size: clamp(60pt, 12vw, 140pt);
+    margin-bottom: 10px;
+    line-height: 1;
+  }
+
+  .slide .emoji-row {
+    font-size: clamp(30pt, 5vw, 60pt);
+    margin: 16px 0;
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .highlight { color: #4fc3f7; }
+  .highlight-green { color: #66bb6a; }
+  .highlight-orange { color: #ffa726; }
+  .highlight-pink { color: #f06292; }
+
+  /* ===== GRID LAYOUTS ===== */
+  .device-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    margin-top: 30px;
+    max-width: 1000px;
+    width: 100%;
+  }
+
+  .device-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 20px 16px;
+    text-align: center;
+    transition: transform 0.3s, background 0.3s;
+  }
+
+  .device-card:hover {
+    transform: scale(1.05);
+    background: rgba(255,255,255,0.1);
+  }
+
+  .device-card .icon { font-size: 36pt; display: block; margin-bottom: 8px; }
+  .device-card .label { font-size: 14pt; color: #ccc; }
+  .device-card .detail { font-size: 10pt; color: #888; margin-top: 4px; }
+
+  /* ===== OPEN SOURCE VISUAL ===== */
+  .os-compare {
+    display: flex;
+    gap: 40px;
+    margin-top: 30px;
+    align-items: stretch;
+  }
+
+  .os-box {
+    flex: 1;
+    border-radius: 16px;
+    padding: 30px 24px;
+    max-width: 400px;
+    text-align: center;
+  }
+
+  .os-box.closed {
+    background: rgba(239, 83, 80, 0.12);
+    border: 2px solid rgba(239, 83, 80, 0.3);
+  }
+
+  .os-box.open {
+    background: rgba(102, 187, 106, 0.12);
+    border: 2px solid rgba(102, 187, 106, 0.3);
+  }
+
+  .os-box .box-icon { font-size: 40pt; margin-bottom: 10px; }
+  .os-box h3 { font-size: 18pt; margin-bottom: 8px; }
+  .os-box p { font-size: 13pt; color: #bbb; line-height: 1.5; }
+
+  /* ===== QUOTE ===== */
+  .quote {
+    font-size: clamp(16pt, 2.5vw, 32pt);
+    font-style: italic;
+    color: #aaa;
+    border-left: 4px solid #4fc3f7;
+    padding-left: 24px;
+    max-width: 800px;
+    text-align: left;
+    line-height: 1.6;
+    margin-top: 20px;
+  }
+
+  /* ===== FINAL SLIDE ===== */
+  .cmd-type {
+    font-family: 'Cascadia Code', 'Consolas', monospace;
+    font-size: clamp(18pt, 3vw, 40pt);
+    color: #4fc3f7;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 12px;
+    padding: 16px 32px;
+    margin-top: 20px;
+    display: inline-block;
+  }
+
+  .cmd-type .prompt { color: #6a9955; }
+  .cmd-type .cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    background: #4fc3f7;
+    margin-left: 2px;
+    animation: blink 1s step-end infinite;
+    vertical-align: text-bottom;
+  }
+
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* ===== LOOK AROUND ===== */
+  .look-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-top: 24px;
+    max-width: 800px;
+    width: 100%;
+  }
+
+  .look-item {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-align: left;
+  }
+
+  .look-item .icon { font-size: 28pt; flex-shrink: 0; }
+  .look-item .text { font-size: 13pt; color: #ccc; line-height: 1.4; }
+  .look-item strong { color: #fff; }
+
+  /* ===== STAT BAR ===== */
+  .stat-bar { width: 100%; max-width: 700px; margin-top: 30px; }
+
+  .stat-row { display: flex; align-items: center; margin-bottom: 12px; gap: 12px; }
+
+  .stat-label { font-size: 12pt; color: #aaa; width: 200px; text-align: right; flex-shrink: 0; }
+
+  .stat-fill-bg { flex: 1; height: 28px; background: rgba(255,255,255,0.06); border-radius: 14px; overflow: hidden; }
+
+  .stat-fill { height: 100%; border-radius: 14px; display: flex; align-items: center; padding-left: 12px; font-size: 10pt; font-weight: 600; color: #fff; }
+
+  /* ===== NAV ===== */
+  .nav {
+    position: fixed;
+    bottom: 30px;
+    right: 40px;
+    display: flex;
+    gap: 12px;
+    z-index: 100;
+  }
+
+  .nav button {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    font-size: 18pt;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .nav button:hover { background: rgba(255,255,255,0.2); }
+  .nav button:disabled { opacity: 0.3; cursor: default; }
+
+  .slide-counter {
+    position: fixed;
+    bottom: 40px;
+    left: 40px;
+    font-size: 11pt;
+    color: #555;
+    z-index: 100;
+  }
+
+  /* ===== ANIMATIONS ===== */
+  .fade-in-up {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+  .slide.active .fade-in-up { opacity: 1; transform: translateY(0); }
+  .slide.active .fade-in-up:nth-child(2) { transition-delay: 0.15s; }
+  .slide.active .fade-in-up:nth-child(3) { transition-delay: 0.3s; }
+  .slide.active .fade-in-up:nth-child(4) { transition-delay: 0.45s; }
+  .slide.active .fade-in-up:nth-child(5) { transition-delay: 0.6s; }
+</style>
+</head>
+<body>
+
+<!-- ===== SLIDE 1: TITLE ===== -->
+<div class="slide active" id="s1">
+  <div class="big-emoji fade-in-up">🐧</div>
+  <h1 class="fade-in-up"><span lang="en">Linux Adventure<br>Workshop</span><span lang="es">Taller de Aventura<br>Linux</span></h1>
+  <p class="fade-in-up"><span lang="en">You don't just <em>use</em> Linux — you <span class="highlight">build</span> with it.</span><span lang="es">No solo <em>usás</em> Linux — <span class="highlight">construís</span> con él.</span></p>
+</div>
+
+<!-- ===== SLIDE 2: WHAT IS OPEN SOURCE ===== -->
+<div class="slide" id="s2">
+  <h2 class="fade-in-up"><span lang="en">What is <span class="highlight-green">Open Source</span>?</span><span lang="es">¿Qué es <span class="highlight-green">Open Source</span>?</span></h2>
+  <div class="os-compare fade-in-up">
+    <div class="os-box closed">
+      <div class="box-icon">🔒</div>
+      <h3 style="color:#ef5350;"><span lang="en">Closed Source</span><span lang="es">Código Cerrado</span></h3>
+      <p><span lang="en">Someone builds software and <strong>hides the recipe</strong>. You can use it, but you can't see how it works or change it.</span><span lang="es">Alguien crea software y <strong>esconde la receta</strong>. Podés usarlo, pero no podés ver cómo funciona ni cambiarlo.</span></p>
+      <p style="margin-top:8px; font-size:11pt; color:#999;"><span lang="en">Examples: Windows, macOS, Instagram</span><span lang="es">Ejemplos: Windows, macOS, Instagram</span></p>
+    </div>
+    <div class="os-box open">
+      <div class="box-icon">🔓</div>
+      <h3 style="color:#66bb6a;"><span lang="en">Open Source</span><span lang="es">Código Abierto</span></h3>
+      <p><span lang="en">The recipe is <strong>shared with the world</strong>. Anyone can read it, improve it, and share it — for free.</span><span lang="es">La receta se <strong>comparte con el mundo</strong>. Cualquier persona puede leerla, mejorarla y compartirla — de forma libre.</span></p>
+      <p style="margin-top:8px; font-size:11pt; color:#999;"><span lang="en">Examples: Linux, Firefox, Android, VLC</span><span lang="es">Ejemplos: Linux, Firefox, Android, VLC</span></p>
+    </div>
+  </div>
+  <p class="fade-in-up" style="margin-top:24px; font-size: clamp(12pt, 1.8vw, 20pt);"><span lang="en">Linux is open source. <span class="highlight-green">Thousands of people</span> around the world build it together.</span><span lang="es">Linux es código abierto. <span class="highlight-green">Miles de personas</span> en todo el mundo lo construyen juntas.</span></p>
+</div>
+
+<!-- ===== SLIDE 3: LINUX RUNS EVERYTHING ===== -->
+<div class="slide" id="s3">
+  <h2 class="fade-in-up"><span lang="en">Linux runs <span class="highlight">almost everything</span></span><span lang="es">Linux está en <span class="highlight">casi todo</span></span></h2>
+  <div class="device-grid fade-in-up">
+    <div class="device-card"><span class="icon">📱</span><div class="label"><span lang="en">Your Phone</span><span lang="es">Tu Celular</span></div><div class="detail">Android = Linux</div></div>
+    <div class="device-card"><span class="icon">🎮</span><div class="label">Gaming</div><div class="detail">Steam Deck / SteamOS</div></div>
+    <div class="device-card"><span class="icon">💻</span><div class="label">Chromebooks</div><div class="detail">ChromeOS = Linux</div></div>
+    <div class="device-card"><span class="icon">📺</span><div class="label">Smart TVs</div><div class="detail">Samsung, LG, Android TV</div></div>
+    <div class="device-card"><span class="icon">🚗</span><div class="label"><span lang="en">Cars</span><span lang="es">Carros</span></div><div class="detail">Tesla, Toyota, Mercedes</div></div>
+    <div class="device-card"><span class="icon">🚀</span><div class="label"><span lang="en">Space</span><span lang="es">Espacio</span></div><div class="detail"><span lang="en">ISS, Mars rovers, SpaceX</span><span lang="es">ISS, rovers en Marte, SpaceX</span></div></div>
+    <div class="device-card"><span class="icon">🌐</span><div class="label">Internet</div><div class="detail">Google, YouTube, Netflix</div></div>
+    <div class="device-card"><span class="icon">🏥</span><div class="label"><span lang="en">Hospitals</span><span lang="es">Hospitales</span></div><div class="detail"><span lang="en">Medical equipment &amp; records</span><span lang="es">Equipos médicos y registros</span></div></div>
+    <div class="device-card"><span class="icon">☁️</span><div class="label">Microsoft Azure</div><div class="detail"><span lang="en">Azure Linux powers the cloud</span><span lang="es">Azure Linux impulsa la nube</span></div></div>
+    <div class="device-card"><span class="icon">🖥️</span><div class="label"><span lang="en">Supercomputers</span><span lang="es">Supercomputadoras</span></div><div class="detail"><span lang="en">100% of the Top 500</span><span lang="es">100% del Top 500</span></div></div>
+  </div>
+</div>
+
+<!-- ===== SLIDE 4: BY THE NUMBERS ===== -->
+<div class="slide" id="s4">
+  <h2 class="fade-in-up"><span lang="en">Linux by the numbers</span><span lang="es">Linux en números</span></h2>
+  <div class="stat-bar fade-in-up">
+    <div class="stat-row"><div class="stat-label"><span lang="en">Supercomputers</span><span lang="es">Supercomputadoras</span></div><div class="stat-fill-bg"><div class="stat-fill" style="width:100%; background: linear-gradient(90deg, #4fc3f7, #0288d1);">100%</div></div></div>
+    <div class="stat-row"><div class="stat-label"><span lang="en">Cloud servers</span><span lang="es">Servidores en la nube</span></div><div class="stat-fill-bg"><div class="stat-fill" style="width:90%; background: linear-gradient(90deg, #66bb6a, #2e7d32);">90%+</div></div></div>
+    <div class="stat-row"><div class="stat-label"><span lang="en">Smartphones (Android)</span><span lang="es">Teléfonos (Android)</span></div><div class="stat-fill-bg"><div class="stat-fill" style="width:72%; background: linear-gradient(90deg, #ffa726, #e65100);">72%</div></div></div>
+    <div class="stat-row"><div class="stat-label"><span lang="en">Web servers</span><span lang="es">Servidores web</span></div><div class="stat-fill-bg"><div class="stat-fill" style="width:80%; background: linear-gradient(90deg, #f06292, #c2185b);">80%+</div></div></div>
+    <div class="stat-row"><div class="stat-label"><span lang="en">IoT devices</span><span lang="es">Dispositivos IoT</span></div><div class="stat-fill-bg"><div class="stat-fill" style="width:70%; background: linear-gradient(90deg, #ba68c8, #7b1fa2);">70%+</div></div></div>
+  </div>
+  <p class="fade-in-up" style="margin-top:24px; font-size: clamp(12pt, 1.8vw, 22pt);"><span lang="en">Windows and Linux work <strong>together</strong>. <span class="highlight">That's why we have WSL.</span></span><span lang="es">Windows y Linux trabajan <strong>juntos</strong>. <span class="highlight">Por eso tenemos WSL.</span></span></p>
+</div>
+
+<!-- ===== SLIDE 5: EVEN MICROSOFT USES LINUX ===== -->
+<div class="slide" id="s5">
+  <h2 class="fade-in-up"><span lang="en">Even <span class="highlight">Microsoft</span> uses Linux</span><span lang="es">Hasta <span class="highlight">Microsoft</span> usa Linux</span></h2>
+  <p class="fade-in-up" style="font-size: clamp(12pt, 1.8vw, 22pt); margin-bottom: 20px;"><span lang="en">Yes — the company that makes Windows.</span><span lang="es">Sí — la empresa que hace Windows.</span></p>
+  <div class="look-grid fade-in-up" style="max-width: 800px;">
+    <div class="look-item"><span class="icon">☁️</span><div class="text"><span lang="en"><strong>Azure Linux 4.0</strong> — Microsoft just launched their own Linux distro to power Azure, the world's second-largest cloud.</span><span lang="es"><strong>Azure Linux 4.0</strong> — Microsoft lanzó su propia distro Linux para impulsar Azure, la segunda nube más grande del mundo.</span></div></div>
+    <div class="look-item"><span class="icon">🪟</span><div class="text"><span lang="en"><strong>WSL</strong> — Windows Subsystem for Linux lets you run Linux inside Windows. That's what we're using today!</span><span lang="es"><strong>WSL</strong> — El Subsistema de Windows para Linux permite correr Linux dentro de Windows. ¡Eso es lo que vamos a usar hoy!</span></div></div>
+    <div class="look-item"><span class="icon">🐙</span><div class="text"><span lang="en"><strong>GitHub</strong> — the world's largest code platform (owned by Microsoft) runs on Linux servers.</span><span lang="es"><strong>GitHub</strong> — la plataforma de código más grande del mundo (propiedad de Microsoft) corre en servidores Linux.</span></div></div>
+    <div class="look-item"><span class="icon">🤖</span><div class="text"><span lang="en"><strong>AI infrastructure</strong> — Microsoft trains AI models like Copilot on thousands of Linux computers in Azure. Linux is the standard for AI worldwide.</span><span lang="es"><strong>Infraestructura de IA</strong> — Microsoft entrena modelos de IA como Copilot en miles de computadoras Linux en Azure. Linux es el estándar mundial para IA.</span></div></div>
+  </div>
+  <p class="fade-in-up" style="margin-top:24px; font-size: clamp(12pt, 1.6vw, 20pt); color: #999;"><span lang="en">Linux is so powerful that even its biggest competitor builds with it.</span><span lang="es">Linux es tan poderoso que hasta su mayor competidor construye con él.</span></p>
+</div>
+
+<!-- ===== SLIDE 6: LOOK AROUND ===== -->
+<div class="slide" id="s6">
+  <h2 class="fade-in-up"><span lang="en">Now <span class="highlight-orange">look around</span> this room</span><span lang="es">Ahora <span class="highlight-orange">mirá alrededor</span> de este salón</span></h2>
+  <div class="look-grid fade-in-up">
+    <div class="look-item"><span class="icon">📱</span><div class="text"><span lang="en"><strong>Your phone</strong> in your pocket? If it's Android, it runs Linux <em>right now</em>.</span><span lang="es"><strong>Tu celular</strong> en el bolsillo. Si es Android, está corriendo Linux <em>en este momento</em>.</span></div></div>
+    <div class="look-item"><span class="icon">📡</span><div class="text"><span lang="en"><strong>The Wi-Fi router</strong> connecting this room to the internet? Almost certainly Linux.</span><span lang="es"><strong>El router de Wi-Fi</strong> que conecta este salón al internet, casi seguro corre Linux.</span></div></div>
+    <div class="look-item"><span class="icon">🖥️</span><div class="text"><span lang="en"><strong>This laptop</strong> — we're about to run Linux on it, right now, with WSL.</span><span lang="es"><strong>Esta laptop</strong> — vamos a correr Linux aquí mismo, ahora, con WSL.</span></div></div>
+    <div class="look-item"><span class="icon">☁️</span><div class="text"><span lang="en"><strong>Every website</strong> you visited today? The server behind it is probably running Linux.</span><span lang="es"><strong>Cada sitio web</strong> que visitaste hoy, el servidor detrás probablemente corre Linux.</span></div></div>
+  </div>
+  <p class="fade-in-up" style="margin-top:24px; font-size: clamp(12pt, 1.8vw, 22pt);"><span lang="en">Linux is <strong>invisible</strong> — but it's <span class="highlight-orange">everywhere</span>.</span><span lang="es">Linux es <strong>invisible</strong> — pero está en <span class="highlight-orange">todos lados</span>.</span></p>
+</div>
+
+<!-- ===== SLIDE 7: WHY SHOULD YOU CARE ===== -->
+<div class="slide" id="s7">
+  <h2 class="fade-in-up"><span lang="en">Why should <span class="highlight-pink">you</span> care?</span><span lang="es">¿Por qué debería importar<span class="highlight-pink">te</span>?</span></h2>
+  <p class="fade-in-up" style="font-size: clamp(14pt, 2vw, 24pt); margin-bottom: 20px;"><span lang="en">Because the people who <em>build</em> the future use the terminal.</span><span lang="es">Porque las personas que <em>construyen</em> el futuro usan la terminal.</span></p>
+  <div class="look-grid fade-in-up" style="max-width: 700px;">
+    <div class="look-item"><span class="icon">👾</span><div class="text"><span lang="en"><strong>Game developers</strong> use it to build games</span><span lang="es"><strong>Desarrolladores de videojuegos</strong> la usan para crear juegos</span></div></div>
+    <div class="look-item"><span class="icon">🤖</span><div class="text"><span lang="en"><strong>AI engineers</strong> use it to train models</span><span lang="es"><strong>Ingenieros de IA</strong> la usan para entrenar modelos</span></div></div>
+    <div class="look-item"><span class="icon">🔒</span><div class="text"><span lang="en"><strong>Hackers &amp; security pros</strong> use it to protect systems</span><span lang="es"><strong>Hackers y expertos en seguridad</strong> la usan para proteger sistemas</span></div></div>
+    <div class="look-item"><span class="icon">🚀</span><div class="text"><span lang="en"><strong>NASA engineers</strong> use it to control spacecraft</span><span lang="es"><strong>Ingenieros de la NASA</strong> la usan para controlar naves espaciales</span></div></div>
+  </div>
+  <p class="fade-in-up" style="margin-top:20px; font-size: clamp(12pt, 1.6vw, 20pt); color: #999;"><span lang="en">Today, you learn the same tool they use.</span><span lang="es">Hoy, aprendés la misma herramienta que ellos usan.</span></p>
+</div>
+
+<!-- ===== SLIDE 8: LET'S GO ===== -->
+<div class="slide" id="s8">
+  <div class="big-emoji fade-in-up">🐧</div>
+  <h1 class="fade-in-up" style="margin-bottom: 10px;"><span lang="en">Ready?</span><span lang="es">¿Listos?</span></h1>
+  <p class="fade-in-up" style="font-size: clamp(14pt, 2vw, 26pt); margin-bottom: 24px;"><span lang="en">No mouse. No menus.<br>Just you, the terminal, and your brain.</span><span lang="es">Sin mouse. Sin menús.<br>Solo vos, la terminal y tu cerebro.</span></p>
+  <div class="cmd-type fade-in-up">
+    <span class="prompt">$ </span>cd ~/linux-adventure<span class="cursor"></span>
+  </div>
+  <p class="fade-in-up" style="margin-top: 30px; font-size: clamp(16pt, 2.5vw, 32pt); color: #fff; font-weight: 700;"><span lang="en">Let's go.</span><span lang="es">¡Vamos!</span></p>
+</div>
+
+<!-- ===== NAVIGATION ===== -->
+<div class="slide-counter"><span id="current">1</span> / <span id="total">8</span></div>
+<div class="nav">
+  <button id="prev" onclick="go(-1)" disabled>‹</button>
+  <button id="next" onclick="go(1)">›</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let idx = 0;
+
+  function go(dir) {
+    if (idx + dir < 0 || idx + dir >= slides.length) return;
+    slides[idx].classList.remove('active');
+    slides[idx].classList.add('exit');
+    idx += dir;
+    slides[idx].classList.remove('exit');
+    slides[idx].classList.add('active');
+    document.getElementById('current').textContent = idx + 1;
+    document.getElementById('prev').disabled = idx === 0;
+    document.getElementById('next').disabled = idx === slides.length - 1;
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); go(1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
+  });
+</script>
+
+</body>
+</html>

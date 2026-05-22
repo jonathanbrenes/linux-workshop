@@ -1,0 +1,166 @@
+# ============================================
+# Linux Adventure Workshop - All-in-One Installer
+# ============================================
+# Run this ONCE per laptop in PowerShell (as Admin recommended).
+# It does everything: installs WSL+Ubuntu, downloads workshop
+# files, installs fun tools, and creates a desktop shortcut.
+#
+# Usage (PowerShell):
+#   irm https://linux.brenes.info/install-workshop.ps1 | iex
+# ============================================
+
+$ErrorActionPreference = "Stop"
+$site    = "https://linux.brenes.info"
+$appDir  = Join-Path $env:USERPROFILE ".linux-workshop"
+$ps1File = Join-Path $appDir "launch-workshop.ps1"
+$icoFile = Join-Path $appDir "tux.ico"
+$lnkFile = Join-Path ([Environment]::GetFolderPath("Desktop")) "Linux Adventure Workshop.lnk"
+
+Write-Host ""
+Write-Host "  =========================================" -ForegroundColor Cyan
+Write-Host "  Linux Adventure Workshop - Installer" -ForegroundColor Cyan
+Write-Host "  =========================================" -ForegroundColor Cyan
+Write-Host ""
+
+if (-not (Test-Path $appDir)) { New-Item -ItemType Directory -Path $appDir -Force | Out-Null }
+
+# =============================================
+# STEP 1: Install WSL + Ubuntu
+# =============================================
+Write-Host "  [1/5] Checking WSL + Ubuntu..." -ForegroundColor Yellow
+
+$wslReady = $false
+try {
+    $wslOutput = wsl --status 2>&1
+    if ($LASTEXITCODE -eq 0) { $wslReady = $true }
+} catch {}
+
+if ($wslReady) {
+    Write-Host "    -> WSL is already installed." -ForegroundColor DarkGray
+} else {
+    Write-Host "    -> Installing WSL with Ubuntu (this may take a few minutes)..." -ForegroundColor Yellow
+    wsl --install -d Ubuntu --no-launch
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "    -> WSL + Ubuntu installed." -ForegroundColor Green
+        Write-Host ""
+        Write-Host "  REBOOT REQUIRED" -ForegroundColor Red
+        Write-Host "  Please reboot this laptop, then:" -ForegroundColor Red
+        Write-Host "    1. Open Ubuntu from the Start menu to finish first-time setup" -ForegroundColor Red
+        Write-Host "    2. Run this installer again to complete the remaining steps" -ForegroundColor Red
+        Write-Host ""
+        return
+    } else {
+        Write-Host "    -> WSL install failed (exit code $LASTEXITCODE). Try running as Administrator." -ForegroundColor Red
+        return
+    }
+}
+
+# Check that Ubuntu distro is available
+$distroList = (wsl -l -q 2>&1) -replace "`0","" -join " "
+$hasUbuntu = $distroList -match "Ubuntu"
+if (-not $hasUbuntu) {
+    Write-Host "    -> Ubuntu distro not found. Installing..." -ForegroundColor Yellow
+    wsl --install -d Ubuntu --no-launch
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "    -> Install failed. You may need to run as Administrator." -ForegroundColor Red
+        return
+    }
+    Write-Host "    -> Open Ubuntu from the Start menu to finish first-time setup, then re-run this installer." -ForegroundColor Cyan
+    return
+}
+
+Write-Host "    -> Ubuntu is ready." -ForegroundColor DarkGray
+
+# =============================================
+# STEP 2: Download & run workshop setup scripts
+# =============================================
+Write-Host "  [2/5] Setting up workshop files in Ubuntu..." -ForegroundColor Yellow
+wsl -d Ubuntu -- bash -c "curl -sL $site/setup.sh | bash"
+Write-Host "    -> Activity folders created in ~/linux-adventure/ and ~/aventura-linux/" -ForegroundColor DarkGray
+
+# =============================================
+# STEP 3: Install fun tools (cowsay, sl, etc.)
+# =============================================
+Write-Host '  [3/5] Installing fun tools (cowsay, sl, cmatrix, figlet)...' -ForegroundColor Yellow
+wsl -d Ubuntu -- bash -c "curl -sL $site/bonus/setup-fun.sh | sudo bash"
+Write-Host "    -> Fun tools installed." -ForegroundColor DarkGray
+
+# =============================================
+# STEP 4: Download workshop icon
+# =============================================
+Write-Host "  [4/5] Downloading workshop icon..." -ForegroundColor Yellow
+
+Invoke-WebRequest -Uri "$site/images/icon.ico" -OutFile $icoFile -UseBasicParsing
+Write-Host "    -> $icoFile" -ForegroundColor DarkGray
+
+# =============================================
+# STEP 5: Create launcher script + desktop shortcut
+# =============================================
+Write-Host "  [5/5] Creating desktop shortcut..." -ForegroundColor Yellow
+
+$nl = [Environment]::NewLine
+$hereOpen = [char]64 + [char]34
+$hereClose = [char]34 + [char]64
+$launchScript = '# Linux Adventure Workshop - Split-Screen Launcher' + $nl
+$launchScript += 'Add-Type -AssemblyName System.Windows.Forms' + $nl
+$launchScript += "Add-Type $hereOpen" + $nl
+$launchScript += 'using System;' + $nl
+$launchScript += 'using System.Runtime.InteropServices;' + $nl
+$launchScript += 'public class WinAPI {' + $nl
+$launchScript += '    [DllImport("user32.dll")] public static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);' + $nl
+$launchScript += '    [DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);' + $nl
+$launchScript += '    [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd);' + $nl
+$launchScript += '}' + $nl
+$launchScript += $hereClose + $nl
+$launchScript += '' + $nl
+$launchScript += '# Always use the primary monitor' + $nl
+$launchScript += '$primary = [System.Windows.Forms.Screen]::PrimaryScreen.WorkingArea' + $nl
+$launchScript += '$halfW   = [int]($primary.Width / 2)' + $nl
+$launchScript += '$fullH   = $primary.Height' + $nl
+$launchScript += '$originX = $primary.X' + $nl
+$launchScript += '$originY = $primary.Y' + $nl
+$launchScript += '' + $nl
+$launchScript += '# Launch Edge on the LEFT half of the primary monitor' + $nl
+$launchScript += 'Start-Process "msedge.exe" "--new-window --window-position=$originX,$originY --window-size=$halfW,$fullH https://linux.brenes.info"' + $nl
+$launchScript += 'Start-Sleep -Seconds 3' + $nl
+$launchScript += '' + $nl
+$launchScript += '$edge = Get-Process -Name msedge -ErrorAction SilentlyContinue |' + $nl
+$launchScript += '        Where-Object { $_.MainWindowHandle -ne 0 } |' + $nl
+$launchScript += '        Select-Object -First 1' + $nl
+$launchScript += '' + $nl
+$launchScript += 'if ($edge) {' + $nl
+$launchScript += '    [WinAPI]::ShowWindow($edge.MainWindowHandle, 9) | Out-Null' + $nl
+$launchScript += '    [WinAPI]::MoveWindow($edge.MainWindowHandle, $originX, $originY, $halfW, $fullH, $true) | Out-Null' + $nl
+$launchScript += '    [WinAPI]::SetForegroundWindow($edge.MainWindowHandle) | Out-Null' + $nl
+$launchScript += '}' + $nl
+$launchScript += '' + $nl
+$launchScript += '# Launch Windows Terminal on the RIGHT half of the primary monitor' + $nl
+$launchScript += 'Start-Process "wt.exe" "-p Ubuntu"' + $nl
+$launchScript += 'Start-Sleep -Seconds 2' + $nl
+$launchScript += '' + $nl
+$launchScript += '$wt = Get-Process -Name WindowsTerminal -ErrorAction SilentlyContinue |' + $nl
+$launchScript += '      Where-Object { $_.MainWindowHandle -ne 0 } |' + $nl
+$launchScript += '      Select-Object -First 1' + $nl
+$launchScript += '' + $nl
+$launchScript += 'if ($wt) {' + $nl
+$launchScript += '    [WinAPI]::ShowWindow($wt.MainWindowHandle, 9) | Out-Null' + $nl
+$launchScript += '    [WinAPI]::MoveWindow($wt.MainWindowHandle, ($originX + $halfW), $originY, $halfW, $fullH, $true) | Out-Null' + $nl
+$launchScript += '    [WinAPI]::SetForegroundWindow($wt.MainWindowHandle) | Out-Null' + $nl
+$launchScript += '}'
+
+Set-Content -Path $ps1File -Value $launchScript -Encoding UTF8
+
+$ws = New-Object -ComObject WScript.Shell
+$shortcut = $ws.CreateShortcut($lnkFile)
+$shortcut.TargetPath = "powershell.exe"
+$shortcut.Arguments = "-ExecutionPolicy Bypass -WindowStyle Hidden -File `"$ps1File`""
+$shortcut.IconLocation = $icoFile
+$shortcut.Description = "Open Edge + Ubuntu side by side for the Linux Adventure Workshop"
+$shortcut.WorkingDirectory = $env:USERPROFILE
+$shortcut.Save()
+
+Write-Host "    -> $lnkFile" -ForegroundColor DarkGray
+Write-Host ""
+Write-Host "  All done! Laptop is ready for the workshop." -ForegroundColor Green
+Write-Host "  Double-click the Tux penguin on the Desktop to launch." -ForegroundColor Green
+Write-Host ""

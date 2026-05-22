@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" href="images/webicon.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linux Adventure Workshop — Instructor Guide</title>
+<script src="i18n.js"></script>
+<style>
+  /* ===== RESET & BASE ===== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 11pt; }
+  body { font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; color: #1a1a1a; line-height: 1.55; padding: 0; margin: 0; background: #fff; }
+
+  /* ===== PRINT SETTINGS ===== */
+  @page { size: letter; margin: 1.5cm 1.8cm; }
+  @media print { body { font-size: 10pt; } .page-break { page-break-before: always; } .no-break { page-break-inside: avoid; } .cover { height: 100vh; } a { color: #1a1a1a !important; text-decoration: underline !important; } .script-card { break-inside: avoid; } }
+
+  /* ===== SCREEN PADDING ===== */
+  @media screen { body { max-width: 800px; margin: 0 auto; padding: 20px; padding-top: 50px; } .page-break { border-top: 3px dashed #ccc; margin: 40px 0; padding-top: 30px; } }
+
+  /* ===== COVER PAGE ===== */
+  .cover { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 60px 20px; }
+  .cover .penguin { font-size: 80pt; margin-bottom: 10px; }
+  .cover h1 { font-size: 28pt; color: #1a1a1a; margin-bottom: 8px; }
+  .cover .subtitle { font-size: 14pt; color: #555; margin-bottom: 30px; }
+  .cover .tagline { font-size: 12pt; color: #333; border: 2px solid #333; border-radius: 8px; padding: 12px 24px; display: inline-block; margin-top: 15px; font-weight: 600; }
+  .cover .footer-info { margin-top: 40px; font-size: 10pt; color: #777; line-height: 1.8; }
+
+  /* ===== HEADINGS ===== */
+  h1 { font-size: 20pt; border-bottom: 3px solid #333; padding-bottom: 6px; margin-bottom: 16px; margin-top: 0; }
+  h2 { font-size: 14pt; color: #222; margin-top: 20px; margin-bottom: 8px; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
+  h3 { font-size: 11pt; color: #333; margin-top: 14px; margin-bottom: 6px; }
+
+  /* ===== SECTION HEADERS ===== */
+  .section-header { background: #1a1a1a; color: #fff; padding: 10px 16px; border-radius: 6px; font-size: 18pt; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+  .section-header .icon { font-size: 22pt; }
+  .section-header .badge { margin-left: auto; font-size: 10pt; background: rgba(255,255,255,0.2); padding: 3px 10px; border-radius: 12px; }
+
+  /* ===== TABLES ===== */
+  table { width: 100%; border-collapse: collapse; margin: 10px 0 16px; font-size: 10pt; }
+  th { background: #f0f0f0; text-align: left; padding: 6px 10px; border: 1px solid #ccc; font-weight: 600; }
+  td { padding: 5px 10px; border: 1px solid #ccc; vertical-align: top; }
+  tr:nth-child(even) td { background: #fafafa; }
+
+  /* ===== CODE ===== */
+  code { font-family: 'Cascadia Code', 'Consolas', 'Courier New', monospace; background: #f4f4f4; padding: 1px 5px; border-radius: 3px; font-size: 9.5pt; border: 1px solid #e0e0e0; }
+  pre { background: #1e1e1e; color: #d4d4d4; padding: 10px 14px; border-radius: 6px; margin: 8px 0 14px; overflow-x: auto; font-size: 9.5pt; line-height: 1.5; }
+  pre code { background: none; border: none; padding: 0; color: inherit; font-size: inherit; }
+  .cmd-prompt::before { content: "$ "; color: #6a9955; font-weight: bold; }
+
+  /* ===== TIPS / CALLOUTS ===== */
+  .tip { background: #e8f5e9; border-left: 4px solid #43a047; padding: 8px 14px; margin: 10px 0; border-radius: 0 6px 6px 0; font-size: 10pt; }
+  .warning { background: #fff3e0; border-left: 4px solid #ef6c00; padding: 8px 14px; margin: 10px 0; border-radius: 0 6px 6px 0; font-size: 10pt; }
+  .info-box { background: #e3f2fd; border-left: 4px solid #1565c0; padding: 8px 14px; margin: 10px 0; border-radius: 0 6px 6px 0; font-size: 10pt; }
+  .script-speech { background: #f3e5f5; border-left: 4px solid #7b1fa2; padding: 10px 16px; margin: 10px 0; border-radius: 0 6px 6px 0; font-size: 10pt; font-style: italic; line-height: 1.7; }
+  .script-speech::before { content: "🎤 "; font-style: normal; }
+
+  /* ===== SCRIPT DOWNLOAD CARDS ===== */
+  .script-card { border: 2px solid #1565c0; border-radius: 10px; padding: 16px 20px; margin: 14px 0; background: #f8fbff; }
+  .script-card h3 { margin-top: 0; color: #1565c0; font-size: 12pt; }
+  .script-card .script-url { display: block; background: #1e1e1e; color: #9cdcfe; padding: 8px 12px; border-radius: 5px; margin: 8px 0; font-family: 'Cascadia Code', 'Consolas', monospace; font-size: 8.5pt; word-break: break-all; }
+  .script-card .script-url a { color: #9cdcfe; text-decoration: none; }
+  .script-card .script-url a:hover { text-decoration: underline; }
+
+  /* ===== TIMELINE ===== */
+  .timeline-row td:first-child { font-weight: 700; white-space: nowrap; width: 50px; color: #1565c0; }
+  .timeline-row td:nth-child(2) { white-space: nowrap; width: 55px; text-align: center; }
+
+  /* ===== HELP TABLE ===== */
+  .help-table td:first-child { font-weight: 600; width: 45%; }
+
+  /* ===== LISTS ===== */
+  ul, ol { margin: 6px 0 12px 20px; }
+  li { margin-bottom: 4px; }
+
+  /* ===== MISC ===== */
+  p { margin-bottom: 8px; }
+  strong { color: #111; }
+  hr { border: none; border-top: 1px solid #ddd; margin: 16px 0; }
+  .key-message { text-align: center; font-size: 12pt; font-weight: 600; color: #333; padding: 16px; margin: 16px 0; border: 2px solid #333; border-radius: 8px; }
+
+  .at-a-glance { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+  .glance-item { background: #f5f5f5; border-radius: 6px; padding: 10px 14px; text-align: center; }
+  .glance-item .value { font-size: 18pt; font-weight: 700; color: #1565c0; display: block; }
+  .glance-item .label { font-size: 9pt; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  .activity-tip { border: 1px solid #e0e0e0; border-radius: 8px; padding: 12px 16px; margin: 12px 0; background: #fafafa; }
+  .activity-tip h3 { margin-top: 0; display: flex; align-items: center; gap: 6px; }
+  .activity-tip .duration { font-size: 9pt; background: #e0e0e0; padding: 2px 8px; border-radius: 10px; font-weight: normal; color: #555; }
+</style>
+</head>
+<body>
+
+<!-- ==================== COVER PAGE ==================== -->
+<div class="cover">
+  <div class="penguin">👩‍🏫</div>
+  <h1><span lang="en">Linux Adventure Workshop</span><span lang="es">Taller de Aventura Linux</span></h1>
+  <div class="subtitle"><span lang="en">Instructor Guide</span><span lang="es">Guía del Instructor</span></div>
+  <div class="tagline"><span lang="en">Everything you need to run a great workshop.</span><span lang="es">Todo lo que necesitás para dar un gran taller.</span></div>
+  <div class="footer-info">
+    WSL Ubuntu &bull; 30 <span lang="en">Minutes</span><span lang="es">Minutos</span> &bull; <span lang="en">Ages</span><span lang="es">Edades</span> 11–13<br>
+    25 Laptops &bull; 1–2 <span lang="en">Students per Laptop</span><span lang="es">Estudiantes por Laptop</span>
+  </div>
+</div>
+
+<!-- ==================== AT A GLANCE ==================== -->
+<div class="page-break"></div>
+
+<div class="section-header">
+  <span class="icon">📊</span>
+  <span><span lang="en">Workshop at a Glance</span><span lang="es">Taller de un Vistazo</span></span>
+</div>
+
+<div class="at-a-glance">
+  <div class="glance-item"><span class="value">30 min</span><span class="label"><span lang="en">Duration</span><span lang="es">Duración</span></span></div>
+  <div class="glance-item"><span class="value">24–37</span><span class="label"><span lang="en">Students (ages 11–13)</span><span lang="es">Estudiantes (11–13 años)</span></span></div>
+  <div class="glance-item"><span class="value">25</span><span class="label">Laptops</span></div>
+  <div class="glance-item"><span class="value">1–2</span><span class="label"><span lang="en">Per Laptop</span><span lang="es">Por Laptop</span></span></div>
+</div>
+
+<h2><span lang="en">⏱️ Timeline</span><span lang="es">⏱️ Cronograma</span></h2>
+<table>
+  <tr><th><span lang="en">Time</span><span lang="es">Hora</span></th><th><span lang="en">Duration</span><span lang="es">Duración</span></th><th><span lang="en">Activity</span><span lang="es">Actividad</span></th><th><span lang="en">Key Commands</span><span lang="es">Comandos Clave</span></th></tr>
+  <tr class="timeline-row"><td>0:00</td><td>2 min</td><td><strong><span lang="en">Welcome &amp; Intro</span><span lang="es">Bienvenida e Intro</span></strong></td><td><span lang="en">Welcome slides (8 slides)</span><span lang="es">Diapositivas de bienvenida (8)</span></td></tr>
+  <tr class="timeline-row"><td>0:02</td><td>8 min</td><td><strong><span lang="en">🗺️ Treasure Hunt</span><span lang="es">🗺️ Búsqueda del Tesoro</span></strong></td><td><code>ls</code>, <code>cd</code>, <code>cat</code>, <code>ls -a</code></td></tr>
+  <tr class="timeline-row"><td>0:10</td><td>8 min</td><td><strong><span lang="en">🤖 Robot Factory</span><span lang="es">🤖 Fábrica de Robots</span></strong></td><td><code>touch</code>, <code>mv</code>, <code>wc -l</code></td></tr>
+  <tr class="timeline-row"><td>0:18</td><td>5 min</td><td><strong><span lang="en">🎮 Terminal Playground</span><span lang="es">🎮 Zona de Juegos</span></strong></td><td><code>cowsay</code>, <code>sl</code>, <code>cmatrix</code></td></tr>
+  <tr class="timeline-row"><td>0:23</td><td>7 min</td><td><strong><span lang="en">📝 First Script</span><span lang="es">📝 Primer Script</span></strong></td><td><code>nano</code>, <code>bash</code></td></tr>
+  <tr class="timeline-row"><td>0:30</td><td>—</td><td><strong><span lang="en">🏁 Wrap-up</span><span lang="es">🏁 Cierre</span></strong></td><td><span lang="en">Celebration &amp; key message</span><span lang="es">Celebración y mensaje clave</span></td></tr>
+</table>
+
+<div class="info-box">
+  <span lang="en"><strong>🔍 Command Detective</strong> is a bonus activity for groups that finish early. It uses <code>grep</code> to search through evidence files — great for curious/advanced students.</span>
+  <span lang="es"><strong>🔍 Detective de Comandos</strong> es una actividad extra para grupos que terminen rápido. Usa <code>grep</code> para buscar en archivos de evidencia — ideal para estudiantes curiosos/avanzados.</span>
+</div>
+
+<!-- ==================== DEPLOYMENT SCRIPTS ==================== -->
+<div class="page-break"></div>
+
+<div class="section-header">
+  <span class="icon">🚀</span>
+  <span><span lang="en">Before the Workshop — Deploy Scripts</span><span lang="es">Antes del Taller — Instalar Scripts</span></span>
+  <span class="badge"><span lang="en">Do this first!</span><span lang="es">¡Hacer primero!</span></span>
+</div>
+
+<p><span lang="en">Run <strong>one command</strong> in PowerShell on each laptop. It does everything automatically:</span><span lang="es">Ejecutá <strong>un comando</strong> en PowerShell en cada laptop. Hace todo automáticamente:</span></p>
+
+<div class="script-card no-break">
+  <h3><span lang="en">🐧 All-in-One Installer — <code>install-workshop.ps1</code></span><span lang="es">🐧 Instalador Todo-en-Uno — <code>install-workshop.ps1</code></span></h3>
+  <p><span lang="en">This single script handles the entire setup:</span><span lang="es">Este script maneja toda la configuración:</span></p>
+  <ol>
+    <li><span lang="en"><strong>Installs WSL + Ubuntu</strong> (skips if already installed; reboots if needed)</span><span lang="es"><strong>Instala WSL + Ubuntu</strong> (se salta si ya está instalado; reinicia si es necesario)</span></li>
+    <li><span lang="en"><strong>Creates activity folders</strong> in <code>~/linux-adventure/</code> (setup.sh)</span><span lang="es"><strong>Crea carpetas de actividades</strong> en <code>~/linux-adventure/</code> y <code>~/aventura-linux/</code> (setup.sh)</span></li>
+    <li><span lang="en"><strong>Installs fun tools</strong> — cowsay, sl, cmatrix, figlet (setup-fun.sh)</span><span lang="es"><strong>Instala herramientas divertidas</strong> — cowsay, sl, cmatrix, figlet (setup-fun.sh)</span></li>
+    <li><span lang="en"><strong>Creates a 🐧 Tux desktop shortcut</strong> that opens Edge + Ubuntu side by side</span><span lang="es"><strong>Crea un acceso directo 🐧 Tux</strong> que abre Edge + Ubuntu lado a lado</span></li>
+  </ol>
+  <p><strong><span lang="en">Open PowerShell (as Admin) and run:</span><span lang="es">Abrí PowerShell (como Admin) y ejecutá:</span></strong></p>
+  <pre><code>irm https://linux.brenes.info/install-workshop.ps1 | iex</code></pre>
+  <p><span lang="en"><strong>If WSL wasn't installed:</strong> The script will install it, ask you to reboot, and then you run the same command again to finish.</span><span lang="es"><strong>Si WSL no estaba instalado:</strong> El script lo instalará, te pedirá reiniciar, y luego ejecutás el mismo comando de nuevo para terminar.</span></p>
+</div>
+
+<div class="tip">
+  <span lang="en"><strong>💡 Safe to re-run.</strong> The installer skips steps that are already done. If a laptop needs a reset, just run it again.</span>
+  <span lang="es"><strong>💡 Se puede ejecutar de nuevo sin problema.</strong> El instalador se salta pasos ya completados. Si una laptop necesita reinicio, solo volvé a ejecutarlo.</span>
+</div>
+
+<div class="warning">
+  <span lang="en"><strong>⚠️ No internet at the school?</strong> Run the installer at home/office on each laptop beforehand. The script downloads everything it needs from GitHub.<br><br><strong>USB alternative:</strong> Download the repo files to a USB drive, then run from PowerShell:</span>
+  <span lang="es"><strong>⚠️ ¿Sin internet en la escuela?</strong> Ejecutá el instalador en casa/oficina en cada laptop de antemano. El script descarga todo lo necesario de GitHub.<br><br><strong>Alternativa USB:</strong> Descargá los archivos del repo a una USB, y ejecutá desde PowerShell:</span>
+  <pre style="margin:6px 0 0;"><code>powershell -ExecutionPolicy Bypass -File "D:\install-workshop.ps1"</code></pre>
+</div>
+
+<h2><span lang="en">✅ Pre-Flight Checklist</span><span lang="es">✅ Lista de Verificación</span></h2>
+<table>
+  <tr><th>#</th><th><span lang="en">Task</span><span lang="es">Tarea</span></th><th><span lang="en">Check</span><span lang="es">✓</span></th></tr>
+  <tr><td>1</td><td><span lang="en">Installer ran successfully on every laptop — <code>irm ... | iex</code></span><span lang="es">El instalador se ejecutó con éxito en cada laptop — <code>irm ... | iex</code></span></td><td>☐</td></tr>
+  <tr><td>2</td><td><span lang="en">Ubuntu (WSL) opens from the Start menu on every laptop</span><span lang="es">Ubuntu (WSL) abre desde el menú Inicio en cada laptop</span></td><td>☐</td></tr>
+  <tr><td>3</td><td><span lang="en"><code>ls ~/linux-adventure/</code> shows 5 folders and <code>cowsay "test"</code> works</span><span lang="es"><code>ls ~/aventura-linux/</code> muestra 5 carpetas y <code>cowsay "test"</code> funciona</span></td><td>☐</td></tr>
+  <tr><td>4</td><td><span lang="en">🐧 <strong>"Linux Adventure Workshop"</strong> shortcut is on the Desktop — click it to open Edge (workshop site) + Windows Terminal (Ubuntu) side by side</span><span lang="es">🐧 El acceso directo <strong>"Linux Adventure Workshop"</strong> está en el Escritorio — click para abrir Edge (sitio del taller) + Terminal de Windows (Ubuntu) lado a lado</span></td><td>☐</td></tr>
+  <tr><td>5</td><td><span lang="en">Student guides printed (1 per group) or displayed on projector</span><span lang="es">Guías de estudiante impresas (1 por grupo) o en el proyector</span></td><td>☐</td></tr>
+  <tr><td>6</td><td><span lang="en">Welcome slides loaded on projector — <a href="https://linux.brenes.info/welcome.html">linux.brenes.info/welcome.html</a></span><span lang="es">Diapositivas de bienvenida cargadas en el proyector — <a href="https://linux.brenes.info/welcome.html">linux.brenes.info/welcome.html</a></span></td><td>☐</td></tr>
+  <tr><td>7</td><td><span lang="en">This instructor guide is open on your device</span><span lang="es">Esta guía de instructor está abierta en tu dispositivo</span></td><td>☐</td></tr>
+</table>
+
+<!-- ==================== WELCOME SCRIPT ==================== -->
+<div class="page-break"></div>
+
+<div class="section-header">
+  <span class="icon">🎤</span>
+  <span><span lang="en">Welcome Script</span><span lang="es">Guión de Bienvenida</span></span>
+  <span class="badge">2 <span lang="en">minutes</span><span lang="es">minutos</span></span>
+</div>
+
+<p><span lang="en">Open the <strong>Welcome Slides</strong> full-screen on the projector before students arrive:</span><span lang="es">Abrí las <strong>Diapositivas de Bienvenida</strong> en pantalla completa en el proyector antes de que lleguen los estudiantes:</span></p>
+
+<div class="script-card no-break">
+  <h3><span lang="en">🖥️ Welcome Slides</span><span lang="es">🖥️ Diapositivas de Bienvenida</span></h3>
+  <p><span lang="en">8 slides, ~2 minutes. Use arrow keys or spacebar to advance.</span><span lang="es">8 diapositivas, ~2 minutos. Usá las flechas o la barra espaciadora para avanzar.</span></p>
+  <div class="script-url"><a href="https://linux.brenes.info/welcome.html" target="_blank">linux.brenes.info/welcome.html</a></div>
+</div>
+
+<p><strong><span lang="en">Slide order:</span><span lang="es">Orden de diapositivas:</span></strong></p>
+<ol>
+  <li><span lang="en"><strong>Title</strong> — "Linux Adventure Workshop" with penguin</span><span lang="es"><strong>Título</strong> — "Taller de Aventura Linux" con pingüino</span></li>
+  <li><span lang="en"><strong>What is Open Source</strong> — Closed vs Open comparison</span><span lang="es"><strong>Qué es Open Source</strong> — Comparación Cerrado vs Abierto</span></li>
+  <li><span lang="en"><strong>Linux runs almost everything</strong> — 10-card grid (phones, cars, space, Azure…)</span><span lang="es"><strong>Linux está en casi todo</strong> — Grilla de 10 (teléfonos, carros, espacio, Azure…)</span></li>
+  <li><span lang="en"><strong>Linux by the numbers</strong> — stat bars (supercomputers 100%, cloud 90%+, etc.)</span><span lang="es"><strong>Linux en números</strong> — barras de estadísticas (supercomputadoras 100%, nube 90%+, etc.)</span></li>
+  <li><span lang="en"><strong>Even Microsoft uses Linux</strong> — Azure Linux, WSL, GitHub, AI infrastructure</span><span lang="es"><strong>Hasta Microsoft usa Linux</strong> — Azure Linux, WSL, GitHub, infraestructura de IA</span></li>
+  <li><span lang="en"><strong>Look around this room</strong> — phone, router, laptop, websites</span><span lang="es"><strong>Mirá alrededor del salón</strong> — celular, router, laptop, sitios web</span></li>
+  <li><span lang="en"><strong>Why should you care</strong> — game devs, AI, security, NASA</span><span lang="es"><strong>¿Por qué debería importarte?</strong> — videojuegos, IA, seguridad, NASA</span></li>
+  <li><span lang="en"><strong>Ready?</strong> — terminal prompt with blinking cursor</span><span lang="es"><strong>¿Listos?</strong> — prompt de terminal con cursor parpadeante</span></li>
+</ol>
+
+<div class="tip">
+  <span lang="en"><strong>💡 Delivery tip:</strong> Don't read the slides. Let the visuals speak. Add energy with your voice: <em>"Raise your hand if you have an Android phone — guess what, you're already running Linux!"</em></span>
+  <span lang="es"><strong>💡 Tip de presentación:</strong> No leás las diapositivas. Dejá que los visuales hablen. Agregá energía con tu voz: <em>"Levanten la mano si tienen un celular Android — ¿adivinen qué? ¡Ya están usando Linux!"</em></span>
+</div>
+
+<p><span lang="en">After slide 8, immediately:</span><span lang="es">Después de la diapositiva 8, inmediatamente:</span></p>
+<ol>
+  <li><span lang="en">Make sure every group has Ubuntu open</span><span lang="es">Asegurate de que cada grupo tenga Ubuntu abierto</span></li>
+  <li><span lang="en">Have them type <code>cd ~</code> then <code>cd linux-adventure</code> and press Enter</span><span lang="es">Que escriban <code>cd ~</code> luego <code>cd aventura-linux</code> y presionen Enter</span></li>
+  <li><span lang="en">Start Activity 1!</span><span lang="es">¡Empezá la Actividad 1!</span></li>
+</ol>
+
+<div class="tip">
+  <span lang="en"><strong>💡 Energy tip:</strong> Don't over-explain. Kids learn by doing. Get them into Activity 1 as fast as possible.</span>
+  <span lang="es"><strong>💡 Tip de energía:</strong> No expliqués de más. Los chicos aprenden haciendo. Metelos en la Actividad 1 lo más rápido posible.</span>
+</div>
+
+<!-- ==================== ACTIVITY TIPS ==================== -->
+<div class="page-break"></div>
+
+<div class="section-header">
+  <span class="icon">📋</span>
+  <span><span lang="en">Activity-by-Activity Tips</span><span lang="es">Tips por Actividad</span></span>
+</div>
+
+<div class="activity-tip no-break">
+  <h3><span lang="en">🗺️ Treasure Hunt</span><span lang="es">🗺️ Búsqueda del Tesoro</span> <span class="duration">8 min</span></h3>
+  <p><strong><span lang="en">Goal:</span><span lang="es">Meta:</span></strong> <span lang="en">Navigate folders and find hidden clues</span><span lang="es">Navegar carpetas y encontrar pistas ocultas</span></p>
+  <p><strong><span lang="en">Key commands:</span><span lang="es">Comandos clave:</span></strong> <code>ls</code>, <code>ls -a</code>, <code>cd</code>, <code>cat</code></p>
+  <ul>
+    <li><span lang="en"><strong>Big reveal:</strong> The treasure is a hidden file (<code>.treasure</code>) — they need <code>ls -a</code> to see it!</span><span lang="es"><strong>Gran revelación:</strong> El tesoro es un archivo oculto (<code>.treasure</code>) — ¡necesitan <code>ls -a</code> para verlo!</span></li>
+    <li><span lang="en"><strong>Don't</strong> give away the hidden file trick right away — let them struggle for 1–2 minutes</span><span lang="es"><strong>No</strong> revelés el truco del archivo oculto de una vez — dejá que luchen 1–2 minutos</span></li>
+    <li><span lang="en">If a group is stuck after 2 minutes, hint: <em>"Have you tried seeing ALL the files?"</em></span><span lang="es">Si un grupo está atascado después de 2 minutos, pista: <em>"¿Intentaron ver TODOS los archivos?"</em></span></li>
+    <li><span lang="en">There's also a hidden bonus: <code>.secret-star</code> in the forest</span><span lang="es">También hay un bonus oculto: <code>.secret-star</code> en el bosque</span></li>
+  </ul>
+</div>
+
+<div class="activity-tip no-break">
+  <h3><span lang="en">🤖 Robot Factory</span><span lang="es">🤖 Fábrica de Robots</span> <span class="duration">8 min</span></h3>
+  <p><strong><span lang="en">Goal:</span><span lang="es">Meta:</span></strong> <span lang="en">Create files, rename them, count them</span><span lang="es">Crear archivos, renombrarlos, contarlos</span></p>
+  <p><strong><span lang="en">Key commands:</span><span lang="es">Comandos clave:</span></strong> <code>touch</code>, <code>ls</code>, <code>mv</code>, <code>wc -l</code></p>
+  <ul>
+    <li><span lang="en">Students get creative with robot part names — <strong>encourage it!</strong></span><span lang="es">Los estudiantes se ponen creativos con los nombres de piezas — <strong>¡animalo!</strong></span></li>
+    <li><span lang="en">Challenge fast groups: <em>"Can you build a robot with 15 parts?"</em></span><span lang="es">Retá a los grupos rápidos: <em>"¿Podés construir un robot con 15 piezas?"</em></span></li>
+    <li><span lang="en">Remind them: <span style="color:#4a90d9;font-weight:bold">blue</span> = folders, white = files</span><span lang="es">Recordales: <span style="color:#4a90d9;font-weight:bold">azul</span> = carpetas, blanco = archivos</span></li>
+  </ul>
+</div>
+
+<div class="activity-tip no-break">
+  <h3><span lang="en">🎮 Terminal Playground</span><span lang="es">🎮 Zona de Juegos</span> <span class="duration">5 min</span></h3>
+  <p><strong><span lang="en">Goal:</span><span lang="es">Meta:</span></strong> <span lang="en">Have FUN — see the terminal can be playful</span><span lang="es">DIVERTIRSE — ver que la terminal puede ser divertida</span></p>
+  <p><strong><span lang="en">Requires:</span><span lang="es">Requiere:</span></strong> <code>cowsay</code>, <code>figlet</code>, <code>sl</code>, <code>cmatrix</code> (<span lang="en">from</span><span lang="es">de</span> <code>setup-fun.sh</code>)</p>
+  <ul>
+    <li><span lang="en">If tools aren't installed, students can still try <code>echo</code>, <code>cal</code>, <code>date</code>, <code>whoami</code></span><span lang="es">Si las herramientas no están instaladas, los estudiantes pueden probar <code>echo</code>, <code>cal</code>, <code>date</code>, <code>whoami</code></span></li>
+    <li><span lang="en"><code>figlet</code> is a huge hit — kids love seeing their name in giant letters! Try <code>figlet [STUDENT NAME]</code></span><span lang="es"><code>figlet</code> es un éxito — ¡a los chicos les encanta ver su nombre en letras gigantes! Probá <code>figlet [NOMBRE]</code></span></li>
+    <li><span lang="en"><code>cmatrix</code> is a crowd favorite — let them enjoy it! Press <code>q</code> to quit</span><span lang="es"><code>cmatrix</code> es el favorito — ¡dejalos disfrutarlo! Presioná <code>q</code> para salir</span></li>
+    <li><span lang="en"><code>echo "I love tacos" | cowsay</code> always gets laughs</span><span lang="es"><code>echo "Me encantan los tacos" | cowsay</code> siempre saca risas</span></li>
+  </ul>
+</div>
+
+<div class="activity-tip no-break">
+  <h3><span lang="en">📝 First Script</span><span lang="es">📝 Primer Script</span> <span class="duration">7 min</span></h3>
+  <p><strong><span lang="en">Goal:</span><span lang="es">Meta:</span></strong> <span lang="en">Write and run a bash script in nano</span><span lang="es">Escribir y ejecutar un script de bash en nano</span></p>
+  <ul>
+    <li><span lang="en"><strong>Key moment:</strong> When they run their script and it WORKS — <strong>celebrate it!</strong></span><span lang="es"><strong>Momento clave:</strong> Cuando ejecutan su script y FUNCIONA — <strong>¡celebralo!</strong></span></li>
+    <li><span lang="en">Walk them through nano: type → <code>Ctrl+O</code> to save → <code>Enter</code> → <code>Ctrl+X</code> to exit</span><span lang="es">Guialos por nano: escribir → <code>Ctrl+O</code> para guardar → <code>Enter</code> → <code>Ctrl+X</code> para salir</span></li>
+    <li><span lang="en">Emphasize: <em>"You just wrote a PROGRAM. You are now a programmer."</em></span><span lang="es">Enfatizá: <em>"Acabás de escribir un PROGRAMA. Ahora sos programador."</em></span></li>
+    <li><span lang="en">This is the most common place students need help — circulate actively</span><span lang="es">Este es el lugar más común donde los estudiantes necesitan ayuda — circulá activamente</span></li>
+  </ul>
+</div>
+
+<div class="activity-tip no-break">
+  <h3><span lang="en">🔍 Command Detective</span><span lang="es">🔍 Detective de Comandos</span> <span class="duration">Bonus</span></h3>
+  <p><strong><span lang="en">Goal:</span><span lang="es">Meta:</span></strong> <span lang="en">Use <code>grep</code> to solve a mystery</span><span lang="es">Usar <code>grep</code> para resolver un misterio</span></p>
+  <ul>
+    <li><span lang="en">Only for groups that finish everything early</span><span lang="es">Solo para grupos que terminen todo temprano</span></li>
+    <li><span lang="en">Answer: <strong>Alex</strong> stole the cookie (was in kitchen, likes cookies, had chocolate on shirt)</span><span lang="es">Respuesta: <strong>Alex</strong> robó la galleta (estaba en la cocina, le gustan las galletas, tenía chocolate en la camisa)</span></li>
+    <li><span lang="en">Great for curious/advanced students who want a real challenge</span><span lang="es">Ideal para estudiantes curiosos/avanzados que quieran un reto real</span></li>
+  </ul>
+</div>
+
+<!-- ==================== GROUP MANAGEMENT ==================== -->
+<div class="page-break"></div>
+
+<div class="section-header">
+  <span class="icon">👥</span>
+  <span><span lang="en">Group &amp; Energy Management</span><span lang="es">Manejo de Grupos y Energía</span></span>
+</div>
+
+<h2><span lang="en">🔄 Rotation Rule</span><span lang="es">🔄 Regla de Rotación</span></h2>
+<ul>
+  <li><span lang="en">Every activity, a <strong>different person</strong> types</span><span lang="es">En cada actividad, una <strong>persona diferente</strong> escribe</span></li>
+  <li><span lang="en">Other group members help by reading instructions and suggesting commands</span><span lang="es">Los otros miembros del grupo ayudan leyendo instrucciones y sugiriendo comandos</span></li>
+  <li><span lang="en">No one should type for more than one activity in a row</span><span lang="es">Nadie debería escribir por más de una actividad seguida</span></li>
+</ul>
+
+<h2><span lang="en">⚡ Energy Management</span><span lang="es">⚡ Manejo de Energía</span></h2>
+<table>
+  <tr><th><span lang="en">Situation</span><span lang="es">Situación</span></th><th><span lang="en">What to Do</span><span lang="es">Qué Hacer</span></th></tr>
+  <tr><td><span lang="en">Energy drops</span><span lang="es">Baja la energía</span></td><td><span lang="en">Switch to <strong>Terminal Playground</strong> — fun commands wake everyone up</span><span lang="es">Cambiá a <strong>Zona de Juegos</strong> — los comandos divertidos despiertan a todos</span></td></tr>
+  <tr><td><span lang="en">Groups racing ahead</span><span lang="es">Grupos muy adelantados</span></td><td><span lang="en">Give them the <strong>Command Detective</strong> bonus</span><span lang="es">Dales el bonus de <strong>Detective de Comandos</strong></span></td></tr>
+  <tr><td><span lang="en">Groups falling behind</span><span lang="es">Grupos atrasados</span></td><td><span lang="en">Skip Terminal Playground → go straight to <strong>First Script</strong></span><span lang="es">Saltá la Zona de Juegos → directo al <strong>Primer Script</strong></span></td></tr>
+  <tr><td><span lang="en">Noise getting loud</span><span lang="es">Mucho ruido</span></td><td><span lang="en">Terminal excitement is GOOD! Only redirect if groups distract each other. Say: <em>"Indoor hacker voices"</em></span><span lang="es">¡La emoción de la terminal es BUENA! Solo redirigí si los grupos se distraen. Decí: <em>"Voces de hacker en interiores"</em></span></td></tr>
+</table>
+
+<h2><span lang="en">🎯 When to Help vs. When to Observe</span><span lang="es">🎯 Cuándo Ayudar vs. Cuándo Observar</span></h2>
+<table class="help-table">
+  <tr><th><span lang="en">Situation</span><span lang="es">Situación</span></th><th><span lang="en">Action</span><span lang="es">Acción</span></th></tr>
+  <tr><td><span lang="en">Student is thinking and trying commands</span><span lang="es">El estudiante está pensando y probando comandos</span></td><td><span lang="en"><strong>👀 Observe</strong> — let them figure it out</span><span lang="es"><strong>👀 Observar</strong> — dejá que lo descubran</span></td></tr>
+  <tr><td><span lang="en">Stuck for 2+ minutes</span><span lang="es">Atascado por 2+ minutos</span></td><td><span lang="en"><strong>💬 Hint</strong> — don't give the answer, give a direction</span><span lang="es"><strong>💬 Pista</strong> — no des la respuesta, da una dirección</span></td></tr>
+  <tr><td><span lang="en">Typed something wrong, got an error</span><span lang="es">Escribió algo mal, salió un error</span></td><td><span lang="en"><strong>👍 Encourage</strong> — <em>"Errors are normal! Read the message."</em></span><span lang="es"><strong>👍 Animar</strong> — <em>"¡Los errores son normales! Leé el mensaje."</em></span></td></tr>
+  <tr><td><span lang="en">Accidentally broke something</span><span lang="es">Rompió algo por accidente</span></td><td><span lang="en"><strong>🔧 Help</strong> — re-run <code>setup.sh</code></span><span lang="es"><strong>🔧 Ayudar</strong> — volver a ejecutar <code>setup.sh</code></span></td></tr>
+  <tr><td><span lang="en">Excited and wants to explore</span><span lang="es">Emocionado y quiere explorar</span></td><td><span lang="en"><strong>🚀 Encourage</strong> — <em>"Try it! See what happens!"</em></span><span lang="es"><strong>🚀 Animar</strong> — <em>"¡Probalo! ¡A ver qué pasa!"</em></span></td></tr>
+  <tr><td><span lang="en">Afraid to type</span><span lang="es">Tiene miedo de escribir</span></td><td><span lang="en"><strong>💪 Reassure</strong> — <em>"You can't break anything. Try it!"</em></span><span lang="es"><strong>💪 Tranquilizar</strong> — <em>"No podés romper nada. ¡Probalo!"</em></span></td></tr>
+</table>
+
+<!-- ==================== TROUBLESHOOTING ==================== -->
+<div class="page-break"></div>
+
+<div class="section-header">
+  <span class="icon">🛠️</span>
+  <span><span lang="en">Troubleshooting</span><span lang="es">Solución de Problemas</span></span>
+</div>
+
+<table>
+  <tr><th><span lang="en">Problem</span><span lang="es">Problema</span></th><th><span lang="en">Solution</span><span lang="es">Solución</span></th></tr>
+  <tr><td><span lang="en">Ubuntu won't open</span><span lang="es">Ubuntu no abre</span></td><td><span lang="en">Start menu → search <strong>"Ubuntu"</strong></span><span lang="es">Menú Inicio → buscar <strong>"Ubuntu"</strong></span></td></tr>
+  <tr><td><code>"Permission denied"</code></td><td><span lang="en">Try adding <code>bash</code> before the script name</span><span lang="es">Intentá agregar <code>bash</code> antes del nombre del script</span></td></tr>
+  <tr><td><span lang="en"><code>"command not found"</code> for fun tools</span><span lang="es"><code>"command not found"</code> para herramientas divertidas</span></td><td><span lang="en">Run <code>sudo bash setup-fun.sh</code> first</span><span lang="es">Ejecutá <code>sudo bash setup-fun.sh</code> primero</span></td></tr>
+  <tr><td><span lang="en">Student deleted files by accident</span><span lang="es">El estudiante borró archivos por accidente</span></td><td><span lang="en">Re-run <code>bash setup.sh</code> — it resets everything</span><span lang="es">Ejecutá de nuevo <code>bash setup.sh</code> — reinicia todo</span></td></tr>
+  <tr><td><span lang="en">nano is confusing</span><span lang="es">nano es confuso</span></td><td><span lang="en">Walk them through: type → <code>Ctrl+O</code> → Enter → <code>Ctrl+X</code></span><span lang="es">Guialos: escribir → <code>Ctrl+O</code> → Enter → <code>Ctrl+X</code></span></td></tr>
+  <tr><td><span lang="en">Terminal looks frozen</span><span lang="es">La terminal parece congelada</span></td><td><span lang="en">They might be in a program — try <code>Ctrl+C</code> or <code>q</code></span><span lang="es">Pueden estar en un programa — probá <code>Ctrl+C</code> o <code>q</code></span></td></tr>
+  <tr><td><code>"No such file or directory"</code></td><td><span lang="en">Check spelling, use <code>ls</code> to see what's available</span><span lang="es">Revisá la ortografía, usá <code>ls</code> para ver qué hay disponible</span></td></tr>
+  <tr><td><span lang="en">WSL not installed on a laptop</span><span lang="es">WSL no está instalado en una laptop</span></td><td><span lang="en">Open PowerShell as Admin: <code>wsl --install -d Ubuntu</code></span><span lang="es">Abrí PowerShell como Admin: <code>wsl --install -d Ubuntu</code></span></td></tr>
+</table>
+
+<div class="warning">
+  <span lang="en"><strong>⚠️ Quick Reset:</strong> If anything goes wrong on a student's laptop, one command fixes it:</span>
+  <span lang="es"><strong>⚠️ Reinicio Rápido:</strong> Si algo sale mal en la laptop de un estudiante, un comando lo arregla:</span>
+  <pre style="margin:6px 0 0;"><code><span class="cmd-prompt">curl -sL https://linux.brenes.info/setup.sh | bash</span></code></pre>
+  <span lang="en">This re-creates all folders and files from scratch. Students can continue where they left off.</span>
+  <span lang="es">Esto re-crea todas las carpetas y archivos desde cero. Los estudiantes pueden continuar donde se quedaron.</span>
+</div>
+
+<!-- ==================== WRAP-UP ==================== -->
+<div class="page-break"></div>
+
+<div class="section-header">
+  <span class="icon">🏁</span>
+  <span><span lang="en">Wrap-Up Script</span><span lang="es">Guión de Cierre</span></span>
+  <span class="badge">1 <span lang="en">minute</span><span lang="es">minuto</span></span>
+</div>
+
+<div class="script-speech">
+  <span lang="en">"You just navigated a Linux terminal, created files, searched through evidence, and WROTE YOUR OWN PROGRAM. That's what builders do. Linux runs the world — and now you know how to use it. Keep exploring. Keep building. 🐧"</span>
+  <span lang="es">"Acabás de navegar una terminal Linux, creaste archivos, buscaste evidencia y ESCRIBISTE TU PROPIO PROGRAMA. Eso es lo que hacen los constructores. Linux mueve el mundo — y ahora sabés cómo usarlo. Seguí explorando. Seguí construyendo. 🐧"</span>
+</div>
+
+<div class="key-message" style="margin-top: 30px; font-size: 14pt; border-width: 3px;">
+  <span lang="en">Linux is not just used.<br>Linux is controlled.<br>Linux is built with.</span>
+  <span lang="es">Linux no solo se usa.<br>Linux se controla.<br>Con Linux se construye.</span>
+</div>
+
+<div style="margin-top: 40px; text-align: center; font-size: 10pt; color: #888;">
+  <p><strong><span lang="en">Quick-reference links:</span><span lang="es">Enlaces de referencia rápida:</span></strong></p>
+  <p>
+    <a href="https://jonathanbrenes.github.io/linux-workshop/" target="_blank">Workshop Website</a> &nbsp;|&nbsp;
+    <a href="https://github.com/jonathanbrenes/linux-workshop" target="_blank">GitHub Repository</a> &nbsp;|&nbsp;
+    <a href="https://linux.brenes.info" target="_blank">linux.brenes.info</a>
+  </p>
+</div>
+
+<div style="margin-top: 30px; text-align: center; font-size: 9pt; color: #bbb;">
+  Linux Adventure Workshop &bull; <span lang="en">Instructor Guide</span><span lang="es">Guía del Instructor</span> &bull; WSL Ubuntu
+</div>
+
+</body>
+</html>

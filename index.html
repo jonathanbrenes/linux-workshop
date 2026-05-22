@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" href="images/webicon.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linux Adventure Workshop</title>
+<script src="i18n.js"></script>
+<style>
+/* ===== RESET ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ===== CUSTOM PROPERTIES ===== */
+:root {
+  --bg-dark: #0d1117;
+  --bg-card: #161b22;
+  --bg-card-hover: #1c2333;
+  --accent-green: #3fb950;
+  --accent-blue: #58a6ff;
+  --accent-purple: #bc8cff;
+  --accent-orange: #f0883e;
+  --accent-pink: #f778ba;
+  --accent-yellow: #d29922;
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+  --text-muted: #6e7681;
+  --border: #30363d;
+  --radius: 12px;
+  --radius-lg: 20px;
+  --shadow: 0 8px 32px rgba(0,0,0,0.3);
+  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===== BASE ===== */
+html { scroll-behavior: smooth; font-size: 16px; scroll-padding-top: 80px; }
+body { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg-dark); color: var(--text-primary); line-height: 1.6; overflow-x: hidden; }
+
+/* ===== FLOATING NAV ===== */
+.floating-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: rgba(13, 17, 23, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); transition: var(--transition); }
+.floating-nav.scrolled { box-shadow: 0 4px 24px rgba(0,0,0,0.4); }
+.nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; height: 64px; gap: 8px; }
+.nav-logo { font-size: 1.2rem; font-weight: 700; color: var(--text-primary); text-decoration: none; display: flex; align-items: center; gap: 8px; margin-right: auto; white-space: nowrap; }
+.nav-logo span { font-size: 1.4rem; }
+.nav-links { display: flex; gap: 4px; list-style: none; overflow-x: auto; scrollbar-width: none; }
+.nav-links::-webkit-scrollbar { display: none; }
+.nav-links a { display: block; padding: 8px 14px; color: var(--text-secondary); text-decoration: none; font-size: 0.85rem; font-weight: 500; border-radius: 8px; transition: var(--transition); white-space: nowrap; }
+.nav-links a:hover, .nav-links a.active { color: var(--text-primary); background: rgba(255,255,255,0.08); }
+.nav-links a.active { color: var(--accent-green); }
+.nav-toggle { display: none; background: none; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer; padding: 8px; }
+
+@media (max-width: 768px) {
+  .nav-toggle { display: block; }
+  .nav-links { display: none; position: absolute; top: 64px; left: 0; right: 0; background: rgba(13, 17, 23, 0.97); backdrop-filter: blur(16px); flex-direction: column; padding: 12px; border-bottom: 1px solid var(--border); }
+  .nav-links.open { display: flex; }
+  .nav-links a { padding: 12px 16px; font-size: 1rem; }
+}
+
+/* ===== HERO ===== */
+.hero { position: relative; min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; overflow: hidden; }
+.hero-bg { position: absolute; inset: 0; z-index: 0; }
+.hero-bg img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.35) saturate(1.2); }
+.hero-bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(13,17,23,0.3) 0%, rgba(13,17,23,0.6) 60%, rgba(13,17,23,1) 100%); }
+.hero-content { position: relative; z-index: 1; max-width: 800px; padding: 120px 24px 80px; }
+.hero h1 { font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 800; line-height: 1.1; margin-bottom: 16px; letter-spacing: -0.02em; }
+.hero h1 .highlight { background: linear-gradient(135deg, var(--accent-green), var(--accent-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero .tagline { font-size: clamp(1.1rem, 2.5vw, 1.4rem); color: var(--text-secondary); margin-bottom: 32px; max-width: 600px; margin-left: auto; margin-right: auto; }
+.hero-cta { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; background: var(--accent-green); color: var(--bg-dark); text-decoration: none; font-weight: 700; font-size: 1.05rem; border-radius: 50px; transition: var(--transition); box-shadow: 0 4px 20px rgba(63, 185, 80, 0.3); }
+.hero-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(63, 185, 80, 0.45); }
+.hero-stats { display: flex; justify-content: center; gap: 40px; margin-top: 48px; flex-wrap: wrap; }
+.hero-stat { text-align: center; }
+.hero-stat .number { font-size: 2rem; font-weight: 800; color: var(--accent-green); }
+.hero-stat .label { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+/* ===== SECTION LAYOUT ===== */
+.section { max-width: 1200px; margin: 0 auto; padding: 80px 24px; }
+.section-header { text-align: center; margin-bottom: 48px; }
+.section-header h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800; margin-bottom: 12px; letter-spacing: -0.02em; }
+.section-header p { color: var(--text-secondary); font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
+
+/* ===== CHEATSHEET ===== */
+.cheatsheet-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+.cheat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; transition: var(--transition); }
+.cheat-card:hover { border-color: var(--accent-green); transform: translateY(-2px); box-shadow: var(--shadow); }
+.cheat-card h3 { font-size: 1.1rem; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.cheat-card table { width: 100%; border-collapse: collapse; }
+.cheat-card td { padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: top; }
+.cheat-card td:first-child { width: 45%; padding-right: 12px; }
+.cheat-card tr:last-child td { border-bottom: none; }
+.cmd { font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; background: rgba(63, 185, 80, 0.1); color: var(--accent-green); padding: 2px 8px; border-radius: 4px; font-size: 0.85rem; white-space: nowrap; }
+.desc { color: var(--text-secondary); font-size: 0.9rem; }
+
+/* ===== ACTIVITY CARDS ===== */
+.activity-card { display: grid; grid-template-columns: 1fr 1fr; gap: 0; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 32px; transition: var(--transition); cursor: pointer; }
+.activity-card:hover { border-color: var(--accent-blue); box-shadow: var(--shadow); transform: translateY(-4px); }
+.activity-card.reverse { direction: rtl; }
+.activity-card.reverse > * { direction: ltr; }
+.activity-img { position: relative; overflow: hidden; min-height: 360px; }
+.activity-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+.activity-card:hover .activity-img img { transform: scale(1.05); }
+.activity-badge { position: absolute; top: 16px; left: 16px; background: rgba(13,17,23,0.8); backdrop-filter: blur(8px); padding: 6px 14px; border-radius: 50px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+.activity-body { padding: 40px 36px; display: flex; flex-direction: column; justify-content: center; }
+.activity-body .icon-row { font-size: 2rem; margin-bottom: 12px; }
+.activity-body h3 { font-size: 1.6rem; font-weight: 700; margin-bottom: 8px; }
+.activity-body .time { display: inline-flex; align-items: center; gap: 4px; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 16px; }
+.activity-body .description { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.7; margin-bottom: 20px; }
+.commands-used { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+.commands-used .cmd { font-size: 0.8rem; background: rgba(88, 166, 255, 0.1); color: var(--accent-blue); border: 1px solid rgba(88, 166, 255, 0.2); padding: 4px 10px; border-radius: 6px; }
+.activity-link { display: inline-flex; align-items: center; gap: 6px; color: var(--accent-green); text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: var(--transition); background: none; border: none; cursor: pointer; font-family: inherit; padding: 0; }
+.activity-link:hover { gap: 10px; }
+.activity-link::after { content: '\2192'; transition: var(--transition); }
+
+@media (max-width: 768px) {
+  .activity-card, .activity-card.reverse { grid-template-columns: 1fr; direction: ltr; }
+  .activity-img { min-height: 220px; }
+  .activity-body { padding: 28px 24px; }
+}
+
+/* ===== MODAL ===== */
+.modal-overlay { position: fixed; inset: 0; z-index: 2000; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 24px; opacity: 0; visibility: hidden; transition: opacity 0.35s ease, visibility 0.35s ease; }
+.modal-overlay.open { opacity: 1; visibility: visible; }
+.modal-window { position: relative; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-lg); width: 100%; max-width: 820px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 24px 80px rgba(0,0,0,0.6); transform: translateY(30px) scale(0.96); transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+.modal-overlay.open .modal-window { transform: translateY(0) scale(1); }
+.modal-header { display: flex; align-items: center; gap: 12px; padding: 20px 28px; border-bottom: 1px solid var(--border); background: var(--bg-card); flex-shrink: 0; }
+.modal-header .modal-icon { font-size: 1.6rem; }
+.modal-header h2 { font-size: 1.3rem; font-weight: 700; flex: 1; }
+.modal-header .modal-time { font-size: 0.8rem; color: var(--text-muted); background: rgba(255,255,255,0.06); padding: 4px 12px; border-radius: 50px; }
+.modal-close { background: rgba(255,255,255,0.06); border: 1px solid var(--border); color: var(--text-secondary); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem; transition: var(--transition); flex-shrink: 0; }
+.modal-close:hover { background: rgba(255, 80, 80, 0.15); color: #ff6b6b; border-color: rgba(255, 80, 80, 0.3); }
+.modal-body { padding: 28px; overflow-y: auto; flex: 1; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+.modal-body::-webkit-scrollbar { width: 6px; }
+.modal-body::-webkit-scrollbar-track { background: transparent; }
+.modal-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.modal-body h3 { font-size: 1.15rem; font-weight: 700; margin: 28px 0 12px; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
+.modal-body h3:first-child { margin-top: 0; }
+.modal-body p { color: var(--text-secondary); margin-bottom: 12px; line-height: 1.7; }
+.modal-body .step-number { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: var(--accent-green); color: var(--bg-dark); font-weight: 800; font-size: 0.85rem; border-radius: 50%; flex-shrink: 0; }
+.modal-body pre { background: #1a1f2e; border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin: 10px 0 18px; overflow-x: auto; font-size: 0.9rem; line-height: 1.6; }
+.modal-body pre code { font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; color: #d4d4d4; }
+.modal-body .prompt-line::before { content: '$ '; color: var(--accent-green); font-weight: 700; }
+.modal-body .modal-tip { background: linear-gradient(135deg, rgba(63,185,80,0.08), rgba(88,166,255,0.08)); border: 1px solid rgba(63,185,80,0.2); border-radius: var(--radius); padding: 14px 18px; margin: 14px 0; display: flex; align-items: flex-start; gap: 10px; font-size: 0.9rem; }
+.modal-body .modal-tip .tip-emoji { flex-shrink: 0; font-size: 1.1rem; }
+.modal-body .modal-tip p { margin: 0; }
+.modal-body .modal-warning { background: rgba(240, 136, 62, 0.08); border: 1px solid rgba(240, 136, 62, 0.2); border-radius: var(--radius); padding: 14px 18px; margin: 14px 0; display: flex; align-items: flex-start; gap: 10px; font-size: 0.9rem; }
+.modal-body .challenge { background: rgba(88, 166, 255, 0.06); border: 1px solid rgba(88, 166, 255, 0.2); border-radius: var(--radius); padding: 20px; margin: 16px 0; }
+.modal-body .challenge h4 { color: var(--accent-blue); font-size: 1rem; margin-bottom: 10px; }
+.modal-body .bonus { background: rgba(188, 140, 255, 0.06); border: 2px dashed rgba(188, 140, 255, 0.3); border-radius: var(--radius); padding: 20px; margin: 16px 0; }
+.modal-body .bonus h4 { color: var(--accent-purple); font-size: 1rem; margin-bottom: 10px; }
+.modal-body table { width: 100%; border-collapse: collapse; margin: 12px 0 18px; font-size: 0.9rem; }
+.modal-body th { text-align: left; padding: 8px 12px; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-primary); font-weight: 600; }
+.modal-body td { padding: 7px 12px; border: 1px solid var(--border); color: var(--text-secondary); }
+.modal-body ul, .modal-body ol { margin: 8px 0 14px 20px; color: var(--text-secondary); }
+.modal-body li { margin-bottom: 6px; }
+.modal-body .key-message { text-align: center; font-size: 1.1rem; font-weight: 700; color: var(--text-primary); padding: 20px; margin: 20px 0; border: 2px solid var(--accent-green); border-radius: var(--radius); background: rgba(63, 185, 80, 0.05); }
+
+@media (max-width: 768px) {
+  .modal-overlay { padding: 8px; }
+  .modal-window { max-height: 95vh; border-radius: 16px; }
+  .modal-header { padding: 16px 20px; }
+  .modal-body { padding: 20px; }
+}
+
+/* ===== TIP BAR ===== */
+.tip-bar { background: linear-gradient(135deg, rgba(63,185,80,0.1), rgba(88,166,255,0.1)); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px 32px; margin: 48px 0; display: flex; align-items: flex-start; gap: 16px; }
+.tip-bar .tip-icon { font-size: 1.5rem; flex-shrink: 0; margin-top: 2px; }
+.tip-bar .tip-text { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.7; }
+.tip-bar .tip-text strong { color: var(--text-primary); }
+.tip-bar .color-folder { color: #58a6ff; font-weight: 700; }
+.tip-bar .color-file { color: #e6edf3; font-weight: 700; }
+
+/* ===== PRO TIPS GRID ===== */
+.tips-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-top: 24px; }
+.tip-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; transition: var(--transition); }
+.tip-card:hover { border-color: var(--accent-purple); transform: translateY(-2px); }
+.tip-card .tip-key { font-family: 'Cascadia Code', monospace; background: rgba(188, 140, 255, 0.15); color: var(--accent-purple); padding: 4px 10px; border-radius: 6px; font-size: 0.85rem; display: inline-block; margin-bottom: 8px; }
+.tip-card p { color: var(--text-secondary); font-size: 0.9rem; }
+
+/* ===== FOOTER ===== */
+.footer { text-align: center; padding: 60px 24px 40px; border-top: 1px solid var(--border); margin-top: 40px; }
+.footer-message { font-size: clamp(1.2rem, 3vw, 1.6rem); font-weight: 700; line-height: 1.6; max-width: 500px; margin: 0 auto 24px; color: var(--text-primary); }
+.footer-commands { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; }
+.footer-commands .cmd { font-size: 0.8rem; }
+.footer-sub { color: var(--text-muted); font-size: 0.85rem; }
+
+/* ===== SCROLL ANIMATIONS ===== */
+.reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ===== PRINT ===== */
+@media print { .floating-nav, .modal-overlay { display: none; } body { background: #fff; color: #1a1a1a; } .hero { min-height: auto; } .activity-card { break-inside: avoid; } }
+</style>
+</head>
+<body>
+
+<!-- ===== FLOATING NAV ===== -->
+<nav class="floating-nav" id="navbar">
+  <div class="nav-inner">
+    <a href="instructor-guide.html" tabindex="-1" aria-hidden="true" style="color:rgba(13,17,23,0.85);font-size:8px;text-decoration:none;line-height:64px;user-select:none;">&bull;</a>
+    <a href="#hero" class="nav-logo"><span>🐧</span> Linux Adventure</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">☰</button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#cheatsheet">Cheatsheet</a></li>
+      <li><a href="#activities"><span lang="en">Activities</span><span lang="es">Actividades</span></a></li>
+      <li><a href="#treasure-hunt"><span lang="en">Treasure Hunt</span><span lang="es">Tesoro</span></a></li>
+      <li><a href="#robot-factory"><span lang="en">Robot Factory</span><span lang="es">Robots</span></a></li>
+      <li><a href="#terminal-playground">Playground</a></li>
+      <li><a href="#first-script"><span lang="en">First Script</span><span lang="es">Script</span></a></li>
+      <li><a href="#command-detective">Detective</a></li>
+      <li><a href="#tips">Tips</a></li>
+      <li><a href="welcome.html"><span lang="en">Welcome Slides</span><span lang="es">Bienvenida</span></a></li>
+    </ul>
+    <a href="student-guide.html" tabindex="-1" aria-hidden="true" style="color:rgba(13,17,23,0.85);font-size:8px;text-decoration:none;line-height:64px;user-select:none;margin-left:auto;">&bull;</a>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero" id="hero">
+  <div class="hero-bg"><img src="images/banner.png" alt="Linux Adventure Workshop Banner" loading="eager"></div>
+  <div class="hero-content">
+    <h1>Linux <span class="highlight">Adventure</span> Workshop</h1>
+    <p class="tagline"><span lang="en">You don't just use Linux — you <strong>build</strong> with it. Explore the terminal, hunt for treasure, build robots, and write your first program.</span><span lang="es">No solo usás Linux — <strong>construís</strong> con él. Explorá la terminal, buscá tesoros, construí robots y escribí tu primer programa.</span></p>
+    <a href="#activities" class="hero-cta"><span lang="en">Start the Adventure ↓</span><span lang="es">Empezá la Aventura ↓</span></a>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="number">5</div><div class="label"><span lang="en">Activities</span><span lang="es">Actividades</span></div></div>
+      <div class="hero-stat"><div class="number">30</div><div class="label"><span lang="en">Minutes</span><span lang="es">Minutos</span></div></div>
+      <div class="hero-stat"><div class="number">13+</div><div class="label"><span lang="en">Commands</span><span lang="es">Comandos</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CHEATSHEET ===== -->
+<section class="section" id="cheatsheet">
+  <div class="section-header reveal">
+    <h2><span lang="en">📋 Command Cheatsheet</span><span lang="es">📋 Guía Rápida de Comandos</span></h2>
+    <p><span lang="en">Your survival guide. Keep this handy — these are all the commands you need today.</span><span lang="es">Tu guía de supervivencia. Tené esto a mano — estos son todos los comandos que necesitás hoy.</span></p>
+  </div>
+  <div class="cheatsheet-grid">
+    <div class="cheat-card reveal">
+      <h3><span lang="en">🧭 Moving Around</span><span lang="es">🧭 Moverse</span></h3>
+      <table>
+        <tr><td><span class="cmd">pwd</span></td><td><span class="desc"><span lang="en">Where am I?</span><span lang="es">¿Dónde estoy?</span></span></td></tr>
+        <tr><td><span class="cmd">ls</span></td><td><span class="desc"><span lang="en">What's here?</span><span lang="es">¿Qué hay aquí?</span></span></td></tr>
+        <tr><td><span class="cmd">ls -a</span></td><td><span class="desc"><span lang="en">Show everything — even hidden!</span><span lang="es">Mostrar todo — ¡hasta lo oculto!</span></span></td></tr>
+        <tr><td><span class="cmd"><span lang="en">cd folder</span><span lang="es">cd carpeta</span></span></td><td><span class="desc"><span lang="en">Go into a folder</span><span lang="es">Entrar a una carpeta</span></span></td></tr>
+        <tr><td><span class="cmd">cd ..</span></td><td><span class="desc"><span lang="en">Go back one folder</span><span lang="es">Regresar una carpeta</span></span></td></tr>
+        <tr><td><span class="cmd">cd ~</span></td><td><span class="desc"><span lang="en">Go home</span><span lang="es">Ir a inicio</span></span></td></tr>
+      </table>
+    </div>
+    <div class="cheat-card reveal">
+      <h3><span lang="en">📄 Files</span><span lang="es">📄 Archivos</span></h3>
+      <table>
+        <tr><td><span class="cmd"><span lang="en">cat file</span><span lang="es">cat archivo</span></span></td><td><span class="desc"><span lang="en">Read a file</span><span lang="es">Leer un archivo</span></span></td></tr>
+        <tr><td><span class="cmd"><span lang="en">touch file</span><span lang="es">touch archivo</span></span></td><td><span class="desc"><span lang="en">Create a new file</span><span lang="es">Crear un archivo</span></span></td></tr>
+        <tr><td><span class="cmd"><span lang="en">mv old new</span><span lang="es">mv viejo nuevo</span></span></td><td><span class="desc"><span lang="en">Rename or move</span><span lang="es">Renombrar o mover</span></span></td></tr>
+        <tr><td><span class="cmd"><span lang="en">cp file copy</span><span lang="es">cp archivo copia</span></span></td><td><span class="desc"><span lang="en">Copy a file</span><span lang="es">Copiar un archivo</span></span></td></tr>
+        <tr><td><span class="cmd"><span lang="en">rm file</span><span lang="es">rm archivo</span></span></td><td><span class="desc"><span lang="en">Delete a file</span><span lang="es">Eliminar un archivo</span></span></td></tr>
+      </table>
+    </div>
+    <div class="cheat-card reveal">
+      <h3><span lang="en">📁 Folders &amp; Search</span><span lang="es">📁 Carpetas y Búsqueda</span></h3>
+      <table>
+        <tr><td><span class="cmd"><span lang="en">mkdir name</span><span lang="es">mkdir nombre</span></span></td><td><span class="desc"><span lang="en">Create a folder</span><span lang="es">Crear una carpeta</span></span></td></tr>
+        <tr><td><span class="cmd"><span lang="en">grep "word" file</span><span lang="es">grep "palabra" archivo</span></span></td><td><span class="desc"><span lang="en">Search in a file</span><span lang="es">Buscar en un archivo</span></span></td></tr>
+        <tr><td><span class="cmd"><span lang="en">wc -l file</span><span lang="es">wc -l archivo</span></span></td><td><span class="desc"><span lang="en">Count lines</span><span lang="es">Contar líneas</span></span></td></tr>
+      </table>
+    </div>
+    <div class="cheat-card reveal">
+      <h3><span lang="en">📝 Scripts &amp; More</span><span lang="es">📝 Scripts y Más</span></h3>
+      <table>
+        <tr><td><span class="cmd"><span lang="en">nano file</span><span lang="es">nano archivo</span></span></td><td><span class="desc"><span lang="en">Open text editor</span><span lang="es">Abrir editor de texto</span></span></td></tr>
+        <tr><td><span class="cmd"><span lang="en">bash file</span><span lang="es">bash archivo</span></span></td><td><span class="desc"><span lang="en">Run a script</span><span lang="es">Ejecutar un script</span></span></td></tr>
+        <tr><td><span class="cmd"><span lang="en">echo "hi"</span><span lang="es">echo "hola"</span></span></td><td><span class="desc"><span lang="en">Print text</span><span lang="es">Imprimir texto</span></span></td></tr>
+        <tr><td><span class="cmd">clear</span></td><td><span class="desc"><span lang="en">Clean the screen</span><span lang="es">Limpiar la pantalla</span></span></td></tr>
+        <tr><td><span class="cmd">history</span></td><td><span class="desc"><span lang="en">See past commands</span><span lang="es">Ver comandos anteriores</span></span></td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="tip-bar reveal">
+    <div class="tip-icon">💡</div>
+    <div class="tip-text">
+      <span lang="en">When you type <span class="cmd">ls</span>, notice the colors! Names in <span class="color-folder">blue</span> are <strong>folders</strong> you can enter with <span class="cmd">cd</span>. Names in <span class="color-file">white</span> are <strong>files</strong> you can read with <span class="cmd">cat</span>.</span>
+      <span lang="es">Cuando escribís <span class="cmd">ls</span>, ¡fijate en los colores! Los nombres en <span class="color-folder">azul</span> son <strong>carpetas</strong> donde podés entrar con <span class="cmd">cd</span>. Los nombres en <span class="color-file">blanco</span> son <strong>archivos</strong> que podés leer con <span class="cmd">cat</span>.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ACTIVITIES ===== -->
+<section class="section" id="activities">
+  <div class="section-header reveal">
+    <h2><span lang="en">🚀 Activities</span><span lang="es">🚀 Actividades</span></h2>
+    <p><span lang="en">Five hands-on challenges. No lectures, no memorizing — just you and the terminal.</span><span lang="es">Cinco desafíos prácticos. Sin charlas, sin memorizar — solo vos y la terminal.</span></p>
+  </div>
+
+  <!-- Activity 1: Treasure Hunt -->
+  <div class="activity-card reveal" id="treasure-hunt" onclick="openModal('modal-treasure')">
+    <div class="activity-img"><img src="images/activity01.png" alt="Treasure Hunt" loading="lazy"><div class="activity-badge" style="color: var(--accent-yellow);"><span lang="en">Activity 1</span><span lang="es">Actividad 1</span></div></div>
+    <div class="activity-body">
+      <div class="icon-row">🗺️</div>
+      <h3><span lang="en">Treasure Hunt</span><span lang="es">Búsqueda del Tesoro</span></h3>
+      <div class="time">⏱ 8 <span lang="en">minutes</span><span lang="es">minutos</span></div>
+      <p class="description"><span lang="en">You're an explorer on a mysterious island. Hidden somewhere in the folders is a treasure. Follow the clues from cave to forest to mountain to beach — but beware, the treasure might be <strong>hidden</strong>.</span><span lang="es">Sos un explorador en una isla misteriosa. En algún lugar entre las carpetas hay un tesoro. Seguí las pistas de la cueva al bosque, de la montaña a la playa — pero cuidado, el tesoro podría estar <strong>oculto</strong>.</span></p>
+      <div class="commands-used"><span class="cmd">ls</span><span class="cmd">ls -a</span><span class="cmd">cd</span><span class="cmd">cat</span><span class="cmd">pwd</span></div>
+      <button class="activity-link" onclick="event.stopPropagation(); openModal('modal-treasure')"><span lang="en">Open activity</span><span lang="es">Abrir actividad</span></button>
+    </div>
+  </div>
+
+  <!-- Activity 2: Robot Factory -->
+  <div class="activity-card reverse reveal" id="robot-factory" onclick="openModal('modal-robot')">
+    <div class="activity-img"><img src="images/activity02.png" alt="Robot Factory" loading="lazy"><div class="activity-badge" style="color: var(--accent-blue);"><span lang="en">Activity 2</span><span lang="es">Actividad 2</span></div></div>
+    <div class="activity-body">
+      <div class="icon-row">🤖</div>
+      <h3><span lang="en">Robot Factory</span><span lang="es">Fábrica de Robots</span></h3>
+      <div class="time">⏱ 8 <span lang="en">minutes</span><span lang="es">minutos</span></div>
+      <p class="description"><span lang="en">Welcome to the factory! Grab parts from the parts bin, copy them to the assembly line, join them into a robot, and move your creation to the showroom.</span><span lang="es">¡Bienvenido a la fábrica! Agarrá piezas del depósito, copialas a la línea de ensamblaje, unirlas en un robot y mové tu creación a la sala de exhibición.</span></p>
+      <div class="commands-used"><span class="cmd">cp</span><span class="cmd">ls</span><span class="cmd">cat</span><span class="cmd">mv</span><span class="cmd">wc -l</span><span class="cmd">echo</span></div>
+      <button class="activity-link" onclick="event.stopPropagation(); openModal('modal-robot')"><span lang="en">Open activity</span><span lang="es">Abrir actividad</span></button>
+    </div>
+  </div>
+
+  <!-- Activity 3: Terminal Playground -->
+  <div class="activity-card reveal" id="terminal-playground" onclick="openModal('modal-playground')">
+    <div class="activity-img"><img src="images/activity03.png" alt="Terminal Playground" loading="lazy"><div class="activity-badge" style="color: var(--accent-green);"><span lang="en">Activity 3</span><span lang="es">Actividad 3</span></div></div>
+    <div class="activity-body">
+      <div class="icon-row">🎮</div>
+      <h3><span lang="en">Terminal Playground</span><span lang="es">Zona de Juegos</span></h3>
+      <div class="time">⏱ 5 <span lang="en">minutes</span><span lang="es">minutos</span></div>
+      <p class="description"><span lang="en">The terminal isn't just for work — it can be FUN! Make a cow talk, watch a train cross your screen, enter The Matrix, and get random wise quotes.</span><span lang="es">La terminal no es solo para trabajar — ¡puede ser DIVERTIDA! Hacé que una vaca hable, mirá un tren cruzar tu pantalla, entrá a The Matrix y recibí frases sabias al azar.</span></p>
+      <div class="commands-used"><span class="cmd">cowsay</span><span class="cmd">figlet</span><span class="cmd">echo</span><span class="cmd">sl</span><span class="cmd">cmatrix</span><span class="cmd">date</span><span class="cmd">cal</span></div>
+      <button class="activity-link" onclick="event.stopPropagation(); openModal('modal-playground')"><span lang="en">Open activity</span><span lang="es">Abrir actividad</span></button>
+    </div>
+  </div>
+
+  <!-- Activity 4: First Script -->
+  <div class="activity-card reverse reveal" id="first-script" onclick="openModal('modal-script')">
+    <div class="activity-img"><img src="images/activity04.png" alt="First Script" loading="lazy"><div class="activity-badge" style="color: var(--accent-pink);"><span lang="en">Activity 4</span><span lang="es">Actividad 4</span></div></div>
+    <div class="activity-body">
+      <div class="icon-row">📝</div>
+      <h3><span lang="en">First Script</span><span lang="es">Tu Primer Script</span></h3>
+      <div class="time">⏱ 7 <span lang="en">minutes</span><span lang="es">minutos</span></div>
+      <p class="description"><span lang="en">Write your first program! Open the nano editor, type some code, save it, and run it. <strong>You are now a programmer.</strong></span><span lang="es">¡Escribí tu primer programa! Abrí el editor nano, escribí código, guardalo y ejecutalo. <strong>Ahora sos programador.</strong></span></p>
+      <div class="commands-used"><span class="cmd">nano</span><span class="cmd">bash</span><span class="cmd">echo</span><span class="cmd">date</span><span class="cmd">whoami</span><span class="cmd">read</span></div>
+      <button class="activity-link" onclick="event.stopPropagation(); openModal('modal-script')"><span lang="en">Open activity</span><span lang="es">Abrir actividad</span></button>
+    </div>
+  </div>
+
+  <!-- Bonus: Command Detective -->
+  <div class="activity-card reveal" id="command-detective" onclick="openModal('modal-detective')">
+    <div class="activity-img"><img src="images/bonus.png" alt="Command Detective" loading="lazy"><div class="activity-badge" style="color: var(--accent-orange);">⭐ Bonus</div></div>
+    <div class="activity-body">
+      <div class="icon-row">🔍</div>
+      <h3><span lang="en">Command Detective</span><span lang="es">Detective de Comandos</span></h3>
+      <div class="time">⏱ <span lang="en">Extra challenge</span><span lang="es">Desafío extra</span></div>
+      <p class="description"><span lang="en">Someone stole the last cookie from the jar! Investigate suspect files and use <span class="cmd">grep</span> to search through the evidence. Can you solve the case?</span><span lang="es">¡Alguien robó la última galleta del frasco! Investigá los archivos de sospechosos y usá <span class="cmd">grep</span> para buscar entre la evidencia. ¿Podés resolver el caso?</span></p>
+      <div class="commands-used"><span class="cmd">grep</span><span class="cmd">cat</span><span class="cmd">ls</span><span class="cmd">grep -r</span></div>
+      <button class="activity-link" onclick="event.stopPropagation(); openModal('modal-detective')"><span lang="en">Open activity</span><span lang="es">Abrir actividad</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PRO TIPS ===== -->
+<section class="section" id="tips">
+  <div class="section-header reveal">
+    <h2><span lang="en">🎯 Pro Tips</span><span lang="es">🎯 Tips Pro</span></h2>
+    <p><span lang="en">Shortcuts that make you faster than everyone else.</span><span lang="es">Atajos que te hacen más rápido que todos los demás.</span></p>
+  </div>
+  <div class="tips-grid">
+    <div class="tip-card reveal"><span class="tip-key">Tab ↹</span><p><span lang="en">Auto-completes file and folder names. Your best friend.</span><span lang="es">Autocompleta nombres de archivos y carpetas. Tu mejor amigo.</span></p></div>
+    <div class="tip-card reveal"><span class="tip-key">↑ Arrow</span><p><span lang="en">Brings back your last command. Press it again for older ones.</span><span lang="es">Trae tu último comando. Presionalo otra vez para los anteriores.</span></p></div>
+    <div class="tip-card reveal"><span class="tip-key">cd ~</span><p><span lang="en">Lost? Go home instantly. Always works.</span><span lang="es">¿Perdido? Andá a inicio al instante. Siempre funciona.</span></p></div>
+    <div class="tip-card reveal"><span class="tip-key">clear</span><p><span lang="en">Screen too messy? Clean it up in one command.</span><span lang="es">¿Pantalla muy desordenada? Limpiala con un comando.</span></p></div>
+    <div class="tip-card reveal"><span class="tip-key">Ctrl + C</span><p><span lang="en">Something won't stop? Force quit any running command.</span><span lang="es">¿Algo no para? Forzá la salida de cualquier comando.</span></p></div>
+    <div class="tip-card reveal"><span class="tip-key">Ctrl + O → Enter → Ctrl + X</span><p><span lang="en">The nano save-and-exit combo. Memorize it!</span><span lang="es">El combo de guardar y salir de nano. ¡Memorizalo!</span></p></div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="footer-message reveal">
+    <span lang="en">Linux is not just used.<br>Linux is controlled.<br>Linux is <span style="color: var(--accent-green);">built with.</span></span>
+    <span lang="es">Linux no solo se usa.<br>Linux se controla.<br>Con Linux se <span style="color: var(--accent-green);">construye.</span></span>
+  </div>
+  <div class="footer-commands reveal">
+    <span class="cmd">pwd</span><span class="cmd">ls</span><span class="cmd">cd</span><span class="cmd">cat</span>
+    <span class="cmd">touch</span><span class="cmd">mv</span><span class="cmd">cp</span><span class="cmd">mkdir</span>
+    <span class="cmd">grep</span><span class="cmd">nano</span><span class="cmd">bash</span><span class="cmd">echo</span><span class="cmd">clear</span>
+  </div>
+  <p class="footer-sub"><span lang="en">The terminal is not scary. It's your superpower. 💪</span><span lang="es">La terminal no da miedo. Es tu superpoder. 💪</span></p>
+</footer>
+
+<!-- ================================================================ -->
+<!-- ===== MODAL: TREASURE HUNT ===== -->
+<!-- ================================================================ -->
+<div class="modal-overlay" id="modal-treasure">
+  <div class="modal-window">
+    <div class="modal-header">
+      <span class="modal-icon">🗺️</span>
+      <h2><span lang="en">Treasure Hunt</span><span lang="es">Búsqueda del Tesoro</span></h2>
+      <span class="modal-time">⏱ 8 min</span>
+      <button class="modal-close" onclick="closeModal('modal-treasure')" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body">
+      <h3><span lang="en">The Story</span><span lang="es">La Historia</span></h3>
+      <p><span lang="en">You are an explorer. You've just arrived at a mysterious island. Somewhere on this island, a treasure is hidden. Your only tool? The terminal.</span><span lang="es">Sos un explorador. Acabás de llegar a una isla misteriosa. En algún lugar de esta isla hay un tesoro escondido. ¿Tu única herramienta? La terminal.</span></p>
+      <p><span lang="en">Nobody is going to tell you where the treasure is. You have to <strong>find it yourself.</strong></span><span lang="es">Nadie te va a decir dónde está el tesoro. Tenés que <strong>encontrarlo vos mismo.</strong></span></p>
+      <h3><span class="step-number">1</span> <span lang="en">Getting Started</span><span lang="es">Para Empezar</span></h3>
+      <p><span lang="en">Open your terminal and go to the treasure hunt:</span><span lang="es">Abrí tu terminal y andá a la búsqueda del tesoro:</span></p>
+      <pre><code><span class="prompt-line">cd ~</span>
+<span class="prompt-line"><span lang="en">cd linux-adventure/treasure-hunt</span><span lang="es">cd aventura-linux/busqueda-del-tesoro</span></span></code></pre>
+      <p><span lang="en">Now look around. What do you see?</span><span lang="es">Ahora mirá alrededor. ¿Qué ves?</span></p>
+      <pre><code><span class="prompt-line">ls</span></code></pre>
+      <div class="modal-tip"><span class="tip-emoji">💡</span><p><span lang="en">Notice the colors! Names in <strong style="color:#58a6ff">blue</strong> are <strong>folders</strong> you can enter with <span class="cmd">cd</span>. Names in <strong>white</strong> are <strong>files</strong> you can read with <span class="cmd">cat</span>.</span><span lang="es">¡Fijate en los colores! Los nombres en <strong style="color:#58a6ff">azul</strong> son <strong>carpetas</strong> donde podés entrar con <span class="cmd">cd</span>. Los nombres en <strong>blanco</strong> son <strong>archivos</strong> que podés leer con <span class="cmd">cat</span>.</span></p></div>
+      <p><span lang="en">Your adventure begins with <span class="cmd">start-here.txt</span>. Read it:</span><span lang="es">Tu aventura empieza con <span class="cmd">empieza-aqui.txt</span>. Leelo:</span></p>
+      <pre><code><span class="prompt-line"><span lang="en">cat start-here.txt</span><span lang="es">cat empieza-aqui.txt</span></span></code></pre>
+      <p><span lang="en">Hmm, a welcome message! But where should you go first? Look around with <span class="cmd">ls</span> — do you see a mysterious <strong>cave</strong>? 🕳️ Let's explore it!</span><span lang="es">Hmm, ¡un mensaje de bienvenida! ¿Pero a dónde ir primero? Mirá alrededor con <span class="cmd">ls</span> — ¿ves una misteriosa <strong>cueva</strong>? 🕳️ ¡Vamos a explorarla!</span></p>
+      <pre><code><span class="prompt-line"><span lang="en">cd cave</span><span lang="es">cd cueva</span></span>
+<span class="prompt-line">ls</span>
+<span class="prompt-line"><span lang="en">cat clue1.txt</span><span lang="es">cat pista1.txt</span></span></code></pre>
+      <div class="modal-tip"><span class="tip-emoji">🗺️</span><p><span lang="en">The clue tells you where to go next! Read it carefully and follow the trail.</span><span lang="es">¡La pista te dice a dónde ir después! Leela con cuidado y seguí el camino.</span></p></div>
+      <h3><span class="step-number">2</span> <span lang="en">Your Mission</span><span lang="es">Tu Misión</span></h3>
+      <ol><li><span lang="en">Read the first clue</span><span lang="es">Leé la primera pista</span></li><li><span lang="en">Follow the clues from folder to folder</span><span lang="es">Seguí las pistas de carpeta en carpeta</span></li><li><span lang="en">Find the <strong>treasure</strong></span><span lang="es">Encontrá el <strong>tesoro</strong></span></li></ol>
+      <h3><span lang="en">Rules</span><span lang="es">Reglas</span></h3>
+      <ul><li><span lang="en">Read every file you find — some are clues, some are traps!</span><span lang="es">Leé cada archivo que encontrés — ¡algunos son pistas, otros son trampas!</span></li><li><span lang="en">If you get lost, type <span class="cmd">pwd</span> to see where you are</span><span lang="es">Si te perdés, escribí <span class="cmd">pwd</span> para ver dónde estás</span></li><li><span lang="en">To go back, type <span class="cmd">cd ..</span></span><span lang="es">Para regresar, escribí <span class="cmd">cd ..</span></span></li><li><span lang="en">The treasure might be <strong>hidden</strong>... 👀</span><span lang="es">El tesoro podría estar <strong>oculto</strong>... 👀</span></li></ul>
+      <h3><span class="step-number">3</span> <span lang="en">Commands You'll Need</span><span lang="es">Comandos que Vas a Necesitar</span></h3>
+      <table><tr><th><span lang="en">Command</span><span lang="es">Comando</span></th><th><span lang="en">What It Does</span><span lang="es">Qué Hace</span></th></tr><tr><td><span class="cmd">ls</span></td><td><span lang="en">See what's in the current folder</span><span lang="es">Ver qué hay en la carpeta actual</span></td></tr><tr><td><span class="cmd">ls -a</span></td><td><span lang="en">See EVERYTHING — even hidden files!</span><span lang="es">Ver TODO — ¡incluso archivos ocultos!</span></td></tr><tr><td><span class="cmd"><span lang="en">cd foldername</span><span lang="es">cd carpeta</span></span></td><td><span lang="en">Go into a folder</span><span lang="es">Entrar a una carpeta</span></td></tr><tr><td><span class="cmd">cd ..</span></td><td><span lang="en">Go back one folder</span><span lang="es">Regresar una carpeta</span></td></tr><tr><td><span class="cmd"><span lang="en">cat filename</span><span lang="es">cat archivo</span></span></td><td><span lang="en">Read a file</span><span lang="es">Leer un archivo</span></td></tr><tr><td><span class="cmd">pwd</span></td><td><span lang="en">See where you are right now</span><span lang="es">Ver dónde estás ahora</span></td></tr></table>
+      <div class="key-message"><span lang="en">Start exploring. Read the clues. Follow the trail.<br>Can you find the treasure? 🏆</span><span lang="es">Empezá a explorar. Leé las pistas. Seguí el camino.<br>¿Podés encontrar el tesoro? 🏆</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: ROBOT FACTORY ===== -->
+<div class="modal-overlay" id="modal-robot">
+  <div class="modal-window">
+    <div class="modal-header">
+      <span class="modal-icon">🤖</span>
+      <h2><span lang="en">Robot Factory</span><span lang="es">Fábrica de Robots</span></h2>
+      <span class="modal-time">⏱ 8 min</span>
+      <button class="modal-close" onclick="closeModal('modal-robot')" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body">
+      <h3><span lang="en">The Story</span><span lang="es">La Historia</span></h3>
+      <p><span lang="en">Welcome to the <strong>Robot Factory</strong>! Your job: build a robot from parts. You'll grab parts from the parts bin, copy them to the assembly line, join them into one robot file, and show it off in the showroom.</span><span lang="es">¡Bienvenido a la <strong>Fábrica de Robots</strong>! Tu trabajo: construir un robot con piezas. Vas a agarrar piezas del depósito, copiarlas a la línea de ensamblaje, unirlas en un solo archivo robot y exhibirlo en la sala de exhibición.</span></p>
+      <h3><span class="step-number">1</span> <span lang="en">Getting Started</span><span lang="es">Para Empezar</span></h3>
+      <p><span lang="en">Go to the Robot Factory:</span><span lang="es">Andá a la Fábrica de Robots:</span></p>
+      <pre><code><span class="prompt-line">cd ~</span>
+<span class="prompt-line"><span lang="en">cd linux-adventure/robot-factory</span><span lang="es">cd aventura-linux/fabrica-de-robots</span></span>
+<span class="prompt-line">ls</span></code></pre>
+      <div class="modal-tip"><span class="tip-emoji">💡</span><p><span lang="en"><strong style="color:#58a6ff">Blue</strong> = folders — <strong>white</strong> = files.</span><span lang="es"><strong style="color:#58a6ff">Azul</strong> = carpetas — <strong>blanco</strong> = archivos.</span></p></div>
+      <p><span lang="en">Check what parts are available:</span><span lang="es">Revisá qué piezas hay:</span></p>
+      <pre><code><span class="prompt-line"><span lang="en">ls parts-bin/</span><span lang="es">ls piezas/</span></span>
+<span class="prompt-line"><span lang="en">cat parts-bin/arm.txt</span><span lang="es">cat piezas/brazo.txt</span></span></code></pre>
+      <div class="challenge"><h4><span lang="en">Challenge 1: Grab Your Parts</span><span lang="es">Desafío 1: Agarrá tus Piezas</span></h4><p><span lang="en">Copy parts from the parts bin to the assembly line:</span><span lang="es">Copiá piezas del depósito a la línea de ensamblaje:</span></p><pre><code><span class="prompt-line"><span lang="en">cp parts-bin/brain.txt assembly-line/brain.txt</span><span lang="es">cp piezas/cerebro.txt linea-de-ensamblaje/cerebro.txt</span></span>
+<span class="prompt-line"><span lang="en">cp parts-bin/battery.txt assembly-line/body.txt</span><span lang="es">cp piezas/bateria.txt linea-de-ensamblaje/cuerpo.txt</span></span>
+<span class="prompt-line"><span lang="en">cp parts-bin/arm.txt assembly-line/left-arm.txt</span><span lang="es">cp piezas/brazo.txt linea-de-ensamblaje/brazo-izq.txt</span></span>
+<span class="prompt-line"><span lang="en">cp parts-bin/arm.txt assembly-line/right-arm.txt</span><span lang="es">cp piezas/brazo.txt linea-de-ensamblaje/brazo-der.txt</span></span>
+<span class="prompt-line"><span lang="en">cp parts-bin/leg.txt assembly-line/left-leg.txt</span><span lang="es">cp piezas/pierna.txt linea-de-ensamblaje/pierna-izq.txt</span></span>
+<span class="prompt-line"><span lang="en">cp parts-bin/leg.txt assembly-line/right-leg.txt</span><span lang="es">cp piezas/pierna.txt linea-de-ensamblaje/pierna-der.txt</span></span></code></pre><p><span lang="en">Wait — we have a brain but no head to put it in! Let's create one:</span><span lang="es">¡Esperá — tenemos un cerebro pero no hay cabeza donde ponerlo! Creemos una:</span></p><pre><code><span class="prompt-line"><span lang="en">echo "🤖 A shiny robot head" > assembly-line/head.txt</span><span lang="es">echo "🤖 Una cabeza de robot brillante" > linea-de-ensamblaje/cabeza.txt</span></span></code></pre><p><span lang="en">Check your work and count the parts:</span><span lang="es">Revisá tu trabajo y contá las piezas:</span></p><pre><code><span class="prompt-line"><span lang="en">ls assembly-line/</span><span lang="es">ls linea-de-ensamblaje/</span></span>
+<span class="prompt-line"><span lang="en">ls assembly-line/ | wc -l</span><span lang="es">ls linea-de-ensamblaje/ | wc -l</span></span></code></pre></div>
+      <div class="challenge"><h4><span lang="en">Challenge 2: Assemble Your Robot</span><span lang="es">Desafío 2: Ensamblá tu Robot</span></h4><p><span lang="en">Go into the assembly line and join all the parts into one robot file:</span><span lang="es">Entrá a la línea de ensamblaje y uní todas las piezas en un solo archivo robot:</span></p><pre><code><span class="prompt-line"><span lang="en">cd assembly-line</span><span lang="es">cd linea-de-ensamblaje</span></span>
+<span class="prompt-line"><span lang="en">cat head.txt brain.txt body.txt left-arm.txt right-arm.txt left-leg.txt right-leg.txt > my-robot.txt</span><span lang="es">cat cabeza.txt cerebro.txt cuerpo.txt brazo-izq.txt brazo-der.txt pierna-izq.txt pierna-der.txt > mi-robot.txt</span></span></code></pre><p><span lang="en">See your assembled robot:</span><span lang="es">Mirá tu robot ensamblado:</span></p><pre><code><span class="prompt-line"><span lang="en">cat my-robot.txt</span><span lang="es">cat mi-robot.txt</span></span></code></pre></div>
+      <div class="challenge"><h4><span lang="en">Challenge 3: Name &amp; Move to the Showroom</span><span lang="es">Desafío 3: Nombrá y Mové a la Sala de Exhibición</span></h4><p><span lang="en">Give your robot a cool name and move it to the showroom:</span><span lang="es">Dale a tu robot un nombre genial y movelo a la sala de exhibición:</span></p><pre><code><span class="prompt-line"><span lang="en">mv my-robot.txt super-bot-3000.txt</span><span lang="es">mv mi-robot.txt super-bot-3000.txt</span></span>
+<span class="prompt-line"><span lang="en">mv super-bot-3000.txt ../showroom/</span><span lang="es">mv super-bot-3000.txt ../sala-de-exhibicion/</span></span>
+<span class="prompt-line"><span lang="en">cd ../showroom</span><span lang="es">cd ../sala-de-exhibicion</span></span>
+<span class="prompt-line"><span lang="en">cat super-bot-3000.txt</span><span lang="es">cat super-bot-3000.txt</span></span></code></pre><p><span lang="en">Your robot is on display! 🤖🎉</span><span lang="es">¡Tu robot está en exhibición! 🤖🎉</span></p></div>
+      <div class="bonus"><h4><span lang="en">⭐ Bonus: Build a Super Robot</span><span lang="es">⭐ Bonus: Construí un Super Robot</span></h4><p><span lang="en">Add eyes and build a new, even more powerful robot!</span><span lang="es">¡Agregá ojos y construí un robot nuevo y más poderoso!</span></p><pre><code><span class="prompt-line"><span lang="en">cp parts-bin/eye.txt assembly-line/left-eye.txt</span><span lang="es">cp piezas/ojo.txt linea-de-ensamblaje/ojo-izq.txt</span></span>
+<span class="prompt-line"><span lang="en">cp parts-bin/eye.txt assembly-line/right-eye.txt</span><span lang="es">cp piezas/ojo.txt linea-de-ensamblaje/ojo-der.txt</span></span>
+<span class="prompt-line"><span lang="en">cd assembly-line</span><span lang="es">cd linea-de-ensamblaje</span></span>
+<span class="prompt-line"><span lang="en">cat head.txt brain.txt body.txt left-arm.txt right-arm.txt left-leg.txt right-leg.txt left-eye.txt right-eye.txt > thunderbot-9000.txt</span><span lang="es">cat cabeza.txt cerebro.txt cuerpo.txt brazo-izq.txt brazo-der.txt pierna-izq.txt pierna-der.txt ojo-izq.txt ojo-der.txt > thunderbot-9000.txt</span></span>
+<span class="prompt-line"><span lang="en">cat thunderbot-9000.txt</span><span lang="es">cat thunderbot-9000.txt</span></span></code></pre></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: TERMINAL PLAYGROUND ===== -->
+<div class="modal-overlay" id="modal-playground">
+  <div class="modal-window">
+    <div class="modal-header">
+      <span class="modal-icon">🎮</span>
+      <h2><span lang="en">Terminal Playground</span><span lang="es">Zona de Juegos</span></h2>
+      <span class="modal-time">⏱ 5 min</span>
+      <button class="modal-close" onclick="closeModal('modal-playground')" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body">
+      <p><span lang="en">The terminal isn't just for work — it can be <strong>FUN!</strong></span><span lang="es">La terminal no es solo para trabajar — ¡puede ser <strong>DIVERTIDA!</strong></span></p>
+      <pre><code><span class="prompt-line">cd ~</span>
+<span class="prompt-line"><span lang="en">cd linux-adventure/playground</span><span lang="es">cd aventura-linux/area-de-juego</span></span></code></pre>
+      <h3><span lang="en">🐄 Cowsay — Make a Cow Talk!</span><span lang="es">🐄 Cowsay — ¡Hacé que una Vaca Hable!</span></h3>
+      <pre><code><span class="prompt-line">cowsay "I love Linux!"</span>
+<span class="prompt-line">cowsay "Hello World"</span></code></pre>
+      <p><span lang="en">Want a different animal?</span><span lang="es">¿Querés un animal diferente?</span></p>
+      <pre><code><span class="prompt-line">cowsay -f dragon "I breathe fire"</span>
+<span class="prompt-line">cowsay -f tux "I am the Linux penguin"</span></code></pre>
+      <h3><span lang="en">�️ Make the Cow Say Anything!</span><span lang="es">🗣️ ¡Hacé que la Vaca Diga lo que Quieras!</span></h3>
+      <p><span lang="en">Use the pipe <span class="cmd">|</span> to send your words to the cow:</span><span lang="es">Usá el pipe <span class="cmd">|</span> para mandarle tus palabras a la vaca:</span></p>
+      <pre><code><span class="prompt-line">echo "I love Linux" | cowsay</span>
+<span class="prompt-line">echo "Penguins rule the world" | cowsay -f tux</span></code></pre>
+      <h3><span lang="en">�️ Figlet — GIANT Text!</span><span lang="es">🖨️ Figlet — ¡Texto GIGANTE!</span></h3>
+      <p><span lang="en">Make your name appear in huge letters:</span><span lang="es">Hacé que tu nombre aparezca en letras enormes:</span></p>
+      <pre><code><span class="prompt-line">figlet HELLO</span>
+<span class="prompt-line">figlet Linux Rules</span></code></pre>
+      <p><span lang="en">Try it with your name! <span class="cmd">figlet [YOUR NAME]</span></span><span lang="es">¡Probalo con tu nombre! <span class="cmd">figlet [TU NOMBRE]</span></span></p>
+      <h3><span lang="en">�🚂 SL — Oops!</span><span lang="es">🚂 SL — ¡Ups!</span></h3>
+      <p><span lang="en">Ever type <span class="cmd">sl</span> instead of <span class="cmd">ls</span> by accident?</span><span lang="es">¿Alguna vez escribiste <span class="cmd">sl</span> en vez de <span class="cmd">ls</span> por accidente?</span></p>
+      <pre><code><span class="prompt-line">sl</span></code></pre>
+      <p><span lang="en">Watch what happens! 🚂 (Just wait — it goes away on its own.)</span><span lang="es">¡Mirá lo que pasa! 🚂 (Solo esperá — se va solito.)</span></p>
+      <h3><span lang="en">💻 CMatrix — Feel Like a Movie Hacker</span><span lang="es">💻 CMatrix — Sentite Como un Hacker de Película</span></h3>
+      <p><span lang="en">In movies, when someone is "hacking a computer," green code rains down the screen. This is that! 😎 (It's just for fun — it doesn't actually do anything.)</span><span lang="es">En las películas, cuando alguien está "hackeando una computadora," código verde llueve por la pantalla. ¡Esto es eso! 😎 (Es solo por diversión — en realidad no hace nada.)</span></p>
+      <pre><code><span class="prompt-line">cmatrix</span></code></pre>
+      <p><span lang="en">Press <span class="cmd">q</span> to quit. Show your friends and look like a genius. 🧠</span><span lang="es">Presioná <span class="cmd">q</span> para salir. Mostráselo a tus amigos y parecé un genio. 🧠</span></p>
+      <h3><span lang="en">🕐 Built-In Fun (Always Works!)</span><span lang="es">🕐 Diversión Incluida (¡Siempre Funciona!)</span></h3>
+      <table><tr><th><span lang="en">Command</span><span lang="es">Comando</span></th><th><span lang="en">What It Does</span><span lang="es">Qué Hace</span></th></tr><tr><td><span class="cmd">date</span></td><td><span lang="en">Today's date and time</span><span lang="es">Fecha y hora actual</span></td></tr><tr><td><span class="cmd">cal</span></td><td><span lang="en">Show a calendar</span><span lang="es">Mostrar un calendario</span></td></tr><tr><td><span class="cmd">whoami</span></td><td><span lang="en">Who are you?</span><span lang="es">¿Quién sos?</span></td></tr><tr><td><span class="cmd">uptime</span></td><td><span lang="en">How long the computer has been on</span><span lang="es">Cuánto tiempo lleva encendida la compu</span></td></tr><tr><td><span class="cmd">echo "Hello!"</span></td><td><span lang="en">Make the terminal say something</span><span lang="es">Hacer que la terminal diga algo</span></td></tr></table>
+      <div class="modal-tip"><span class="tip-emoji">💡</span><p><span lang="en">Combine commands with the pipe <span class="cmd">|</span> — it sends the output of one command into the next! Try: <span class="cmd">echo "I am awesome" | cowsay -f tux</span></span><span lang="es">Combiná comandos con el pipe <span class="cmd">|</span> — ¡envía la salida de un comando al siguiente! Probá: <span class="cmd">echo "I am awesome" | cowsay -f tux</span></span></p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: FIRST SCRIPT ===== -->
+<div class="modal-overlay" id="modal-script">
+  <div class="modal-window">
+    <div class="modal-header">
+      <span class="modal-icon">📝</span>
+      <h2><span lang="en">First Script</span><span lang="es">Tu Primer Script</span></h2>
+      <span class="modal-time">⏱ 7 min</span>
+      <button class="modal-close" onclick="closeModal('modal-script')" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body">
+      <p><span lang="en">A script is a file that tells the computer what to do, step by step. When you write a script, <strong>you are programming.</strong></span><span lang="es">Un script es un archivo que le dice a la computadora qué hacer, paso a paso. Cuando escribís un script, <strong>estás programando.</strong></span></p>
+      <h3><span class="step-number">1</span> <span lang="en">Go to the Script Lab</span><span lang="es">Andá al Laboratorio de Scripts</span></h3>
+      <pre><code><span class="prompt-line">cd ~</span>
+<span class="prompt-line"><span lang="en">cd linux-adventure/my-scripts</span><span lang="es">cd aventura-linux/mis-scripts</span></span></code></pre>
+      <h3><span class="step-number">2</span> <span lang="en">Create Your Script</span><span lang="es">Creá tu Script</span></h3>
+      <pre><code><span class="prompt-line">nano hello.sh</span></code></pre>
+      <p><span lang="en">A text editor opens in your terminal!</span><span lang="es">¡Se abre un editor de texto en tu terminal!</span></p>
+      <h3><span class="step-number">3</span> <span lang="en">Type This Code</span><span lang="es">Escribí Este Código</span></h3>
+      <div class="modal-tip"><span class="tip-emoji">📋</span><p><span lang="en"><strong>Copy & Paste tip:</strong> Select the code below, press <strong>Ctrl+C</strong> to copy. Then click on your terminal and press <strong>Ctrl+Shift+V</strong> to paste. (In the terminal, paste needs the extra <strong>Shift</strong>!)</span><span lang="es"><strong>Tip para Copiar y Pegar:</strong> Seleccioná el código de abajo, presioná <strong>Ctrl+C</strong> para copiar. Después hacé clic en tu terminal y presioná <strong>Ctrl+Shift+V</strong> para pegar. (¡En la terminal, pegar necesita el <strong>Shift</strong> extra!)</span></p></div>
+<span lang="en"><pre><code>#!/bin/bash
+echo "Hello! I am a Linux script!"
+echo "Made by: [YOUR NAME]"
+echo ""
+echo "Today is:"
+date
+echo ""
+echo "You are logged in as:"
+whoami
+echo ""
+echo "🐧 Script complete!"</code></pre></span>
+<span lang="es"><pre><code>#!/bin/bash
+echo "¡Hola! ¡Soy un script de Linux!"
+echo "Hecho por: [TU NOMBRE]"
+echo ""
+echo "Hoy es:"
+date
+echo ""
+echo "Estás conectado como:"
+whoami
+echo ""
+echo "🐧 ¡Script completo!"</code></pre></span>
+      <p><span lang="en">Replace <span class="cmd">[YOUR NAME]</span> with your real name!</span><span lang="es">¡Reemplazá <span class="cmd">[TU NOMBRE]</span> con tu nombre real!</span></p>
+      <h3><span class="step-number">4</span> <span lang="en">Save and Exit nano</span><span lang="es">Guardar y Salir de nano</span></h3>
+      <table><tr><th><span lang="en">Action</span><span lang="es">Acción</span></th><th><span lang="en">Keys</span><span lang="es">Teclas</span></th></tr><tr><td><span lang="en">Save the file</span><span lang="es">Guardar el archivo</span></td><td><strong>Ctrl + O</strong>, <span lang="en">then press</span><span lang="es">luego presioná</span> <strong>Enter</strong></td></tr><tr><td><span lang="en">Exit nano</span><span lang="es">Salir de nano</span></td><td><strong>Ctrl + X</strong></td></tr></table>
+      <h3><span class="step-number">5</span> <span lang="en">Run Your Script!</span><span lang="es">¡Ejecutá tu Script!</span></h3>
+      <pre><code><span class="prompt-line">bash hello.sh</span></code></pre>
+      <div class="key-message"><span lang="en">🎉 YOUR SCRIPT JUST RAN!<br>You are officially a programmer!</span><span lang="es">🎉 ¡TU SCRIPT ACABA DE EJECUTARSE!<br>¡Oficialmente sos programador!</span></div>
+      <div class="bonus"><h4><span lang="en">⭐ Bonus: Make It Interactive</span><span lang="es">⭐ Extra: Hacelo Interactivo</span></h4><p><span lang="en">Open your script again (<span class="cmd">nano hello.sh</span>) and add these lines at the end:</span><span lang="es">Abrí tu script de nuevo (<span class="cmd">nano hello.sh</span>) y agregá estas líneas al final:</span></p><span lang="en"><pre><code>echo "What is your name?"
+read name
+echo "Hello, $name! Welcome to Linux!"</code></pre></span><span lang="es"><pre><code>echo "¿Cómo te llamás?"
+read name
+echo "¡Hola, $name! ¡Bienvenido a Linux!"</code></pre></span><p><span lang="en">Save, exit, and run with <span class="cmd">bash hello.sh</span>. The <span class="cmd">read</span> command waits for you to type something!</span><span lang="es">Guardá, salí y ejecutá con <span class="cmd">bash hello.sh</span>. ¡El comando <span class="cmd">read</span> espera a que escribás algo!</span></p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: COMMAND DETECTIVE ===== -->
+<div class="modal-overlay" id="modal-detective">
+  <div class="modal-window">
+    <div class="modal-header">
+      <span class="modal-icon">🔍</span>
+      <h2><span lang="en">Command Detective</span><span lang="es">Detective de Comandos</span></h2>
+      <span class="modal-time">⭐ Bonus</span>
+      <button class="modal-close" onclick="closeModal('modal-detective')" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-body">
+      <h3><span lang="en">The Case</span><span lang="es">El Caso</span></h3>
+      <p><span lang="en">Someone stole the last cookie from the jar. There are witnesses and suspects. Your job: search through the evidence and figure out <strong>who did it.</strong></span><span lang="es">Alguien robó la última galleta del frasco. Hay testigos y sospechosos. Tu trabajo: buscar entre la evidencia y descubrir <strong>quién fue.</strong></span></p>
+      <h3><span class="step-number">1</span> <span lang="en">Getting Started</span><span lang="es">Para Empezar</span></h3>
+      <pre><code><span class="prompt-line">cd ~</span>
+<span class="prompt-line"><span lang="en">cd linux-adventure/detective</span><span lang="es">cd aventura-linux/detective</span></span>
+<span class="prompt-line"><span lang="en">cat case-file.txt</span><span lang="es">cat caso.txt</span></span></code></pre>
+      <h3><span class="step-number">2</span> <span lang="en">Investigate the Evidence</span><span lang="es">Investigar la Evidencia</span></h3>
+      <p><span lang="en">Look at what you have:</span><span lang="es">Mirá lo que tenés:</span></p>
+      <pre><code><span class="prompt-line"><span lang="en">ls evidence/</span><span lang="es">ls evidencia/</span></span>
+<span class="prompt-line"><span lang="en">ls suspects/</span><span lang="es">ls sospechosos/</span></span></code></pre>
+      <p><span lang="en">Read the witness statements:</span><span lang="es">Leé las declaraciones de testigos:</span></p>
+      <pre><code><span class="prompt-line"><span lang="en">cat evidence/witness1.txt</span><span lang="es">cat evidencia/testigo1.txt</span></span>
+<span class="prompt-line"><span lang="en">cat evidence/witness2.txt</span><span lang="es">cat evidencia/testigo2.txt</span></span>
+<span class="prompt-line"><span lang="en">cat evidence/witness3.txt</span><span lang="es">cat evidencia/testigo3.txt</span></span>
+<span class="prompt-line"><span lang="en">cat evidence/witness4.txt</span><span lang="es">cat evidencia/testigo4.txt</span></span></code></pre>
+      <p><span lang="en">Read the suspect files:</span><span lang="es">Leé los archivos de sospechosos:</span></p>
+      <pre><code><span class="prompt-line"><span lang="en">cat suspects/alex.txt</span><span lang="es">cat sospechosos/alex.txt</span></span>
+<span class="prompt-line"><span lang="en">cat suspects/sam.txt</span><span lang="es">cat sospechosos/sam.txt</span></span>
+<span class="prompt-line"><span lang="en">cat suspects/jordan.txt</span><span lang="es">cat sospechosos/jordan.txt</span></span>
+<span class="prompt-line"><span lang="en">cat suspects/riley.txt</span><span lang="es">cat sospechosos/riley.txt</span></span></code></pre>
+      <h3><span class="step-number">3</span> <span lang="en">Use grep — Your Secret Weapon</span><span lang="es">Usá grep — Tu Arma Secreta</span></h3>
+      <p><span lang="en">Instead of reading every file, <strong>search</strong> for clues!</span><span lang="es">En vez de leer cada archivo, ¡<strong>buscá</strong> pistas!</span></p>
+      <pre><code><span class="prompt-line"><span lang="en">grep "cookies" suspects/*</span><span lang="es">grep "galletas" sospechosos/*</span></span>
+<span class="prompt-line"><span lang="en">grep "kitchen" suspects/*</span><span lang="es">grep "cocina" sospechosos/*</span></span>
+<span class="prompt-line"><span lang="en">grep "chocolate" evidence/*</span><span lang="es">grep "chocolate" evidencia/*</span></span>
+<span class="prompt-line"><span lang="en">grep -r "cookie" .</span><span lang="es">grep -r "galleta" .</span></span></code></pre>
+      <h3><span class="step-number">4</span> <span lang="en">Solve the Case!</span><span lang="es">¡Resolvé el Caso!</span></h3>
+      <ol><li><span lang="en">Who was in the kitchen?</span><span lang="es">¿Quién estaba en la cocina?</span></li><li><span lang="en">Who likes cookies?</span><span lang="es">¿A quién le gustan las galletas?</span></li><li><span lang="en">Who had chocolate on their shirt?</span><span lang="es">¿Quién tenía chocolate en su camisa?</span></li><li><span lang="en"><strong>Who stole the cookie?</strong></span><span lang="es"><strong>¿Quién robó la galleta?</strong></span></li></ol>
+      <div class="modal-tip"><span class="tip-emoji">💡</span><p><span lang="en"><span class="cmd">grep</span> is one of the most powerful commands in Linux. Real engineers and security analysts use it every day!</span><span lang="es"><span class="cmd">grep</span> es uno de los comandos más poderosos de Linux. ¡Ingenieros y analistas de seguridad reales lo usan todos los días!</span></p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SCRIPTS ===== -->
+<script>
+// --- Floating nav scroll effect ---
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => { navbar.classList.toggle('scrolled', window.scrollY > 40); });
+
+// --- Mobile menu toggle ---
+const navToggle = document.getElementById('navToggle');
+const navLinks = document.getElementById('navLinks');
+navToggle.addEventListener('click', () => { navLinks.classList.toggle('open'); });
+navLinks.querySelectorAll('a').forEach(link => { link.addEventListener('click', () => navLinks.classList.remove('open')); });
+
+// --- Active nav link on scroll ---
+const sections = document.querySelectorAll('section[id], .activity-card[id]');
+const navAnchors = document.querySelectorAll('.nav-links a');
+const observerNav = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      navAnchors.forEach(a => { a.classList.toggle('active', a.getAttribute('href') === '#' + id); });
+    }
+  });
+}, { rootMargin: '-30% 0px -60% 0px' });
+sections.forEach(s => observerNav.observe(s));
+
+// --- Scroll reveal animations ---
+const reveals = document.querySelectorAll('.reveal');
+const observerReveal = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) { entry.target.classList.add('visible'); observerReveal.unobserve(entry.target); }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+reveals.forEach(el => observerReveal.observe(el));
+
+// --- Modal open / close ---
+function openModal(id) {
+  const modal = document.getElementById(id);
+  if (!modal) return;
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  const body = modal.querySelector('.modal-body');
+  if (body) body.scrollTop = 0;
+}
+
+function closeModal(id) {
+  const modal = document.getElementById(id);
+  if (!modal) return;
+  modal.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) { overlay.classList.remove('open'); document.body.style.overflow = ''; }
+  });
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.open').forEach(m => { m.classList.remove('open'); });
+    document.body.style.overflow = '';
+  }
+});
+</script>
+
+</body>
+</html>
